@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CSMDigitalSlotCarsSystem.Models.Comms;
 using CSMDigitalSlotCarsSystem;
 
 namespace PowerbaseTest
@@ -27,11 +28,24 @@ namespace PowerbaseTest
         {
             
             Enums.PacketType packetType = Enums.PacketType.Incoming;
-            byte validCrc8Rx = 101;
+            byte validCrc8Rx = 83;
 
             byte crc8Rx = this.powerbase.CrcCheck(this.incomingPacket.Data, packetType);
 
             Assert.AreEqual(validCrc8Rx, crc8Rx);
         }
+
+        [TestMethod]
+        public void OutgoingSuccessCrcChecksumByteAreEqualTest()
+        {
+
+            Enums.PacketType packetType = Enums.PacketType.Outgoing;
+            byte validCrc8Rx = 16;
+
+            byte crc8Rx = this.powerbase.CrcCheck(this.outgoingPacketSuccess.Data, packetType);
+
+            Assert.AreEqual(validCrc8Rx, crc8Rx);
+        }
+
     }
 }

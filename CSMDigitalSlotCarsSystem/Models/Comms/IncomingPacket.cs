@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSMDigitalSlotCarsSystem
+namespace CSMDigitalSlotCarsSystem.Models.Comms
 {
     /// <summary>
     /// The incoming packet (from Powerbase to PC) carries the information of:

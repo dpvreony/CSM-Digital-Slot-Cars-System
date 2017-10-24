@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSMDigitalSlotCarsSystem
+namespace CSMDigitalSlotCarsSystem.Models.Comms
 {
     /// <summary>
     /// Represents a drive packet received from a handset or transmitted to the powerbase.

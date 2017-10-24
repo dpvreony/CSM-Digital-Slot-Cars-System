@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CSMDigitalSlotCarsSystem.Enums;
 
-namespace CSMDigitalSlotCarsSystem
+namespace CSMDigitalSlotCarsSystem.Models.Comms
 {
     class Powerbase
     {
@@ -125,6 +125,7 @@ namespace CSMDigitalSlotCarsSystem
         internal byte CrcCheck(byte[] from6CPB_Msg, PacketType packetType)
         {
             int numLoops = packetType == PacketType.Incoming ? (int)PacketType.Incoming : (int)PacketType.Outgoing;
+            numLoops -= 1; // Ignore checksum byte
             byte crc8Rx = 0, nxtCrc8Rx = 0;
             int i = 0;
             byte[] CRC8_LOOK_UP_TABLE = new byte[]

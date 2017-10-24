@@ -42,19 +42,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CarBase.cs" />
-    <Compile Include="DrivePacket.cs" />
+    <Compile Include="Models\Racing\CarBase.cs" />
+    <Compile Include="Models\Comms\DrivePacket.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="FreePlayRace.cs" />
-    <Compile Include="HandsetTrackStatusPacket.cs" />
-    <Compile Include="IncomingPacket.cs" />
-    <Compile Include="OutgoingPacket.cs" />
+    <Compile Include="Models\Racing\FreePlayRace.cs" />
+    <Compile Include="Models\Comms\HandsetTrackStatusPacket.cs" />
+    <Compile Include="Models\Comms\IncomingPacket.cs" />
+    <Compile Include="Models\Comms\OutgoingPacket.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="Powerbase.cs" />
+    <Compile Include="Models\Comms\Powerbase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RaceSession.cs" />
-    <Compile Include="RaceTypeBase.cs" />
+    <Compile Include="Models\Racing\RaceSession.cs" />
+    <Compile Include="Models\Racing\RaceTypeBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
