@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSMDigitalSlotCarsSystem", "CSMDigitalSlotCarsSystem\CSMDigitalSlotCarsSystem.csproj", "{F3861AE3-4D10-4E11-A082-92E1D29D6B3F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06C94E8A-0FBD-4DEB-AD51-F828E1442064}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Documents\Uni\FYP\Scalextric\C7042 Scalextric 6 Car Power Base SNC Communications Protocol.pdf = ..\..\..\Documents\Uni\FYP\Scalextric\C7042 Scalextric 6 Car Power Base SNC Communications Protocol.pdf
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerbaseTest", "PowerbaseTest\PowerbaseTest.csproj", "{0B95AB72-474E-477C-B988-5962039F03E5}"
 EndProject

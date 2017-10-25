@@ -6,68 +6,106 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using static CSMDigitalSlotCarsSystem.Enums;
 
 namespace CSMDigitalSlotCarsSystem.Models.Comms
 {
+    /// <summary>
+    /// The Powerbase class manages all IO to and from the Powerbase device over a USB 
+    /// Serial Port connection, according to the "C7042 Scalextric 6 Car Power Base SNC
+    /// Communication Protocol v1" produced by "Sagentia" for "Hornby plc". 
+    /// Utilises IncomingPacket and OutgoingPacket objects in an asynchronous BufferBlock 
+    /// using the ProducerConsumer pattern.
+    /// </summary>
     class Powerbase
     {
-        private static List<IncomingPacket> incomingPackets = new List<IncomingPacket>();
-        private static List<OutgoingPacket> outgoingPackets = new List<OutgoingPacket>();
         private static OutgoingPacket SuccessOutgoingPacket = new OutgoingPacket(true);
         private static OutgoingPacket NotRecognisedOutgoingPacket = new OutgoingPacket(false);
+        private BufferBlock<IncomingPacket> incomingPackets;
+        private BufferBlock<OutgoingPacket> outgoingPackets;
 
-        CancellationTokenSource IncomingCancellationTokenSource, OutgoingCancellationTokenSource;
-        CancellationToken IncomingCancellationToken, OutgoingCancellationToken;
+        public CancellationToken PowerbaseRunCancellationToken;
+        private CancellationTokenSource PowerbaseRunCancellationTokenSource, IncomingCancellationTokenSource, OutgoingCancellationTokenSource;
+        private CancellationToken IncomingCancellationToken, OutgoingCancellationToken;
 
         private SerialPort port;
-        private bool running;
-        private readonly object locker = new object();
+        int msgRcvdCnt=0, msgInCnt = 0, msgOutCnt = 0;
 
-
+        /// <summary>
+        /// Contructs an instance of the Powerbase class, to manage IO from the Powerbase device.
+        /// </summary>
         internal Powerbase()
         {
-            // add start packet to output processing list
-            SuccessOutgoingPacket.Checksum = this.CrcCheck(SuccessOutgoingPacket.Data, PacketType.Outgoing);
-            this.OutgoingPackets.Add(SuccessOutgoingPacket);
-
-            this.Port = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
+            Powerbase.SuccessOutgoingPacket.Checksum = Powerbase.CrcCheck(SuccessOutgoingPacket.Data, PacketType.Outgoing);
+            Powerbase.NotRecognisedOutgoingPacket.Checksum = Powerbase.CrcCheck(NotRecognisedOutgoingPacket.Data, PacketType.Outgoing);
+            this.IncomingPackets = new BufferBlock<IncomingPacket>();
+            this.OutgoingPackets = new BufferBlock<OutgoingPacket>();
+            this.RefreshAllCancellationTokens();
+            this.Port = new SerialPort("COM3", 19200, Parity.None, 8, StopBits.One);
             this.Port.DataReceived += new SerialDataReceivedEventHandler(Port_DataReceived);
-
-
+            this.Port.DtrEnable = true;
 
         }
 
-        public List<IncomingPacket> IncomingPackets { get => incomingPackets; }
-        public List<OutgoingPacket> OutgoingPackets { get => outgoingPackets; }
-        public bool Running { get => running; set => running = value; }
+        public BufferBlock<IncomingPacket> IncomingPackets { get => this.incomingPackets; set => this.incomingPackets = value; }
+        public BufferBlock<OutgoingPacket> OutgoingPackets { get => this.outgoingPackets; set => this.outgoingPackets = value; }
         public SerialPort Port { get => port; set => port = value; }
 
+        /// <summary>
+        /// Drives the Powerbase class to start processing incoming and outgoing packets 
+        /// from the Powerbase device.
+        /// </summary>
         internal void Run()
         {
-            this.IncomingCancellationTokenSource = new CancellationTokenSource();
-            this.OutgoingCancellationTokenSource = new CancellationTokenSource();
-            this.IncomingCancellationToken = IncomingCancellationTokenSource.Token;
-            this.OutgoingCancellationToken = OutgoingCancellationTokenSource.Token;
+            this.RefreshAllCancellationTokens();
 
-            Port.Open();
-            Console.WriteLine($"{DateTime.Now.ToString()}: {Port.PortName} open");
-            this.Running = true;
-
-            // new background task to start input processing
-            Task incoming = new Task(() => { this.ProcessIncomingPacketBuffer(); }, TaskCreationOptions.None);
-            incoming.Start();
-            // new background task to start output processing
-            Task outgoing = new Task(() => { this.ProcessOutgoingPacketBuffer(); }, TaskCreationOptions.None);
-            outgoing.Start();
-
-
-            while (running)
+            this.Port.WriteBufferSize = 72;
+            this.Port.ReceivedBytesThreshold = 15;
+            try
             {
-                Thread.Sleep(5000);
+                this.Port.Open();
+                Console.WriteLine($"{DateTime.Now.ToString()}: {Port.PortName} is open");
 
+                // new task to start input processing
+                Task incomingProcessorTask = new Task(() => { this.ProcessIncomingPacketBuffer(); }, TaskCreationOptions.LongRunning);                
+                
+                // new task to start output processing
+                Task outgoingProcessorTask = new Task(() => { this.ProcessOutgoingPacketBuffer(); }, TaskCreationOptions.LongRunning);
+                incomingProcessorTask.Start();
+                outgoingProcessorTask.Start();
+
+                // add start packet to output processing list
+                this.OutgoingPackets.Post(SuccessOutgoingPacket);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine($"{DateTime.Now.ToString()}: {e.Message}");
+                this.PowerbaseRunCancellationTokenSource.Cancel();
             }
 
+            while (!this.PowerbaseRunCancellationToken.IsCancellationRequested)
+            {
+                Thread.Sleep(5000);
+                System.Diagnostics.Debug.WriteLine($"Port is still open: {this.Port.IsOpen}");
+                this.OutgoingPackets.Post(SuccessOutgoingPacket);
+
+            }
+        }
+
+        /// <summary>
+        /// Reinstantiates CancellationTokenSource and Tokens for the powerbase run and 
+        /// incoming/outgoing buffer processing loops, in event of Powerbase Run needing 
+        /// to be restarted.
+        /// </summary>
+        private void RefreshAllCancellationTokens()
+        {
+            this.PowerbaseRunCancellationTokenSource = new CancellationTokenSource();
+            this.IncomingCancellationTokenSource = new CancellationTokenSource();
+            this.OutgoingCancellationTokenSource = new CancellationTokenSource();
+            this.PowerbaseRunCancellationToken = PowerbaseRunCancellationTokenSource.Token;
+            this.IncomingCancellationToken = IncomingCancellationTokenSource.Token;
+            this.OutgoingCancellationToken = OutgoingCancellationTokenSource.Token;
         }
 
         /// <summary>
@@ -75,54 +113,113 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
         /// </summary>
         /// <param name="sender">The serial port sender.</param>
         /// <param name="e">The serial data received event args.</param>
-        private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        private async void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Console.WriteLine("Data Received event");
             SerialPort serialPort = sender as SerialPort;
-
             int bytesToRead = serialPort.BytesToRead;
-            if (bytesToRead == 9)
+            byte[] data = new byte[bytesToRead];
+            serialPort.Read(data, 0, bytesToRead);
+
+            if (data.Length == 15)
             {
-                byte[] data = new byte[bytesToRead];
-                serialPort.Read(data, 0, bytesToRead);
+
+                System.Diagnostics.Debug.WriteLine( $"RCVD: {++msgRcvdCnt} " +
+                    $"{data[0].ToString()},{data[1].ToString()},{data[2].ToString()},{data[3].ToString()},{data[4].ToString()}," +
+                    $"{data[5].ToString()},{data[6].ToString()},{data[7].ToString()},{data[8].ToString()},{data[9].ToString()}," +
+                    $"{data[10].ToString()},{data[11].ToString()},{data[12].ToString()},{data[13].ToString()},{data[14].ToString()}");
 
                 // CRC check, send notunderstood if fails
-                if (this.CrcCheck(data, PacketType.Incoming) == data[14])
+                if (Powerbase.CrcCheck(data, PacketType.Incoming) == data[14])
                 {
-                    this.IncomingPackets.Add(new IncomingPacket(data));
+                    //                this.IncomingPackets.Add(new IncomingPacket(data));
+                    //                    this.Port.Write(new OutgoingPacket(data).Data, 0, 9);
+
+                    // LATEST
+                    //                    await this.OutgoingPackets.SendAsync(new OutgoingPacket(data));
+                    await this.IncomingPackets.SendAsync(new IncomingPacket(data));
+
+                    System.Diagnostics.Debug.WriteLine("Sent Success");
+
                 }
                 else
                 {
-                    this.OutgoingPackets.Add(NotRecognisedOutgoingPacket);
+                    //                    this.Port.Write(NotRecognisedOutgoingPacket.Data, 0, 9);
+                    await this.OutgoingPackets.SendAsync(NotRecognisedOutgoingPacket);
+                    System.Diagnostics.Debug.WriteLine("Sent Unrecognised");
+                    msgRcvdCnt -= 1;
+                    msgOutCnt -= 1;
+                    //                this.OutgoingPackets.Add(NotRecognisedOutgoingPacket);
                 }
             }
         }
 
-        public void ProcessIncomingPacketBuffer()
+        public async void ProcessIncomingPacketBuffer()
         {
+            IncomingPacket tmpIncomingPacket;
             while (!this.IncomingCancellationToken.IsCancellationRequested)
             {
                 if (this.IncomingPackets.Count > 0)
                 {
-                    // Send to game manager, which will add response to outgoing packets
+                    tmpIncomingPacket = await this.IncomingPackets.ReceiveAsync();
+/*                    System.Diagnostics.Debug.WriteLine($"IN P'D:{++msgInCnt} " +
+                    $"{tmpIncomingPacket.Data[0].ToString()},{tmpIncomingPacket.Data[1].ToString()},{tmpIncomingPacket.Data[2].ToString()},{tmpIncomingPacket.Data[3].ToString()},{tmpIncomingPacket.Data[4].ToString()}," +
+                    $"{tmpIncomingPacket.Data[5].ToString()},{tmpIncomingPacket.Data[6].ToString()},{tmpIncomingPacket.Data[7].ToString()},{tmpIncomingPacket.Data[8].ToString()},{tmpIncomingPacket.Data[9].ToString()}," +
+                    $"{tmpIncomingPacket.Data[10].ToString()},{tmpIncomingPacket.Data[11].ToString()},{tmpIncomingPacket.Data[12].ToString()},{tmpIncomingPacket.Data[13].ToString()},{tmpIncomingPacket.Data[14].ToString()}");
+*/
+                    // Send to game manager, which will process SF line and return modified outgoing packets
+
+                    await this.OutgoingPackets.SendAsync(new OutgoingPacket(tmpIncomingPacket.Data));
                 }
             }
         }
 
-        public void ProcessOutgoingPacketBuffer()
+        public async void ProcessOutgoingPacketBuffer()
         {
+            OutgoingPacket tmpOutgoingPacket;
             while (!OutgoingCancellationToken.IsCancellationRequested)
             {
                 if (this.OutgoingPackets.Count > 0)
                 {
+                    tmpOutgoingPacket = await this.OutgoingPackets.ReceiveAsync();
+                    System.Diagnostics.Debug.WriteLine($"OUT P'D:{++msgOutCnt} " +
+                    $"{tmpOutgoingPacket.Data[0].ToString()},{tmpOutgoingPacket.Data[1].ToString()},{tmpOutgoingPacket.Data[2].ToString()},{tmpOutgoingPacket.Data[3].ToString()},{tmpOutgoingPacket.Data[4].ToString()}," +
+                    $"{tmpOutgoingPacket.Data[5].ToString()},{tmpOutgoingPacket.Data[6].ToString()},{tmpOutgoingPacket.Data[7].ToString()},{tmpOutgoingPacket.Data[8].ToString()}");
+
+                    await this.Port.BaseStream.WriteAsync(tmpOutgoingPacket.Data, 0, (int)Enums.PacketType.Outgoing);
                     // How to send data down port
-                    this.Port.WriteLine(this.OutgoingPackets[0].Data.ToString());
- //                   this.OutgoingPackets.Remove(this.OutgoingPackets[0]);
+//                    this.Port.BaseStream.WriteAsync(this.OutgoingPackets[0].Data, 0, this.OutgoingPackets[0].Data.Length);
+//                                        this.Port.Write(this.OutgoingPackets[0].Data, 0, this.OutgoingPackets[0].Data.Length);
+                    //                    this.Port.WriteLine(this.OutgoingPackets[0].Data.ToString());
+                    //                   this.OutgoingPackets.Remove(this.OutgoingPackets[0]);
                 }
             }
+            System.Diagnostics.Debug.WriteLine("Out - See you then");
+
         }
 
-        internal byte CrcCheck(byte[] from6CPB_Msg, PacketType packetType)
+        /// <summary>
+        /// Cancels the OutgoingPacket processor loop.
+        /// </summary>
+        public void CancelProcessOutgoingPacketBuffer()
+        {
+            this.OutgoingCancellationTokenSource.Cancel();
+        }
+
+        /// <summary>
+        /// Cancels the IncomingPacket processor loop.
+        /// </summary>
+        public void CancelProcessIncomingPacketBuffer()
+        {
+            this.IncomingCancellationTokenSource.Cancel();
+        }
+
+        /// <summary>
+        /// Performs a CRC8 calculation on the n-1 bytes in an incoming or outgoing packet.
+        /// </summary>
+        /// <param name="from6CPB_Msg">The packet to generate a checksum for.</param>
+        /// <param name="packetType">The tpe of packet (Incoming or Outgoing).</param>
+        /// <returns>The checksum byte.</returns>
+        internal static byte CrcCheck(byte[] from6CPB_Msg, PacketType packetType)
         {
             int numLoops = packetType == PacketType.Incoming ? (int)PacketType.Incoming : (int)PacketType.Outgoing;
             numLoops -= 1; // Ignore checksum byte
@@ -155,7 +252,6 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
                 nxtCrc8Rx = from6CPB_Msg[i];
                 crc8Rx = CRC8_LOOK_UP_TABLE[crc8Rx ^ nxtCrc8Rx];
             }
-
 
             return crc8Rx;
         }

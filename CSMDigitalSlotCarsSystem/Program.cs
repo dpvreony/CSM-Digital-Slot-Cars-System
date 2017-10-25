@@ -14,9 +14,10 @@ namespace CSMDigitalSlotCarsSystem
         static void Main(string[] args)
         {
             Console.WriteLine($"{DateTime.Now.ToString()}: Starting 'CSM Digital Slot Cars System'");
-
             Powerbase powerbase = new Powerbase();
-            powerbase.Run();
+            Task powerbaseTask = new Task(() => powerbase.Run());
+            powerbaseTask.Start();
+            powerbaseTask.Wait();
         }
     }
 }

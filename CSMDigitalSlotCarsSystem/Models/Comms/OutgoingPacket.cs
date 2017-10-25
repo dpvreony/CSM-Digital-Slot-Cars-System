@@ -12,7 +12,7 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
         private const byte SuccessByte = 0xFF;
         private const byte NotRecognisedByte = 0x7F;
         private const byte ZeroByte = 0x00;
-        private byte[] data;
+        private byte[] data = new byte[9];
 
         internal byte[] Data { get => data; set => data = value; }
         internal byte OperationMode { get => this.data[0]; set => data[0] = value; }
@@ -25,44 +25,33 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
         internal byte LEDStatus { get => this.data[7]; set => this.data[7] = value; }
         internal byte Checksum { get => this.data[8]; set => this.data[8] = value; }
 
-        /// <summary>
-        /// Dummy packet for testing, including checksum value
-        /// </summary>
-        public OutgoingPacket TestOutgoingPacket()
-        {
-            return new OutgoingPacket(new byte[] 
-            {
-                SuccessByte, 
-            });
-        }
-
         public OutgoingPacket(bool success)
         {
             if (success)
             {
-                this.Data = new byte[]
-                {
-                    SuccessByte,
-                    SuccessByte, SuccessByte, SuccessByte, SuccessByte, SuccessByte,SuccessByte,
-                    191,
-                    ZeroByte
-                };
+                this.Data = new byte[] { SuccessByte, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x80, 0x27 };
             }
             else
             {
-                this.Data = new byte[]
-                {
-                    NotRecognisedByte,
-                    SuccessByte, SuccessByte, SuccessByte, SuccessByte, SuccessByte,SuccessByte,
-                    129,
-                    ZeroByte
-                };
+                this.Data = new byte[] { NotRecognisedByte, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x80, 0x98 };
             }
         }
 
+        /// <summary>
+        /// Creates a new OutgoingPacket from 9 selected bytes of an IncomingPacket 15 byte array.
+        /// </summary>
+        /// <param name="output">An IncomingPacket's 15 byte array</param>
         public OutgoingPacket(byte[] output)
         {
-            this.Data = output;
+            this.Data[0] = SuccessByte;
+            for (int i=1; i < 7; i++)
+            {
+                this.Data[i] = output[i];
+            }
+            this.Data[7] = 129; // Green & Car 1
+            this.Data[8] = Powerbase.CrcCheck(this.Data, Enums.PacketType.Outgoing);
+
+/*
             this.OperationMode = SuccessByte;
             switch(RaceSession.NumPlayers)
             {
@@ -87,6 +76,7 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
                 default:
                     break;
             }
+*/
         }
     }
 }
