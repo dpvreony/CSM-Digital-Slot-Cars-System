@@ -30,7 +30,7 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
         private CancellationToken IncomingCancellationToken, OutgoingCancellationToken;
 
         private SerialPort port;
-        int msgRcvdCnt=0, msgInCnt = 0, msgOutCnt = 0;
+        int msgRcvdCnt=0, msgOutCnt = 0;
 
         /// <summary>
         /// Contructs an instance of the Powerbase class, to manage IO from the Powerbase device.
@@ -43,8 +43,23 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
             this.OutgoingPackets = new BufferBlock<OutgoingPacket>();
             this.RefreshAllCancellationTokens();
             this.Port = new SerialPort("COM3", 19200, Parity.None, 8, StopBits.One);
-            this.Port.DataReceived += new SerialDataReceivedEventHandler(Port_DataReceived);
+            this.Port.WriteBufferSize = 1024;
+            this.Port.ReadBufferSize = 1024;
+            this.Port.ReceivedBytesThreshold = 15;
+            this.Port.Open();
             this.Port.DtrEnable = true;
+            this.Port.RtsEnable = true;
+            this.Port.BaseStream.WriteTimeout = 2000;
+            this.Port.BaseStream.ReadTimeout = 2000;
+            this.Port.DataReceived += new SerialDataReceivedEventHandler(Port_DataReceived);
+
+            // new task to start input processing
+            Task incomingProcessorTask = new Task(() => { this.ProcessIncomingPacketBuffer(); }, TaskCreationOptions.LongRunning);
+
+            // new task to start output processing
+            Task outgoingProcessorTask = new Task(() => { this.ProcessOutgoingPacketBuffer(); }, TaskCreationOptions.LongRunning);
+            incomingProcessorTask.Start();
+            outgoingProcessorTask.Start();
 
         }
 
@@ -59,38 +74,10 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
         internal void Run()
         {
             this.RefreshAllCancellationTokens();
+            Console.WriteLine($"{DateTime.Now.ToString()}: {Port.PortName} is open");
 
-            this.Port.WriteBufferSize = 72;
-            this.Port.ReceivedBytesThreshold = 15;
-            try
-            {
-                this.Port.Open();
-                Console.WriteLine($"{DateTime.Now.ToString()}: {Port.PortName} is open");
-
-                // new task to start input processing
-                Task incomingProcessorTask = new Task(() => { this.ProcessIncomingPacketBuffer(); }, TaskCreationOptions.LongRunning);                
-                
-                // new task to start output processing
-                Task outgoingProcessorTask = new Task(() => { this.ProcessOutgoingPacketBuffer(); }, TaskCreationOptions.LongRunning);
-                incomingProcessorTask.Start();
-                outgoingProcessorTask.Start();
-
-                // add start packet to output processing list
-                this.OutgoingPackets.Post(SuccessOutgoingPacket);
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine($"{DateTime.Now.ToString()}: {e.Message}");
-                this.PowerbaseRunCancellationTokenSource.Cancel();
-            }
-
-            while (!this.PowerbaseRunCancellationToken.IsCancellationRequested)
-            {
-                Thread.Sleep(5000);
-                System.Diagnostics.Debug.WriteLine($"Port is still open: {this.Port.IsOpen}");
-                this.OutgoingPackets.Post(SuccessOutgoingPacket);
-
-            }
+            // add start packet to output processing list
+            this.OutgoingPackets.Post(SuccessOutgoingPacket);
         }
 
         /// <summary>
@@ -115,40 +102,26 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
         /// <param name="e">The serial data received event args.</param>
         private async void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            SerialPort serialPort = sender as SerialPort;
-            int bytesToRead = serialPort.BytesToRead;
-            byte[] data = new byte[bytesToRead];
-            serialPort.Read(data, 0, bytesToRead);
-
-            if (data.Length == 15)
+            if (e.EventType == SerialData.Chars)
             {
-
-                System.Diagnostics.Debug.WriteLine( $"RCVD: {++msgRcvdCnt} " +
-                    $"{data[0].ToString()},{data[1].ToString()},{data[2].ToString()},{data[3].ToString()},{data[4].ToString()}," +
-                    $"{data[5].ToString()},{data[6].ToString()},{data[7].ToString()},{data[8].ToString()},{data[9].ToString()}," +
-                    $"{data[10].ToString()},{data[11].ToString()},{data[12].ToString()},{data[13].ToString()},{data[14].ToString()}");
-
-                // CRC check, send notunderstood if fails
-                if (Powerbase.CrcCheck(data, PacketType.Incoming) == data[14])
+                System.Diagnostics.Debug.WriteLine($"Receive Success {++msgRcvdCnt}");
+                SerialPort serialPort = sender as SerialPort;
+                int bytesToRead = serialPort.BytesToRead;
+                byte[] data = new byte[bytesToRead];
+                serialPort.Read(data, 0, bytesToRead);
+                if (data.Length == 15)
                 {
-                    //                this.IncomingPackets.Add(new IncomingPacket(data));
-                    //                    this.Port.Write(new OutgoingPacket(data).Data, 0, 9);
-
-                    // LATEST
-                    //                    await this.OutgoingPackets.SendAsync(new OutgoingPacket(data));
-                    await this.IncomingPackets.SendAsync(new IncomingPacket(data));
-
-                    System.Diagnostics.Debug.WriteLine("Sent Success");
-
-                }
-                else
-                {
-                    //                    this.Port.Write(NotRecognisedOutgoingPacket.Data, 0, 9);
-                    await this.OutgoingPackets.SendAsync(NotRecognisedOutgoingPacket);
-                    System.Diagnostics.Debug.WriteLine("Sent Unrecognised");
-                    msgRcvdCnt -= 1;
-                    msgOutCnt -= 1;
-                    //                this.OutgoingPackets.Add(NotRecognisedOutgoingPacket);
+                    // CRC check, send notunderstood if fails
+                    if (Powerbase.CrcCheck(data, PacketType.Incoming) == data[14])
+                    {
+                        await this.IncomingPackets.SendAsync(new IncomingPacket(data));
+                    }
+                    else
+                    {
+                        await this.OutgoingPackets.SendAsync(NotRecognisedOutgoingPacket);
+                        System.Diagnostics.Debug.WriteLine("Sent Unrecognised");
+                        msgRcvdCnt -= 1;
+                    }
                 }
             }
         }
@@ -161,11 +134,7 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
                 if (this.IncomingPackets.Count > 0)
                 {
                     tmpIncomingPacket = await this.IncomingPackets.ReceiveAsync();
-/*                    System.Diagnostics.Debug.WriteLine($"IN P'D:{++msgInCnt} " +
-                    $"{tmpIncomingPacket.Data[0].ToString()},{tmpIncomingPacket.Data[1].ToString()},{tmpIncomingPacket.Data[2].ToString()},{tmpIncomingPacket.Data[3].ToString()},{tmpIncomingPacket.Data[4].ToString()}," +
-                    $"{tmpIncomingPacket.Data[5].ToString()},{tmpIncomingPacket.Data[6].ToString()},{tmpIncomingPacket.Data[7].ToString()},{tmpIncomingPacket.Data[8].ToString()},{tmpIncomingPacket.Data[9].ToString()}," +
-                    $"{tmpIncomingPacket.Data[10].ToString()},{tmpIncomingPacket.Data[11].ToString()},{tmpIncomingPacket.Data[12].ToString()},{tmpIncomingPacket.Data[13].ToString()},{tmpIncomingPacket.Data[14].ToString()}");
-*/
+
                     // Send to game manager, which will process SF line and return modified outgoing packets
 
                     await this.OutgoingPackets.SendAsync(new OutgoingPacket(tmpIncomingPacket.Data));
@@ -181,20 +150,10 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
                 if (this.OutgoingPackets.Count > 0)
                 {
                     tmpOutgoingPacket = await this.OutgoingPackets.ReceiveAsync();
-                    System.Diagnostics.Debug.WriteLine($"OUT P'D:{++msgOutCnt} " +
-                    $"{tmpOutgoingPacket.Data[0].ToString()},{tmpOutgoingPacket.Data[1].ToString()},{tmpOutgoingPacket.Data[2].ToString()},{tmpOutgoingPacket.Data[3].ToString()},{tmpOutgoingPacket.Data[4].ToString()}," +
-                    $"{tmpOutgoingPacket.Data[5].ToString()},{tmpOutgoingPacket.Data[6].ToString()},{tmpOutgoingPacket.Data[7].ToString()},{tmpOutgoingPacket.Data[8].ToString()}");
-
                     await this.Port.BaseStream.WriteAsync(tmpOutgoingPacket.Data, 0, (int)Enums.PacketType.Outgoing);
-                    // How to send data down port
-//                    this.Port.BaseStream.WriteAsync(this.OutgoingPackets[0].Data, 0, this.OutgoingPackets[0].Data.Length);
-//                                        this.Port.Write(this.OutgoingPackets[0].Data, 0, this.OutgoingPackets[0].Data.Length);
-                    //                    this.Port.WriteLine(this.OutgoingPackets[0].Data.ToString());
-                    //                   this.OutgoingPackets.Remove(this.OutgoingPackets[0]);
+                    System.Diagnostics.Debug.WriteLine($"Sent Success {++msgOutCnt}");
                 }
             }
-            System.Diagnostics.Debug.WriteLine("Out - See you then");
-
         }
 
         /// <summary>
@@ -255,7 +214,5 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
 
             return crc8Rx;
         }
-
-
     }
 }
