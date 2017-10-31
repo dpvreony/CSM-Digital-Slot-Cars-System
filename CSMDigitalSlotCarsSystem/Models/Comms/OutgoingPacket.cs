@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static CSMDigitalSlotCarsSystem.Enums;
 
 namespace CSMDigitalSlotCarsSystem.Models.Comms
 {
@@ -49,7 +50,7 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
                 this.Data[i] = output[i];
             }
             this.Data[7] = 129; // Green & Car 1
-            this.Data[8] = Powerbase.CrcCheck(this.Data, Enums.PacketType.Outgoing);
+//            this.Data[8] = Powerbase.CrcCheck(this.Data, PacketType.Outgoing);
 
 /*
             this.OperationMode = SuccessByte;

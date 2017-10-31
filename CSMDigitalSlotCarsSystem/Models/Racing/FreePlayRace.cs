@@ -8,7 +8,8 @@ namespace CSMDigitalSlotCarsSystem
 {
     class FreePlayRace : RaceTypeBase
     {
-        public FreePlayRace()
+
+        public FreePlayRace(int numOfLaps, TimeSpan durationMins, bool lapsNotDuration)
         {
             this.RaceTypeName = "Free Play";
         }

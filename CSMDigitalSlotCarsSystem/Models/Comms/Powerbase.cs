@@ -1,190 +1,95 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using static CSMDigitalSlotCarsSystem.Enums;
-
-namespace CSMDigitalSlotCarsSystem.Models.Comms
+﻿namespace CSMDigitalSlotCarsSystem.Models.Comms
 {
+    using System;
+    using System.IO;
+    using System.IO.Ports;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Threading.Tasks.Dataflow;
+    using static CSMDigitalSlotCarsSystem.Enums;
+
     /// <summary>
     /// The Powerbase class manages all IO to and from the Powerbase device over a USB 
     /// Serial Port connection, according to the "C7042 Scalextric 6 Car Power Base SNC
     /// Communication Protocol v1" produced by "Sagentia" for "Hornby plc". 
-    /// Utilises IncomingPacket and OutgoingPacket objects in an asynchronous BufferBlock 
-    /// using the ProducerConsumer pattern.
+    /// Incoming Packets as byte arrays are processed by an asynchronous ActionBlock.
     /// </summary>
     class Powerbase
     {
-        private static OutgoingPacket SuccessOutgoingPacket = new OutgoingPacket(true);
-        private static OutgoingPacket NotRecognisedOutgoingPacket = new OutgoingPacket(false);
-        private BufferBlock<IncomingPacket> incomingPackets;
-        private BufferBlock<OutgoingPacket> outgoingPackets;
-
-        public CancellationToken PowerbaseRunCancellationToken;
-        private CancellationTokenSource PowerbaseRunCancellationTokenSource, IncomingCancellationTokenSource, OutgoingCancellationTokenSource;
-        private CancellationToken IncomingCancellationToken, OutgoingCancellationToken;
-
+        private ActionBlock<byte[]> IncomingPacketActionBlock;
+        private OutgoingPacket SuccessOutgoingPacket = new OutgoingPacket(true);
+        private OutgoingPacket NotRecognisedOutgoingPacket = new OutgoingPacket(false);
         private SerialPort port;
-        int msgRcvdCnt=0, msgOutCnt = 0;
+        private RaceSession raceSession;
+        public int msgRcvdCnt = 0;
+        public int msgOutCnt = 0;
 
+ 
         /// <summary>
-        /// Contructs an instance of the Powerbase class, to manage IO from the Powerbase device.
+        /// Static contructor of the Powerbase class, which initiliases an ActionBlock 
+        /// to manage IO from the Powerbase device.
         /// </summary>
-        internal Powerbase()
+        public Powerbase()
         {
-            Powerbase.SuccessOutgoingPacket.Checksum = Powerbase.CrcCheck(SuccessOutgoingPacket.Data, PacketType.Outgoing);
-            Powerbase.NotRecognisedOutgoingPacket.Checksum = Powerbase.CrcCheck(NotRecognisedOutgoingPacket.Data, PacketType.Outgoing);
-            this.IncomingPackets = new BufferBlock<IncomingPacket>();
-            this.OutgoingPackets = new BufferBlock<OutgoingPacket>();
-            this.RefreshAllCancellationTokens();
-            this.Port = new SerialPort("COM3", 19200, Parity.None, 8, StopBits.One);
-            this.Port.WriteBufferSize = 1024;
-            this.Port.ReadBufferSize = 1024;
-            this.Port.ReceivedBytesThreshold = 15;
-            this.Port.Open();
-            this.Port.DtrEnable = true;
-            this.Port.RtsEnable = true;
-            this.Port.BaseStream.WriteTimeout = 2000;
-            this.Port.BaseStream.ReadTimeout = 2000;
-            this.Port.DataReceived += new SerialDataReceivedEventHandler(Port_DataReceived);
+            try
+            {
+                this.Port = new SerialPort("COM3", 19200, Parity.None, 8, StopBits.One); //TODO port number may change
+                this.Port.WriteBufferSize = 1024;
+                this.Port.ReadBufferSize = 1024;
+                this.Port.ReceivedBytesThreshold = 15;
+                this.Port.Open();
+                this.Port.DtrEnable = true;
+                this.Port.RtsEnable = true;
+                this.Port.BaseStream.WriteTimeout = 2000;
+                this.Port.BaseStream.ReadTimeout = 2000;
+                this.Port.DataReceived += new SerialDataReceivedEventHandler(Port_DataReceived);
 
-            // new task to start input processing
-            Task incomingProcessorTask = new Task(() => { this.ProcessIncomingPacketBuffer(); }, TaskCreationOptions.LongRunning);
+                this.SuccessOutgoingPacket.Checksum = this.CalculateCrcChecksum(SuccessOutgoingPacket.Data, PacketType.Outgoing);
+                this.NotRecognisedOutgoingPacket.Checksum = this.CalculateCrcChecksum(NotRecognisedOutgoingPacket.Data, PacketType.Outgoing);
+            }
+            catch(UnauthorizedAccessException e)
+            {
 
-            // new task to start output processing
-            Task outgoingProcessorTask = new Task(() => { this.ProcessOutgoingPacketBuffer(); }, TaskCreationOptions.LongRunning);
-            incomingProcessorTask.Start();
-            outgoingProcessorTask.Start();
+            }
+            catch (IOException e)
+            {
 
+            }
         }
 
-        public BufferBlock<IncomingPacket> IncomingPackets { get => this.incomingPackets; set => this.incomingPackets = value; }
-        public BufferBlock<OutgoingPacket> OutgoingPackets { get => this.outgoingPackets; set => this.outgoingPackets = value; }
         public SerialPort Port { get => port; set => port = value; }
 
-        /// <summary>
-        /// Drives the Powerbase class to start processing incoming and outgoing packets 
-        /// from the Powerbase device.
-        /// </summary>
-        internal void Run()
-        {
-            this.RefreshAllCancellationTokens();
-            Console.WriteLine($"{DateTime.Now.ToString()}: {Port.PortName} is open");
-
-            // add start packet to output processing list
-            this.OutgoingPackets.Post(SuccessOutgoingPacket);
-        }
+        public RaceSession RaceSession { get => raceSession; set => raceSession = value; }
 
         /// <summary>
-        /// Reinstantiates CancellationTokenSource and Tokens for the powerbase run and 
-        /// incoming/outgoing buffer processing loops, in event of Powerbase Run needing 
-        /// to be restarted.
+        /// Initiates comms with Powerbase hardware by sending a successful outgoing packet.
         /// </summary>
-        private void RefreshAllCancellationTokens()
+        public async void Run(RaceSession session)
         {
-            this.PowerbaseRunCancellationTokenSource = new CancellationTokenSource();
-            this.IncomingCancellationTokenSource = new CancellationTokenSource();
-            this.OutgoingCancellationTokenSource = new CancellationTokenSource();
-            this.PowerbaseRunCancellationToken = PowerbaseRunCancellationTokenSource.Token;
-            this.IncomingCancellationToken = IncomingCancellationTokenSource.Token;
-            this.OutgoingCancellationToken = OutgoingCancellationTokenSource.Token;
+            this.RaceSession = session;
+            this.IncomingPacketActionBlock = new ActionBlock<byte[]>(input => ProcessIncomingPacket(input));
+            await this.Port.BaseStream.WriteAsync(SuccessOutgoingPacket.Data, 0, (int)PacketType.Outgoing);
         }
 
         /// <summary>
-        /// Event handler for data received events
+        /// Sends a signal to the Powerbase incoming ActionBlock to stop processing messages.
         /// </summary>
-        /// <param name="sender">The serial port sender.</param>
-        /// <param name="e">The serial data received event args.</param>
-        private async void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        public void CancelPowerbaseDataFlow()
         {
-            if (e.EventType == SerialData.Chars)
-            {
-                System.Diagnostics.Debug.WriteLine($"Receive Success {++msgRcvdCnt}");
-                SerialPort serialPort = sender as SerialPort;
-                int bytesToRead = serialPort.BytesToRead;
-                byte[] data = new byte[bytesToRead];
-                serialPort.Read(data, 0, bytesToRead);
-                if (data.Length == 15)
-                {
-                    // CRC check, send notunderstood if fails
-                    if (Powerbase.CrcCheck(data, PacketType.Incoming) == data[14])
-                    {
-                        await this.IncomingPackets.SendAsync(new IncomingPacket(data));
-                    }
-                    else
-                    {
-                        await this.OutgoingPackets.SendAsync(NotRecognisedOutgoingPacket);
-                        System.Diagnostics.Debug.WriteLine("Sent Unrecognised");
-                        msgRcvdCnt -= 1;
-                    }
-                }
-            }
-        }
-
-        public async void ProcessIncomingPacketBuffer()
-        {
-            IncomingPacket tmpIncomingPacket;
-            while (!this.IncomingCancellationToken.IsCancellationRequested)
-            {
-                if (this.IncomingPackets.Count > 0)
-                {
-                    tmpIncomingPacket = await this.IncomingPackets.ReceiveAsync();
-
-                    // Send to game manager, which will process SF line and return modified outgoing packets
-
-                    await this.OutgoingPackets.SendAsync(new OutgoingPacket(tmpIncomingPacket.Data));
-                }
-            }
-        }
-
-        public async void ProcessOutgoingPacketBuffer()
-        {
-            OutgoingPacket tmpOutgoingPacket;
-            while (!OutgoingCancellationToken.IsCancellationRequested)
-            {
-                if (this.OutgoingPackets.Count > 0)
-                {
-                    tmpOutgoingPacket = await this.OutgoingPackets.ReceiveAsync();
-                    await this.Port.BaseStream.WriteAsync(tmpOutgoingPacket.Data, 0, (int)Enums.PacketType.Outgoing);
-                    System.Diagnostics.Debug.WriteLine($"Sent Success {++msgOutCnt}");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Cancels the OutgoingPacket processor loop.
-        /// </summary>
-        public void CancelProcessOutgoingPacketBuffer()
-        {
-            this.OutgoingCancellationTokenSource.Cancel();
-        }
-
-        /// <summary>
-        /// Cancels the IncomingPacket processor loop.
-        /// </summary>
-        public void CancelProcessIncomingPacketBuffer()
-        {
-            this.IncomingCancellationTokenSource.Cancel();
+            IncomingPacketActionBlock.Complete();
         }
 
         /// <summary>
         /// Performs a CRC8 calculation on the n-1 bytes in an incoming or outgoing packet.
         /// </summary>
         /// <param name="from6CPB_Msg">The packet to generate a checksum for.</param>
-        /// <param name="packetType">The tpe of packet (Incoming or Outgoing).</param>
+        /// <param name="packetType">The type of packet (Incoming or Outgoing).</param>
         /// <returns>The checksum byte.</returns>
-        internal static byte CrcCheck(byte[] from6CPB_Msg, PacketType packetType)
+        internal byte CalculateCrcChecksum(byte[] from6CPB_Msg, PacketType packetType)
         {
-            int numLoops = packetType == PacketType.Incoming ? (int)PacketType.Incoming : (int)PacketType.Outgoing;
-            numLoops -= 1; // Ignore checksum byte
-            byte crc8Rx = 0, nxtCrc8Rx = 0;
-            int i = 0;
-            byte[] CRC8_LOOK_UP_TABLE = new byte[]
+            byte crc8Rx = 0;
+            byte nxtCrc8Rx = 0;
+            var CRC8_LOOK_UP_TABLE = new byte[]
             {
                 0x00,0x07,0x0e,0x09,0x1c,0x1b,0x12,0x15,0x38,0x3f,0x36,0x31,0x24,0x23,0x2a,0x2d,
                 0x70,0x77,0x7E,0x79,0x6C,0x6B,0x62,0x65,0x48,0x4F,0x46,0x41,0x54,0x53,0x5A,0x5D,
@@ -203,16 +108,76 @@ namespace CSMDigitalSlotCarsSystem.Models.Comms
                 0xAE,0xA9,0xA0,0xA7,0xB2,0xB5,0xBC,0xBB,0x96,0x91,0x98,0x9F,0x8A,0x8D,0x84,0x83,
                 0xDE,0xD9,0xD0,0xD7,0xC2,0xC5,0xCC,0xCB,0xE6,0xE1,0xE8,0xEF,0xFA,0xFD,0xF4,0xF3
             };
+
+            var numLoops = packetType == PacketType.Incoming ? (int)PacketType.Incoming : (int)PacketType.Outgoing;
+            numLoops -= 1; // Ignore checksum byte
+            var i = 0;
+
             // Routine for the CRC
             crc8Rx = CRC8_LOOK_UP_TABLE[from6CPB_Msg[0]]; //first byte
 
-            for (i=1; i < numLoops; i++)
+            for (i = 1; i < numLoops; i++)
             {
                 nxtCrc8Rx = from6CPB_Msg[i];
                 crc8Rx = CRC8_LOOK_UP_TABLE[crc8Rx ^ nxtCrc8Rx];
             }
 
             return crc8Rx;
+        }
+
+        /// <summary>
+        /// Event handler for data received events
+        /// </summary>
+        /// <param name="sender">The serial port sender.</param>
+        /// <param name="e">The serial data received event args.</param>
+        private async void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            if (e.EventType == SerialData.Chars)
+            {
+                System.Diagnostics.Debug.WriteLine($"Receive Success {++msgRcvdCnt}");
+                var serialPort = sender as SerialPort;
+                var bytesToRead = serialPort.BytesToRead;
+                var data = new byte[bytesToRead];
+                serialPort.Read(data, 0, bytesToRead);
+                if (data.Length == (int)PacketType.Incoming)
+                {
+                    // CRC check, send notunderstood if fails
+                    if (data[(int)PacketType.Incoming - 1] == this.CalculateCrcChecksum(data, PacketType.Incoming))
+                    {
+                        await this.IncomingPacketActionBlock.SendAsync(data);
+                    }
+                    else
+                    {
+                        this.SendUnrecognisedOutgoingPacket();
+                        System.Diagnostics.Debug.WriteLine("Sent Unrecognised");
+                        msgRcvdCnt -= 1;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Processes the IncomingPackets after a new packet is added to the Incoming ActionBlock.
+        /// </summary>
+        private async void ProcessIncomingPacket(byte[] incoming)
+        {
+            // Send to game manager, which will process SF line and return modified outgoing packets
+            var outgoingPacket = this.RaceSession.ReceiveIncomingPacketFromPowerbase(incoming).Result;
+            
+            // Calculate CRC for new outgoing packet
+            outgoingPacket[8] = this.CalculateCrcChecksum(outgoingPacket, PacketType.Outgoing);
+
+            // Send to the Powerbase
+            await this.Port.BaseStream.WriteAsync(outgoingPacket, 0, (int)PacketType.Outgoing);
+            System.Diagnostics.Debug.WriteLine($"Sent Success {++this.msgOutCnt}");
+        }
+
+        /// <summary>
+        /// Sends an UnrecognisedPacket to the Powerbase.
+        /// </summary>
+        private async void SendUnrecognisedOutgoingPacket()
+        {
+            await this.Port.BaseStream.WriteAsync(NotRecognisedOutgoingPacket.Data, 0, (int)PacketType.Outgoing);
         }
     }
 }

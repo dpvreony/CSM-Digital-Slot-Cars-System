@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CSMDigitalSlotCarsSystem.Models.Comms;
+using static CSMDigitalSlotCarsSystem.Enums;
 
 namespace CSMDigitalSlotCarsSystem
 {
@@ -14,12 +15,19 @@ namespace CSMDigitalSlotCarsSystem
         static void Main(string[] args)
         {
             Console.WriteLine($"{DateTime.Now.ToString()}: Starting 'CSM Digital Slot Cars System'");
-            Powerbase powerbase = new Powerbase();
-            powerbase.Run();
-            while (!powerbase.PowerbaseRunCancellationToken.IsCancellationRequested)
+            //            Powerbase powerbase = new Powerbase();
+            List<Player> players = new List<Player> { new Player() };
+            RaceTypeBase raceType = new RaceTypeBase();
+            RaceSession raceSession = new RaceSession(1, RaceTypes.FreePlay, players);
+            Powerbase pb = new Powerbase();
+            pb.Run(raceSession);
+            while (true)
             {
                 Thread.Sleep(60 * 1000);
-                System.Diagnostics.Debug.WriteLine($"Bytes on Port: Read: {powerbase.Port.BytesToRead} Write: {powerbase.Port.BytesToWrite}");
+                System.Diagnostics.Debug.WriteLine($"Bytes on Port: Read: {pb.Port.BytesToRead} Write: {pb.Port.BytesToWrite}");
+                pb.CancelPowerbaseDataFlow();
+                Thread.Sleep(15 * 1000);
+                pb.Run(raceSession);
             }
             //            Task powerbaseTask = new Task(() => powerbase.Run());
             //            powerbaseTask.Start();

@@ -8,7 +8,7 @@ namespace PowerbaseTest
     [TestClass]
     public class PowerbasePacketsTest
     {
-//        Powerbase powerbase = new Powerbase();
+        Powerbase powerbase = new Powerbase();
         OutgoingPacket outgoingPacketSuccess = new OutgoingPacket(true);
         OutgoingPacket outgoingPacketNotRecognised = new OutgoingPacket(false);
         IncomingPacket incomingPacket = new IncomingPacket(new byte[] 
@@ -31,7 +31,7 @@ namespace PowerbaseTest
             Enums.PacketType packetType = Enums.PacketType.Incoming;
             byte validCrc8Rx = 187;
 
-            byte crc8Rx = Powerbase.CrcCheck(this.incomingPacket.Data, packetType);
+            byte crc8Rx = powerbase.CalculateCrcChecksum(this.incomingPacket.Data, packetType);
 
             Assert.AreEqual(validCrc8Rx, crc8Rx);
         }
@@ -43,7 +43,7 @@ namespace PowerbaseTest
             Enums.PacketType packetType = Enums.PacketType.Outgoing;
             byte validCrc8Rx = 39;
 
-            byte crc8Rx = Powerbase.CrcCheck(this.outgoingPacketSuccess.Data, packetType);
+            byte crc8Rx = powerbase.CalculateCrcChecksum(this.outgoingPacketSuccess.Data, packetType);
 
             Assert.AreEqual(validCrc8Rx, crc8Rx);
         }
@@ -55,7 +55,7 @@ namespace PowerbaseTest
             Enums.PacketType packetType = Enums.PacketType.Outgoing;
             byte validCrc8Rx = 152;
 
-            byte crc8Rx = Powerbase.CrcCheck(this.outgoingPacketNotRecognised.Data, packetType);
+            byte crc8Rx = powerbase.CalculateCrcChecksum(this.outgoingPacketNotRecognised.Data, packetType);
 
             Assert.AreEqual(validCrc8Rx, crc8Rx);
         }

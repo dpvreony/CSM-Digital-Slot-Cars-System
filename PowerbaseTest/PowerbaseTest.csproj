@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="PowerbasePacketsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RaceSessionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
