@@ -17,8 +17,8 @@ namespace CSMDigitalSlotCarsSystem
             Console.WriteLine($"{DateTime.Now.ToString()}: Starting 'CSM Digital Slot Cars System'");
             //            Powerbase powerbase = new Powerbase();
             List<Player> players = new List<Player> { new Player() };
-            RaceTypeBase raceType = new RaceTypeBase();
-            RaceSession raceSession = new RaceSession(1, RaceTypes.FreePlay, players);
+            RaceTypeBase raceType = new FreePlayRace(5, new TimeSpan(0,2,0), true);
+            RaceSession raceSession = new RaceSession(1, raceType, players);
             Powerbase pb = new Powerbase();
             pb.Run(raceSession);
             while (true)

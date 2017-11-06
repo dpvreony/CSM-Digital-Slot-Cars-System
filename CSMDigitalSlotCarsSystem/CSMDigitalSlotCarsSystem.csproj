@@ -48,12 +48,12 @@
   <ItemGroup>
     <Compile Include="Models\Racing\CarBase.cs" />
     <Compile Include="Models\Comms\DrivePacket.cs" />
-    <Compile Include="Enums.cs" />
+    <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\Racing\FreePlayRace.cs" />
     <Compile Include="Models\Comms\HandsetTrackStatusPacket.cs" />
     <Compile Include="Models\Comms\IncomingPacket.cs" />
     <Compile Include="Models\Comms\OutgoingPacket.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="Models\Player.cs" />
     <Compile Include="Models\Comms\Powerbase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
