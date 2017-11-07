@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CSMDigitalSlotCarsSystem.Models.Comms
+﻿
+namespace RaceDirectorClientGUI.Models.Comms
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// The incoming packet (from Powerbase to PC) carries the information of:
     /// - Current status of track and each handset

@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CSMDigitalSlotCarsSystem.Models.Comms
+﻿
+namespace RaceDirectorClientGUI.Models.Comms
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Represents a drive packet received from a handset or transmitted to the powerbase.
     /// Each byte carries the status of the corresponding handset, which also indicates 

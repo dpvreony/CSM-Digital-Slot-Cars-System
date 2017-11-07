@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CSMDigitalSlotCarsSystem
+﻿
+namespace RaceDirectorClientGUI.Models
 {
+    using System;
+
     class Player
     {
         uint garageID;

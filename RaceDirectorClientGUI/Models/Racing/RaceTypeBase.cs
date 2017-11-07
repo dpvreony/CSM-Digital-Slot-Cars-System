@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSMDigitalSlotCarsSystem
+namespace RaceDirectorClientGUI.Models.Racing
 {
     abstract class RaceTypeBase
     {

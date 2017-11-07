@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CSMDigitalSlotCarsSystem.Models.Comms
+﻿
+namespace RaceDirectorClientGUI.Models.Comms
 {
+    using System.Collections.Specialized;
+
     class HandsetTrackStatusPacket
     {
         internal byte Data { get; set; }

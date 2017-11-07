@@ -1,13 +1,11 @@
-﻿using CSMDigitalSlotCarsSystem.Models.Comms;
+﻿using RaceDirectorClientGUI.Models.Comms;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using static CSMDigitalSlotCarsSystem.Enums;
+using static RaceDirectorClientGUI.Helpers.Enums;
 
-namespace CSMDigitalSlotCarsSystem
+namespace RaceDirectorClientGUI.Models.Racing
 {
     class RaceSession
     {
@@ -16,11 +14,13 @@ namespace CSMDigitalSlotCarsSystem
         private ActionBlock<byte[]> processIncomingActionBlock;
         private string sessionName;
         private uint trackID; // TODO: Retrieve from XML on startup and store above Powerbase? RaceManager class?
+        byte ledStatusLightByte;
         private RaceTypeBase raceType;
         private Powerbase powerbase;
         private List<Player> players;
         private DateTime startTime;
         private DateTime endTime;
+
         internal bool Started { get; set; }
         internal bool Finished { get; set; }
         private UInt32 StartingGameTimer { get; set; }
@@ -57,6 +57,7 @@ namespace CSMDigitalSlotCarsSystem
             this.DriversPreviousGameCounter = new UInt32[] { 0, 0, 0, 0, 0, 0 };
             this.DriversLapGameCounters = new List<UInt32>[] { new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>() };
             this.DriversFinished = new bool[] { false, false, false, false, false, false };
+            this.ledStatusLightByte = (byte)CalculateLEDStatusLights(players.Count);
         }
 
         public ActionBlock<byte[]> ProcessIncomingActionBlock { get => this.processIncomingActionBlock; set => this.processIncomingActionBlock = value; }
@@ -70,12 +71,19 @@ namespace CSMDigitalSlotCarsSystem
         public DateTime StartTime { get => this.startTime; set => this.startTime = value; }
 
         public DateTime EndTime { get => this.endTime; set => this.endTime = value; }
+
         internal List<TimeSpan>[] DriversLapTimes { get => driversLapTimes; set => driversLapTimes = value; }
+
         internal TimeSpan[] DriversPreviousLapTime { get => driversPreviousLapTime; set => driversPreviousLapTime = value; }
+
         internal TimeSpan[] DriversFastestLapTimes { get => driversFastestLapTimes; set => driversFastestLapTimes = value; }
+
         internal List<uint>[] DriversLapGameCounters { get => driversLapGameCounters; set => driversLapGameCounters = value; }
+
         internal uint[] DriversPreviousGameCounter { get => driversPreviousGameCounter; set => driversPreviousGameCounter = value; }
+
         internal bool[] DriversFinished { get => driversFinished; set => driversFinished = value; }
+        internal Powerbase Powerbase { get => powerbase; set => powerbase = value; }
 
 
 
@@ -87,9 +95,9 @@ namespace CSMDigitalSlotCarsSystem
         {
             if (powerbase != null)
             {
-                this.powerbase = powerbase;
+                this.Powerbase = powerbase;
                 this.StartTime = DateTime.Now;
-                this.powerbase.Run(this);
+                this.Powerbase.Run(this);
             }
             else
             {
@@ -102,7 +110,7 @@ namespace CSMDigitalSlotCarsSystem
         /// </summary>
         public void RaceFinish()
         {
-            this.powerbase.CancelPowerbaseDataFlow();
+            this.Powerbase.Stop();
         }
 
         /// <summary>
@@ -110,24 +118,32 @@ namespace CSMDigitalSlotCarsSystem
         /// BufferBlock for processing laptimes while returning an outgoing message
         /// with throttle levels adjusted for fuel.
         /// </summary>
-        /// <param name="incoming">The incoming packet.</param>
+        /// <param name="incomingPacket">The incoming packet.</param>
         /// <returns>The outgoing packet.</returns>
-        public async Task<byte[]> ReceiveIncomingPacketFromPowerbase(byte[] incoming)
+        public async Task<byte[]> ReceiveIncomingPacketFromPowerbase(byte[] incomingPacket)
         {
-            await this.AddToProcessInputActionBlock(incoming);
+            await this.AddToProcessInputActionBlock(incomingPacket);
 
-            byte[] outgoingPacket = {
-                (byte)MessageBytes.SuccessByte,
-                incoming[1], // TODO: Calculate fuel effect - beware of ones complement
-                incoming[2], // TODO: Throttle finished drivers?
-                incoming[3], // TODO: Safety car throttling - timer since last throttle > 0? 2 secs
-                incoming[4],
-                incoming[5],
-                incoming[6],
-                incoming[7] = (byte)CalculateLEDStatusLights(players.Count), // Green & Car 1
-                // TODO: Calculate every time?
-                (byte)MessageBytes.ZeroByte
-            };
+            byte[] outgoingPacket = new byte[9];
+            outgoingPacket[0] = (byte)MessageBytes.SuccessByte;
+
+            for (var i=1; i <= 6; i++)
+            {
+                if (incomingPacket[i] == (byte)127)
+                {
+                    outgoingPacket[i] = incomingPacket[i];
+                }
+                else if (incomingPacket[i] >= 204)
+                {
+                    outgoingPacket[i] = incomingPacket[i];
+                }
+                else
+                {
+                    outgoingPacket[i] = (byte)204;
+                }
+            }
+
+            outgoingPacket[7] = ledStatusLightByte;
 
             return outgoingPacket;
         }
@@ -239,8 +255,10 @@ namespace CSMDigitalSlotCarsSystem
                 }
             }
 
-            Console.WriteLine($"CarId {carId + 1} : {lapTime}");
+            System.Diagnostics.Debug.WriteLine($"CarId {carId + 1} : {lapTime}");
+
             //TODO: decide when to kill Powerbase comms (EndRace())
+            // And or throttle finished cars 
         }
 
         /// <summary>
