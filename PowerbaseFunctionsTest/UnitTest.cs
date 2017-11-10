@@ -1,10 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RaceDirectorClientGUI.Models.Comms;
+using RaceDirectorClientGUI.Helpers;
 
-
-namespace PowerbaseTest
+namespace PowerbaseFunctionsTest
 {
     [TestClass]
-    public class PowerbasePacketsTest
+    public class UnitTest1
     {
         Powerbase powerbase = new Powerbase();
         OutgoingPacket outgoingPacketSuccess = new OutgoingPacket(true);
@@ -57,6 +60,5 @@ namespace PowerbaseTest
 
             Assert.AreEqual(validCrc8Rx, crc8Rx);
         }
-
     }
 }

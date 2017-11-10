@@ -19,10 +19,14 @@
     <ScrollViewer>
         <StackPanel>
             <TextBlock x:Uid="FirstRun_Body" TextWrapping="WrapWholeWords">
-                <Run>Replace the content of this dialog with whatever content is appropriate to your app.</Run><LineBreak/>
-                <Run>You might want to explain key features or functionality.</Run><LineBreak/>
-                <Run>Don't feel restricted to just text. You can also include images and animations if you wish too.</Run>
+                <Run>Welcome to TrackTime!</Run><LineBreak/>
+                <Run>Please register your track details before continuing:</Run><LineBreak/>
             </TextBlock>
+            <TextBox x:Name="RegisterTrackName_TextBox"
+                     Header="Track Name:"
+                     PlaceholderText="You can change it later..."
+                     Width="100"/>
+            <Button Content="Save" IsEnabled="false"/>
         </StackPanel>
     </ScrollViewer>
 </ContentDialog>

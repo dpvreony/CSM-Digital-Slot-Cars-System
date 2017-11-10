@@ -59,12 +59,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CSMDigitalSlotCarsSystem\CSMDigitalSlotCarsSystem.csproj">
-      <Project>{F3861AE3-4D10-4E11-A082-92E1D29D6B3F}</Project>
-      <Name>CSMDigitalSlotCarsSystem</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

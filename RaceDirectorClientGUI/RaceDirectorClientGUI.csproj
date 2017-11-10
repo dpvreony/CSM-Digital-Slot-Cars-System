@@ -117,7 +117,6 @@
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\Json.cs" />
     <Compile Include="Helpers\SettingsStorageExtensions.cs" />
-    <Compile Include="Models\Comms\DrivePacket.cs" />
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Models\Comms\HandsetTrackStatusPacket.cs" />
     <Compile Include="Models\Comms\IncomingPacket.cs" />

@@ -1,4 +1,6 @@
 ﻿
+using static RaceDirectorClientGUI.Helpers.Enums;
+
 namespace RaceDirectorClientGUI.Models.Comms
 {
     class OutgoingPacket
@@ -6,18 +8,22 @@ namespace RaceDirectorClientGUI.Models.Comms
         private const byte SuccessByte = 0xFF;
         private const byte NotRecognisedByte = 0x7F;
         private const byte ZeroByte = 0x00;
-        private byte[] data = new byte[9];
+        private byte[] data = new byte[(int)PacketType.Outgoing];
 
         internal byte[] Data { get => data; set => data = value; }
         internal byte OperationMode { get => this.data[0]; set => data[0] = value; }
-        internal DrivePacket DrivePacket1 { get; set; }
-        internal DrivePacket DrivePacket2 { get; set; }
-        internal DrivePacket DrivePacket3 { get; set; }
-        internal DrivePacket DrivePacket4 { get; set; }
-        internal DrivePacket DrivePacket5 { get; set; }
-        internal DrivePacket DrivePacket6 { get; set; }
+        internal byte[] DrivePacket1 { get; set; }
+        internal byte[] DrivePacket2 { get; set; }
+        internal byte[] DrivePacket3 { get; set; }
+        internal byte[] DrivePacket4 { get; set; }
+        internal byte[] DrivePacket5 { get; set; }
+        internal byte[] DrivePacket6 { get; set; }
         internal byte LEDStatus { get => this.data[7]; set => this.data[7] = value; }
         internal byte Checksum { get => this.data[8]; set => this.data[8] = value; }
+
+
+
+
 
         public OutgoingPacket(bool success)
         {

@@ -81,12 +81,12 @@ namespace RaceDirectorClientGUI.Models.Comms
 
         internal byte[] Data { get; set; }
         internal HandsetTrackStatusPacket HandsetTrackStatus { get; set; }
-        internal DrivePacket DrivePacket1 { get; set; }
-        internal DrivePacket DrivePacket2 { get; set; }
-        internal DrivePacket DrivePacket3 { get; set; }
-        internal DrivePacket DrivePacket4 { get; set; }
-        internal DrivePacket DrivePacket5 { get; set; }
-        internal DrivePacket DrivePacket6 { get; set; }
+        internal byte[] DrivePacket1 { get; set; }
+        internal byte[] DrivePacket2 { get; set; }
+        internal byte[] DrivePacket3 { get; set; }
+        internal byte[] DrivePacket4 { get; set; }
+        internal byte[] DrivePacket5 { get; set; }
+        internal byte[] DrivePacket6 { get; set; }
         internal byte AuxPortCurrent {get => this.Data[7]; set => this.Data[7] = value; }
         internal byte CarIdOnFinishLine { get; set; }
         internal UInt32 TimerCounter { get; set; }

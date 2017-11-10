@@ -9,21 +9,18 @@ namespace RaceDirectorClientGUI.Models.Racing
 {
     class RaceSession
     {
-        const float GameTimerConstant = 6.4f;
+        const float GameTimerToMicroSecondsConstant = 6.4f;
 
-        private ActionBlock<byte[]> processIncomingActionBlock;
         private string sessionName;
         private uint trackID; // TODO: Retrieve from XML on startup and store above Powerbase? RaceManager class?
-        byte ledStatusLightByte;
         private RaceTypeBase raceType;
-        private Powerbase powerbase;
         private List<Player> players;
         private DateTime startTime;
         private DateTime endTime;
-
-        internal bool Started { get; set; }
-        internal bool Finished { get; set; }
-        private UInt32 StartingGameTimer { get; set; }
+        private int numberOfPlayers;
+        private bool started;
+        private bool finished;
+        private UInt32 startingGameTimer;
         // TODO: fastest lap of session - what format, to include driver?
         private List<TimeSpan>[] driversLapTimes;
         private TimeSpan[] driversPreviousLapTime;
@@ -32,6 +29,8 @@ namespace RaceDirectorClientGUI.Models.Racing
         private UInt32[] driversPreviousGameCounter;
         private bool[] driversFinished;
         private bool fuelEnabled;
+        private float fuelFullTankWeight; // TODO: will be settable as a % to calculate initial weight penalty
+        private float fuelBurnRatePerLap; // TODO: will be decremented from playerFuel each lap / game Timer span
         private float[] playerFuel; // TODO calculate throttle value based on fuel level (needs to factor fuel effect)
 
         // New Race session GUI creates a configured race type and passses to session?
@@ -42,25 +41,24 @@ namespace RaceDirectorClientGUI.Models.Racing
         /// <param name="trackID"></param>
         /// <param name="raceType"></param>
         /// <param name="players"></param>
-        public RaceSession(uint trackID, RaceTypeBase raceType, List<Player> players)
+        public RaceSession(uint trackID, RaceTypeBase raceType, List<Player> players, bool fuelEnabled)
         {
-            this.ProcessIncomingActionBlock = new ActionBlock<byte[]>(input => ProcessIncomingPacketFromPowerbase(input));
             this.TrackID = trackID;
             this.RaceType = raceType;
             this.Players = players;
+            this.NumberOfPlayers = this.Players.Count;
             this.StartTime = DateTime.Now;
             this.Started = false;
             this.Finished = false;
+            this.FuelEnabled = fuelEnabled;
             this.DriversLapTimes = new List<TimeSpan>[] { new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>() };
             this.DriversPreviousLapTime = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
             this.DriversFastestLapTimes = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
             this.DriversPreviousGameCounter = new UInt32[] { 0, 0, 0, 0, 0, 0 };
             this.DriversLapGameCounters = new List<UInt32>[] { new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>() };
             this.DriversFinished = new bool[] { false, false, false, false, false, false };
-            this.ledStatusLightByte = (byte)CalculateLEDStatusLights(players.Count);
+            this.PlayerFuel = new float[] { 0, 0, 0, 0, 0, 0};
         }
-
-        public ActionBlock<byte[]> ProcessIncomingActionBlock { get => this.processIncomingActionBlock; set => this.processIncomingActionBlock = value; }
 
         public uint TrackID { get => this.trackID; set => this.trackID = value; }
 
@@ -83,9 +81,18 @@ namespace RaceDirectorClientGUI.Models.Racing
         internal uint[] DriversPreviousGameCounter { get => driversPreviousGameCounter; set => driversPreviousGameCounter = value; }
 
         internal bool[] DriversFinished { get => driversFinished; set => driversFinished = value; }
-        internal Powerbase Powerbase { get => powerbase; set => powerbase = value; }
 
+        public float[] PlayerFuel { get => playerFuel; set => playerFuel = value; }
 
+        public bool FuelEnabled { get => fuelEnabled; set => fuelEnabled = value; }
+
+        public uint StartingGameTimer { get => startingGameTimer; set => startingGameTimer = value; }
+
+        internal bool Started { get => started; set => started = value; }
+
+        internal bool Finished { get => finished; set => finished = value; }
+
+        public int NumberOfPlayers { get => numberOfPlayers; set => numberOfPlayers = value; }
 
         /// <summary>
         /// Starts a race session, which restarts the Powerbase comms and initiates data recording.
@@ -95,9 +102,8 @@ namespace RaceDirectorClientGUI.Models.Racing
         {
             if (powerbase != null)
             {
-                this.Powerbase = powerbase;
                 this.StartTime = DateTime.Now;
-                this.Powerbase.Run(this);
+                powerbase.Run(this);
             }
             else
             {
@@ -108,96 +114,11 @@ namespace RaceDirectorClientGUI.Models.Racing
         /// <summary>
         /// Finishes the race including stopping the comms to the Powerbase.
         /// </summary>
-        public void RaceFinish()
+        /// <param name="powerbase">The Powerbase instance handling the comms.</param>
+        public void RaceFinish(Powerbase powerbase)
         {
-            this.Powerbase.Stop();
-        }
-
-        /// <summary>
-        /// Receieves valid incoming packets from Powerbase for adding to a 
-        /// BufferBlock for processing laptimes while returning an outgoing message
-        /// with throttle levels adjusted for fuel.
-        /// </summary>
-        /// <param name="incomingPacket">The incoming packet.</param>
-        /// <returns>The outgoing packet.</returns>
-        public async Task<byte[]> ReceiveIncomingPacketFromPowerbase(byte[] incomingPacket)
-        {
-            await this.AddToProcessInputActionBlock(incomingPacket);
-
-            byte[] outgoingPacket = new byte[9];
-            outgoingPacket[0] = (byte)MessageBytes.SuccessByte;
-
-            for (var i=1; i <= 6; i++)
-            {
-                if (incomingPacket[i] == (byte)127)
-                {
-                    outgoingPacket[i] = incomingPacket[i];
-                }
-                else if (incomingPacket[i] >= 204)
-                {
-                    outgoingPacket[i] = incomingPacket[i];
-                }
-                else
-                {
-                    outgoingPacket[i] = (byte)204;
-                }
-            }
-
-            outgoingPacket[7] = ledStatusLightByte;
-
-            return outgoingPacket;
-        }
-
-        /// <summary>
-        /// Processes the incoming packet from the Powerbase to check for initial 
-        /// starting game counter and for any cars that have crossed the finish line.
-        /// </summary>
-        /// <param name="incomingPacket">The incoming packet.</param>
-        private void ProcessIncomingPacketFromPowerbase(byte[] incomingPacket)
-        {
-            try
-            {
-                byte carIdOnFinishLine = (byte)(incomingPacket[8] - 248); // Least significant 3 bits
-                if (carIdOnFinishLine == 0)
-                {
-                    if (!this.Started)
-                    {
-                        UInt32 gameTimer = this.ConvertBytesToGameTimerValue(
-                            new byte[] {
-                                incomingPacket[12],
-                                incomingPacket[11],
-                                incomingPacket[10],
-                                incomingPacket[9]
-                            });
-                        this.StartingGameTimer = gameTimer;
-                        this.DriversPreviousGameCounter[0] = gameTimer;
-                        this.DriversPreviousGameCounter[1] = gameTimer;
-                        this.DriversPreviousGameCounter[2] = gameTimer;
-                        this.DriversPreviousGameCounter[3] = gameTimer;
-                        this.DriversPreviousGameCounter[4] = gameTimer;
-                        this.DriversPreviousGameCounter[5] = gameTimer;
-                        this.Started = true;
-                    }
-                }
-                else if (carIdOnFinishLine <= 6)
-                {
-                    carIdOnFinishLine -= 1; // Adjust for zero index arrays
-
-                    UInt32 gameTimer = this.ConvertBytesToGameTimerValue(
-                        new byte[] {
-                            incomingPacket[12],
-                            incomingPacket[11],
-                            incomingPacket[10],
-                            incomingPacket[9]
-                        });
-
-                    this.ProcessFinishLineData(carIdOnFinishLine, gameTimer);
-                }
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error: {e.Message}");
-            }
+            // TODO: check that data is saved before quitting
+            powerbase.Stop();
         }
 
         /// <summary>
@@ -205,7 +126,7 @@ namespace RaceDirectorClientGUI.Models.Racing
         /// </summary>
         /// <param name="carId">The carId.</param>
         /// <param name="gameTimer">The game timer data.</param>
-        private void ProcessFinishLineData(int carId, UInt32 gameTimer)
+        internal void ProcessFinishLineData(int carId, UInt32 gameTimer)
         {
             // Add to Driver's game counters list
             this.DriversLapGameCounters[carId].Add(gameTimer);
@@ -262,15 +183,19 @@ namespace RaceDirectorClientGUI.Models.Racing
         }
 
         /// <summary>
-        /// Converts the 4 game timer bytes to a UInt32 number.
+        /// Sets the starting game timer for all driver's previous game counter value.
         /// </summary>
-        /// <param name="gameTimerBytes">The 10th-13th bytes containing the 32-bit game timer value.</param>
-        /// <returns>The 32-bit game timer value.</returns>
-        internal UInt32 ConvertBytesToGameTimerValue(byte[] gameTimerBytes)
+        /// <param name="gameTimer">The starting game timer.</param>
+        internal void SetRaceStartGameTimer(UInt32 gameTimer)
         {
-            return BitConverter.ToUInt32(
-                new byte[] { gameTimerBytes[3], gameTimerBytes[2], gameTimerBytes[1], gameTimerBytes[0] },
-                0);
+            this.StartingGameTimer = gameTimer;
+            this.DriversPreviousGameCounter[0] = gameTimer;
+            this.DriversPreviousGameCounter[1] = gameTimer;
+            this.DriversPreviousGameCounter[2] = gameTimer;
+            this.DriversPreviousGameCounter[3] = gameTimer;
+            this.DriversPreviousGameCounter[4] = gameTimer;
+            this.DriversPreviousGameCounter[5] = gameTimer;
+            this.Started = true;
         }
 
         /// <summary>
@@ -281,49 +206,7 @@ namespace RaceDirectorClientGUI.Models.Racing
         /// <returns>The Game Timer as a TimeSpan</returns>
         internal TimeSpan ConvertGameTimerToTimeSpan(UInt32 gameTimer)
         {
-            return new TimeSpan(0, 0, 0, 0, (int)(gameTimer * RaceSession.GameTimerConstant) / 1000);
-        }
-
-        /// <summary>
-        /// Asynchronously adds incoming bytes to the ProcessIncomingActionBlock
-        /// while returning control to the calling method.
-        /// </summary>
-        /// <param name="incoming"></param>
-        private async Task AddToProcessInputActionBlock(byte[] incoming)
-        {
-            await this.ProcessIncomingActionBlock.SendAsync(incoming);
-        }
-
-        /// <summary>
-        /// Calculates the LED status byte based on number of active players in sesion. 
-        /// </summary>
-        /// <param name="numPlayers">The number of active players.</param>
-        /// <returns>the LED status byte</returns>
-        internal int CalculateLEDStatusLights(int numPlayers)
-        {
-            int ledStatus = 128; // Default Powerbase Green Light
-            switch (numPlayers)
-            {
-                case 1:
-                    ledStatus += 1;
-                    break;
-                case 2:
-                    ledStatus += 2 + 1;
-                    break;
-                case 3:
-                    ledStatus += 4 + 2 + 1;
-                    break;
-                case 4:
-                    ledStatus += 8 + 4 + 2 + 1;
-                    break;
-                case 5:
-                    ledStatus += 16 + 8 + 4 + 2 + 1;
-                    break;
-                case 6:
-                    ledStatus += 32 + 16 + 8 + 4 + 2 + 1;
-                    break;
-            }
-            return ledStatus;
+            return new TimeSpan(0, 0, 0, 0, (int)(gameTimer * RaceSession.GameTimerToMicroSecondsConstant) / 1000);
         }
     }
 }
