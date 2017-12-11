@@ -1,13 +1,13 @@
 ﻿
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RaceDirectorClientGUI.Models.Comms;
-using RaceDirectorClientGUI.Helpers;
+using SlotCarsGo.Models.Comms;
+using SlotCarsGo.Helpers;
 
 namespace PowerbaseFunctionsTest
 {
     [TestClass]
-    public class UnitTest1
+    public class PowerbaseTest
     {
         Powerbase powerbase = new Powerbase();
         OutgoingPacket outgoingPacketSuccess = new OutgoingPacket(true);

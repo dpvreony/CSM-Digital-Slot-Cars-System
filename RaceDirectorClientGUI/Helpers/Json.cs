@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
-namespace RaceDirectorClientGUI.Helpers
+namespace SlotCarsGo_GUI.Helpers
 {
     public static class Json
     {

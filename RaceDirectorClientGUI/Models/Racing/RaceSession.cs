@@ -1,11 +1,11 @@
-﻿using RaceDirectorClientGUI.Models.Comms;
+﻿using SlotCarsGo_GUI.Models.Comms;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using static RaceDirectorClientGUI.Helpers.Enums;
+using static SlotCarsGo_GUI.Helpers.Enums;
 
-namespace RaceDirectorClientGUI.Models.Racing
+namespace SlotCarsGo_GUI.Models.Racing
 {
     class RaceSession
     {

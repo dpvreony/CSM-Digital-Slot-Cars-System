@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 using Windows.ApplicationModel.Resources;
 
-namespace RaceDirectorClientGUI.Helpers
+namespace SlotCarsGo_GUI.Helpers
 {
     internal static class ResourceExtensions
     {

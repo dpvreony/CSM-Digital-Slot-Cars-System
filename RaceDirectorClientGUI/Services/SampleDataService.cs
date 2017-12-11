@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-using RaceDirectorClientGUI.Models;
+using SlotCarsGo_GUI.Models;
 
 using Windows.UI.Xaml.Controls;
 
-namespace RaceDirectorClientGUI.Services
+namespace SlotCarsGo_GUI.Services
 {
     // This class holds sample data used by some generated pages to show how they can be used.
     // TODO WTS: Delete this file once your app is using real data.

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RaceDirectorClientGUI.Models.Racing
+namespace SlotCarsGo_GUI.Models.Racing
 {
     abstract class RaceTypeBase
     {

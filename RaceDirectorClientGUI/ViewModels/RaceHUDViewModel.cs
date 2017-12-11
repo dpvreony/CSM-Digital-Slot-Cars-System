@@ -2,7 +2,7 @@
 
 using GalaSoft.MvvmLight;
 
-namespace RaceDirectorClientGUI.ViewModels
+namespace SlotCarsGo_GUI.ViewModels
 {
     public class RaceHUDViewModel : ViewModelBase
     {

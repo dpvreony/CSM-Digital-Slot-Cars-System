@@ -12,12 +12,12 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>RaceDirectorClientGUI_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>SlotCarsGo_GUI_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -121,13 +121,14 @@
     <Compile Include="Models\Comms\HandsetTrackStatusPacket.cs" />
     <Compile Include="Models\Comms\IncomingPacket.cs" />
     <Compile Include="Models\Comms\OutgoingPacket.cs" />
-    <Compile Include="Models\Comms\SerialDataPacketReadyEvent.cs" />
-    <Compile Include="Models\Comms\SerialDataPacketReadyEventArgs.cs" />
+    <Compile Include="Models\Manager\AppManager.cs" />
+    <Compile Include="Models\Manager\Track.cs" />
+    <Compile Include="Models\Manager\User.cs" />
     <Compile Include="Models\Racing\CarBase.cs" />
     <Compile Include="Models\Racing\FreePlayRace.cs" />
     <Compile Include="Models\Racing\RaceSession.cs" />
     <Compile Include="Models\Racing\RaceTypeBase.cs" />
-    <Compile Include="Models\Player.cs" />
+    <Compile Include="Models\Racing\Player.cs" />
     <Compile Include="Models\Comms\Powerbase.cs" />
     <Compile Include="Models\SampleOrder.cs" />
     <Compile Include="Services\ActivationService.cs" />
@@ -300,7 +301,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
-    <None Include="RaceDirectorClientGUI_TemporaryKey.pfx" />
+    <None Include="SlotCarsGo_GUI_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using RaceDirectorClientGUI.Helpers;
-using RaceDirectorClientGUI.Views;
+using SlotCarsGo_GUI.Helpers;
+using SlotCarsGo_GUI.Views;
 
 using Windows.ApplicationModel;
 
-namespace RaceDirectorClientGUI.Services
+namespace SlotCarsGo_GUI.Services
 {
     public static class FirstRunDisplayService
     {

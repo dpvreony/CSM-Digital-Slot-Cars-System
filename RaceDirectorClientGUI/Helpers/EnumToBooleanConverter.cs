@@ -2,7 +2,7 @@
 
 using Windows.UI.Xaml.Data;
 
-namespace RaceDirectorClientGUI.Helpers
+namespace SlotCarsGo_GUI.Helpers
 {
     public class EnumToBooleanConverter : IValueConverter
     {

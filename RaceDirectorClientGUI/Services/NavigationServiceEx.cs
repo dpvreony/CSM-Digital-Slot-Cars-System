@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using RaceDirectorClientGUI.Helpers;
+using SlotCarsGo_GUI.Helpers;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
-namespace RaceDirectorClientGUI.Services
+namespace SlotCarsGo_GUI.Services
 {
     public class NavigationServiceEx
     {

@@ -4,10 +4,10 @@ using GalaSoft.MvvmLight.Ioc;
 
 using Microsoft.Practices.ServiceLocation;
 
-using RaceDirectorClientGUI.Services;
-using RaceDirectorClientGUI.Views;
+using SlotCarsGo_GUI.Services;
+using SlotCarsGo_GUI.Views;
 
-namespace RaceDirectorClientGUI.ViewModels
+namespace SlotCarsGo_GUI.ViewModels
 {
     public class ViewModelLocator
     {

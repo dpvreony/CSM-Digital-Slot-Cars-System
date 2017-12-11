@@ -1,11 +1,11 @@
 ﻿using System;
 
-using RaceDirectorClientGUI.ViewModels;
+using SlotCarsGo_GUI.ViewModels;
 
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace RaceDirectorClientGUI.Views
+namespace SlotCarsGo_GUI.Views
 {
     public sealed partial class SettingsPage : Page
     {

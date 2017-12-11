@@ -1,12 +1,12 @@
 ﻿using System;
 
-using RaceDirectorClientGUI.Services;
-using RaceDirectorClientGUI.ViewModels;
+using SlotCarsGo_GUI.Services;
+using SlotCarsGo_GUI.ViewModels;
 
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace RaceDirectorClientGUI.Views
+namespace SlotCarsGo_GUI.Views
 {
     public sealed partial class ShellPage : Page
     {

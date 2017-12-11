@@ -1,12 +1,12 @@
 ﻿<Page
-    x:Class="RaceDirectorClientGUI.Views.SettingsPage"
+    x:Class="SlotCarsGo_GUI.Views.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Style="{StaticResource PageStyle}"
     DataContext="{Binding SettingsViewModel, Source={StaticResource Locator}}"
-    xmlns:helper="using:RaceDirectorClientGUI.Helpers"
+    xmlns:helper="using:SlotCarsGo_GUI.Helpers"
     xmlns:xaml="using:Windows.UI.Xaml"
     mc:Ignorable="d">
     <Page.Resources>

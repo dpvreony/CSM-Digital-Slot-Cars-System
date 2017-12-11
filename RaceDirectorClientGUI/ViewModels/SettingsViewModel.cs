@@ -4,12 +4,12 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
-using RaceDirectorClientGUI.Services;
+using SlotCarsGo_GUI.Services;
 
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 
-namespace RaceDirectorClientGUI.ViewModels
+namespace SlotCarsGo_GUI.ViewModels
 {
     public class SettingsViewModel : ViewModelBase
     {

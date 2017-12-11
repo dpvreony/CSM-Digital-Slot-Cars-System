@@ -2,7 +2,7 @@
 
 using Windows.UI.Xaml.Controls;
 
-namespace RaceDirectorClientGUI.Views
+namespace SlotCarsGo_GUI.Views
 {
     public sealed partial class WhatsNewDialog : ContentDialog
     {

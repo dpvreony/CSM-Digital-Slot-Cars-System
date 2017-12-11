@@ -1,15 +1,15 @@
 ﻿using System;
 
-using RaceDirectorClientGUI.Services;
+using SlotCarsGo_GUI.Services;
 
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
-using RaceDirectorClientGUI.Models.Comms;
-using RaceDirectorClientGUI.Models;
+using SlotCarsGo_GUI.Models.Comms;
+using SlotCarsGo_GUI.Models;
 using System.Collections.Generic;
-using RaceDirectorClientGUI.Models.Racing;
+using SlotCarsGo_GUI.Models.Racing;
 
-namespace RaceDirectorClientGUI
+namespace SlotCarsGo_GUI
 {
     public sealed partial class App : Application
     {
@@ -30,7 +30,7 @@ namespace RaceDirectorClientGUI
             // Deferred execution until used. Check https://msdn.microsoft.com/library/dd642331(v=vs.110).aspx for further info on Lazy<T> class.
             _activationService = new Lazy<ActivationService>(CreateActivationService);
 
-
+/*
             /// ALL THIS MOVES TO A MANAGER CLASS
             Console.WriteLine($"{DateTime.Now.ToString()}: Starting 'CSM Digital Slot Cars System'");
             List<Player> players = new List<Player> { new Player() };
@@ -38,6 +38,7 @@ namespace RaceDirectorClientGUI
             RaceSession raceSession = new RaceSession(1, raceType, players, false);
             this.pb = new Powerbase();
             raceSession.RaceStart(this.Powerbase);
+*/
         }
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)

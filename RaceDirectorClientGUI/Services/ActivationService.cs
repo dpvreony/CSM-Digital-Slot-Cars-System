@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using RaceDirectorClientGUI.Activation;
+using SlotCarsGo_GUI.Activation;
 
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Core;
@@ -11,7 +11,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace RaceDirectorClientGUI.Services
+namespace SlotCarsGo_GUI.Services
 {
     // For more information on application activation see https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/activation.md
     internal class ActivationService

@@ -1,5 +1,5 @@
 ﻿
-namespace RaceDirectorClientGUI.Models.Comms
+namespace SlotCarsGo_GUI.Models.Comms
 {
     using System;
     using System.Collections.Generic;

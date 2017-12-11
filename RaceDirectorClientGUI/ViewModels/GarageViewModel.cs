@@ -7,10 +7,10 @@ using GalaSoft.MvvmLight;
 
 using Microsoft.Toolkit.Uwp.UI.Controls;
 
-using RaceDirectorClientGUI.Models;
-using RaceDirectorClientGUI.Services;
+using SlotCarsGo_GUI.Models;
+using SlotCarsGo_GUI.Services;
 
-namespace RaceDirectorClientGUI.ViewModels
+namespace SlotCarsGo_GUI.ViewModels
 {
     public class GarageViewModel : ViewModelBase
     {

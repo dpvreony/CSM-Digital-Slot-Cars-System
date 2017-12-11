@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace RaceDirectorClientGUI.Helpers
+namespace SlotCarsGo_GUI.Helpers
 {
     internal static class Singleton<T>
         where T : new()

@@ -1,5 +1,5 @@
 ﻿
-namespace RaceDirectorClientGUI.Models.Racing
+namespace SlotCarsGo_GUI.Models.Racing
 {
     abstract class CarBase
     {

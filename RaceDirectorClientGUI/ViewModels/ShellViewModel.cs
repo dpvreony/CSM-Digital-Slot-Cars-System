@@ -8,15 +8,15 @@ using GalaSoft.MvvmLight.Command;
 
 using Microsoft.Practices.ServiceLocation;
 
-using RaceDirectorClientGUI.Helpers;
-using RaceDirectorClientGUI.Services;
-using RaceDirectorClientGUI.Views;
+using SlotCarsGo_GUI.Helpers;
+using SlotCarsGo_GUI.Services;
+using SlotCarsGo_GUI.Views;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace RaceDirectorClientGUI.ViewModels
+namespace SlotCarsGo_GUI.ViewModels
 {
     public class ShellViewModel : ViewModelBase
     {

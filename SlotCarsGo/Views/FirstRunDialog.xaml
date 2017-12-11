@@ -1,0 +1,45 @@
+﻿<ContentDialog 
+    x:Class="SlotCarsGo.Views.FirstRunDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="345"
+    d:DesignWidth="550"
+    RequestedTheme="Dark">
+    <ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>                
+            </Grid.RowDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                Text="Please register a name for your track before continuing:"/>
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                Grid.Row="1"
+                Margin="0,30,0,0">
+                <TextBlock
+                    Text="Track Name:"
+                    VerticalAlignment="Center"
+                    Margin="0,0,10,0"/>
+                <TextBox
+                    x:Name="RegisterTrackName_TextBox"
+                    PlaceholderText="You can change it later..."
+                    Width="200"/>
+            </StackPanel>
+            <Button
+                Grid.Row="2"
+                Content="Proceed"
+                IsEnabled="{Binding TrackNameEntered}"
+                HorizontalAlignment="Center"
+                Click="Button_Click"
+                Background="Orange"
+                Margin="0,50,0,0"/>
+        </Grid>
+    </ScrollViewer>
+</ContentDialog>

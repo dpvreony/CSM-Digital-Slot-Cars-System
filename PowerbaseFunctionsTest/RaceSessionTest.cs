@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RaceDirectorClientGUI.Models;
-using RaceDirectorClientGUI.Models.Comms;
-using RaceDirectorClientGUI.Models.Racing;
+using SlotCarsGo.Models;
+using SlotCarsGo.Models.Comms;
+using SlotCarsGo.Models.Racing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +25,7 @@ namespace PowerbaseFunctionsTest
         public RaceSessionTest()
         {
             List<Player> players = new List<Player> { new Player() };
-            RaceTypeBase raceType = new FreePlayRace(5, new TimeSpan(0, 2, 0), true);
+            RaceTypeBase raceType = new FreePlayRace(5, true);
             RaceSession raceSession = new RaceSession(1, raceType, players, false);
 
             powerbase.Run(raceSession);

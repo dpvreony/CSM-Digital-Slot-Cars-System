@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using RaceDirectorClientGUI.Helpers;
+using SlotCarsGo_GUI.Helpers;
 
 using Windows.Storage;
 using Windows.UI.Xaml;
 
-namespace RaceDirectorClientGUI.Services
+namespace SlotCarsGo_GUI.Services
 {
     public static class ThemeSelectorService
     {

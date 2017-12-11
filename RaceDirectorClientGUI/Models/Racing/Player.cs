@@ -1,5 +1,5 @@
 ﻿
-namespace RaceDirectorClientGUI.Models
+namespace SlotCarsGo_GUI.Models
 {
     using System;
 

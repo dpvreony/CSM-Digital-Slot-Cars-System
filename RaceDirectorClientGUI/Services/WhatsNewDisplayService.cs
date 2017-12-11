@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using RaceDirectorClientGUI.Helpers;
-using RaceDirectorClientGUI.Views;
+using SlotCarsGo_GUI.Helpers;
+using SlotCarsGo_GUI.Views;
 
 using Windows.ApplicationModel;
 
-namespace RaceDirectorClientGUI.Services
+namespace SlotCarsGo_GUI.Services
 {
     // For instructions on testing this service see https://github.com/Microsoft/WindowsTemplateStudio/tree/master/docs/features/whats-new-prompt.md
     public static class WhatsNewDisplayService

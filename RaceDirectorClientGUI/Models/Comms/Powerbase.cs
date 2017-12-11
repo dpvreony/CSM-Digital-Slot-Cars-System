@@ -1,6 +1,6 @@
-﻿namespace RaceDirectorClientGUI.Models.Comms
+﻿namespace SlotCarsGo_GUI.Models.Comms
 {
-    using RaceDirectorClientGUI.Models.Racing;
+    using SlotCarsGo_GUI.Models.Racing;
     using System;
     using System.Collections;
     using System.Collections.Specialized;
@@ -10,7 +10,7 @@
     using System.Threading.Tasks.Dataflow;
     using Windows.Devices.SerialCommunication;
     using Windows.Storage.Streams;
-    using static RaceDirectorClientGUI.Helpers.Enums;
+    using static SlotCarsGo_GUI.Helpers.Enums;
 
     /// <summary>
     /// The Powerbase class manages all IO to and from the Powerbase device over a USB 

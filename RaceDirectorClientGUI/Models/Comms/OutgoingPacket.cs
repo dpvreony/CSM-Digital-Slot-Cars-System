@@ -1,7 +1,7 @@
 ﻿
-using static RaceDirectorClientGUI.Helpers.Enums;
+using static SlotCarsGo_GUI.Helpers.Enums;
 
-namespace RaceDirectorClientGUI.Models.Comms
+namespace SlotCarsGo_GUI.Models.Comms
 {
     class OutgoingPacket
     {

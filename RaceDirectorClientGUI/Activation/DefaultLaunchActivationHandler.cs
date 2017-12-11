@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using RaceDirectorClientGUI.Services;
+using SlotCarsGo_GUI.Services;
 
 using Windows.ApplicationModel.Activation;
 
-namespace RaceDirectorClientGUI.Activation
+namespace SlotCarsGo_GUI.Activation
 {
     internal class DefaultLaunchActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
     {

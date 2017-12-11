@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace RaceDirectorClientGUI.Activation
+namespace SlotCarsGo_GUI.Activation
 {
     // For more information on application activation see https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/activation.md
     internal abstract class ActivationHandler

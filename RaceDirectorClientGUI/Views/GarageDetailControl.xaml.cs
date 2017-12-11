@@ -1,11 +1,11 @@
 ﻿using System;
 
-using RaceDirectorClientGUI.Models;
+using SlotCarsGo_GUI.Models;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace RaceDirectorClientGUI.Views
+namespace SlotCarsGo_GUI.Views
 {
     public sealed partial class GarageDetailControl : UserControl
     {

@@ -2,7 +2,7 @@
 
 using Windows.UI.Xaml.Controls;
 
-namespace RaceDirectorClientGUI.Models
+namespace SlotCarsGo_GUI.Models
 {
     // TODO WTS: Remove this class once your pages/features are using your data.
     // This is used by the SampleDataService.
