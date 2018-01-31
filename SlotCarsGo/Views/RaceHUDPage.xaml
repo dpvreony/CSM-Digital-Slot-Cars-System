@@ -16,7 +16,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
@@ -25,7 +25,7 @@
             Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
             x:Uid="GridConfirmation_Title"
             Text="{Binding Title}"
-            Style="{StaticResource PageTitleStyle}" />
+            Style="{StaticResource PageTitleStyle}" Padding="50, 0,0,0"/>
         <Grid 
             Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1"
             Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
@@ -40,55 +40,61 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="4*"/>
                     <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="2*"/>                    
+                    <ColumnDefinition Width="4*"/>                    
                 </Grid.ColumnDefinitions>
 
                 <TextBlock
                     Grid.Column="0" Grid.Row="0"
                     Text="{Binding Player1_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="1"
                     Text="{Binding Player2_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="2"
                     Text="{Binding Player3_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="3"
                     Text="{Binding Player4_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="4"
                     Text="{Binding Player5_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="5"
                     Text="{Binding Player6_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="0"
-                    Source="{Binding Player1_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="1"
-                    Source="{Binding Player2_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="2"
-                    Source="{Binding Player3_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="3"
-                    Source="{Binding Player4_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="4"
-                    Source="{Binding Player5_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="5"
-                    Source="{Binding Player6_Avatar, Mode=TwoWay}"/>
+                    Style="{StaticResource GridPositionTextStyle}"/>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="0">
+                    <Image Source="{Binding Player1_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="1">
+                    <Image Source="{Binding Player2_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="2">
+                    <Image Source="{Binding Player3_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="3">
+                    <Image Source="{Binding Player4_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="4">
+                    <Image Source="{Binding Player5_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="5">
+                    <Image Source="{Binding Player6_Avatar, Mode=TwoWay}"/>
+                </Border>                
                 <!-- Player 1 -->
                 <StackPanel Grid.Column="2" Grid.Row="0" VerticalAlignment="Center">
                     <TextBlock
@@ -224,40 +230,39 @@
             </Grid>
         </Grid>
         <!-- Race Panel -->
-        <StackPanel Grid.Row="1" Grid.Column="1">
+        <StackPanel Grid.Row="1" Grid.Column="1"
+            Orientation="Vertical" HorizontalAlignment="Center">
             <TextBlock
                 Text="{Binding RaceTypeTitle}"
                 Style="{StaticResource PageTitleStyle}"
-                HorizontalAlignment="Center"
                 Margin="0,0,0,50"/>
             <Button x:Name="StartRaceButton"
-                    Height="100" Width="100" Content="START"
-                    HorizontalAlignment="Center"
+                    Height="100" Width="100" Content="{Binding StartButtonText}" FontSize="28" FontWeight="SemiBold"
+                    HorizontalAlignment="Center" Background="Orange" 
                     Margin="0,0,0,50"                    
                     Click="StartRaceButton_Click"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>                    
-                </Grid.RowDefinitions>
-                <TextBlock
-                    Grid.Column="0" Grid.Row="0"
-                    Text="Started:"
-                    Style="{StaticResource GridItemTextStyle}"
-                    Margin="10,0,0,0"/>
-                <TextBlock
-                    Grid.Column="1" Grid.Row="0"                    
-                    Text="{Binding StartTime}"
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource GridItemTextStyle}"/>
-            </Grid>
-
+            <TextBlock
+                Text="Running:"
+                Style="{StaticResource GridItemTextStyle}"
+                HorizontalAlignment="Center"/>
+            <TextBlock
+                Text="{Binding RaceTimeDisplay}"
+                Style="{StaticResource GridItemTextStyle}"
+                HorizontalAlignment="Center"/>
+            <TextBlock
+                Text="Remaining:"
+                Style="{StaticResource GridItemTextStyle}"
+                HorizontalAlignment="Center"/>
+            <TextBlock
+                Text="{Binding StartTime}"
+                Style="{StaticResource GridItemTextStyle}"
+                HorizontalAlignment="Center"/>
+            <Button x:Name="StopRaceButton"
+                    Height="50" Width="100" Content="Cancel" FontSize="20" FontWeight="SemiBold"
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                    Background="OrangeRed"
+                    Margin="0,100,0,0"                    
+                    Click="StopRaceButton_Click"/>
         </StackPanel>
 
         <!--  Adaptive triggers  -->

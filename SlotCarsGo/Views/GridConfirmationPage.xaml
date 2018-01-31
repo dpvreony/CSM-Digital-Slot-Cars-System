@@ -40,7 +40,7 @@
                 Click="RefreshButton_Click"/>
             <Button
                 x:Name="StartButton"
-                Content="Start"
+                Content="Next"
                 FontWeight="Bold"
                 Background="Orange"
                 Click="StartButton_Click"/>

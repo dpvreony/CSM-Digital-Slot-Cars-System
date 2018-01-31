@@ -25,6 +25,11 @@
         <Setter Property="Margin" Value="10,0,0,10" />
     </Style>
 
+    <Style x:Key="GridPositionTextStyle" TargetType="TextBlock" BasedOn="{StaticResource GridItemTextStyle}">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource XLFontSize}"/>
+    </Style>    
+    
     <Style x:Key="GridItemHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource GridItemTextStyle}">
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="FontSize" Value="{StaticResource SmallFontSize}"/>
@@ -32,7 +37,7 @@
 
     <Style x:Key="LapTimeTextStyle" TargetType="TextBlock" BasedOn="{StaticResource GridItemTextStyle}">
         <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="FontSize" Value="{StaticResource XXLFontSize}"/>
+        <Setter Property="FontSize" Value="{StaticResource XLFontSize}"/>
         <Setter Property="FontFamily" Value="LCD"/>
     </Style>    
 

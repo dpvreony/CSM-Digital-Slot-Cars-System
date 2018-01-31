@@ -4,6 +4,7 @@ using SlotCarsGo.Services;
 
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
+using GalaSoft.MvvmLight.Threading;
 
 namespace SlotCarsGo
 {
@@ -30,6 +31,7 @@ namespace SlotCarsGo
             if (!args.PrelaunchActivated)
             {
                 await ActivationService.ActivateAsync(args);
+                DispatcherHelper.Initialize();
             }
         }
 

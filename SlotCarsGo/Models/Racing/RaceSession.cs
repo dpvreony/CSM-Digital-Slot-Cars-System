@@ -22,11 +22,14 @@ namespace SlotCarsGo.Models.Racing
         private List<Player> players;
         private DateTime startTime;
         private DateTime endTime;
+        private int lapsRemaining;
+        private TimeSpan timeRemaining;
         private int numberOfPlayers;
         private bool started;
         private bool finished;
         private UInt32 startingGameTimer;
         // TODO: fastest lap of session - what format, to include driver?
+        private TimeSpan zeroLapTime;
         private List<TimeSpan>[] driversLapTimes;
         private TimeSpan[] driversPreviousLapTime;
         private TimeSpan[] driversFastestLapTimes;
@@ -60,6 +63,7 @@ namespace SlotCarsGo.Models.Racing
             this.Started = false;
             this.Finished = false;
             this.FuelEnabled = raceType.FuelEnabled;
+            this.zeroLapTime = new TimeSpan();
             this.DriversLapTimes = new List<TimeSpan>[] { new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>() };
             this.DriversPreviousLapTime = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
             this.DriversFastestLapTimes = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
@@ -106,28 +110,23 @@ namespace SlotCarsGo.Models.Racing
         /// <summary>
         /// Starts a race session, which restarts the Powerbase comms and initiates data recording.
         /// </summary>
-        /// <param name="powerbase">The Powerbase instance handling the comms.</param>
-        public void RaceStart(Powerbase powerbase)
+        public void RaceStart()
         {
-            if (powerbase != null)
-            {
-                this.StartTime = DateTime.Now;
-                powerbase.Run(this);
-            }
-            else
-            {
-                throw new Exception("Powerbase is not initialised.");
-            }
+            this.Started = true;
+            this.StartTime = DateTime.Now;
+            SimpleIoc.Default.GetInstance<Powerbase>().Run(this);
         }
 
         /// <summary>
         /// Finishes the race including stopping the comms to the Powerbase.
         /// </summary>
-        /// <param name="powerbase">The Powerbase instance handling the comms.</param>
-        public void RaceFinish(Powerbase powerbase)
+        public void RaceFinish()
         {
+            this.Finished = true;
+            this.EndTime = DateTime.Now;
+            SimpleIoc.Default.GetInstance<Powerbase>().Stop();
             // TODO: check that data is saved before quitting
-            powerbase.Stop();
+            // TODO: Navigate to results page?
         }
 
         /// <summary>
@@ -156,7 +155,7 @@ namespace SlotCarsGo.Models.Racing
             this.DriversPreviousLapTime[carId] = lapTime;
 
             // Check if last lap time is this driver's fastest in this session
-            if (lapTime > this.DriversFastestLapTimes[carId])
+            if (lapTime < this.DriversFastestLapTimes[carId] || this.DriversFastestLapTimes[carId] == zeroLapTime)
             {
                 this.DriversFastestLapTimes[carId] = lapTime;
             }
@@ -170,7 +169,10 @@ namespace SlotCarsGo.Models.Racing
                 if (this.DriversLapTimes[carId].Count >= this.RaceType.RaceLimitValue)
                 {
                     this.Finished = true;
+                    this.EndTime = DateTime.Now;
                     this.DriversFinished[carId] = true;
+                    this.RaceFinish();
+                    // TODO: create a routine that drives all cars to finish line! (before closing PB) 
                 }
             }
             else

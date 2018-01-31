@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using System.Threading.Tasks.Dataflow;
     using Windows.Devices.SerialCommunication;
+    using Windows.Foundation;
     using Windows.Storage.Streams;
     using static SlotCarsGo.Helpers.Enums;
 
@@ -20,6 +21,10 @@
     /// </summary>
     class Powerbase
     {
+        private SerialDevice serialDevice;
+        private DataReader reader;
+        private DataWriter writer;
+        private readonly int msResponseTime = 12;
         private byte ledStatusLightByte;
         private int msgRcvdCnt = 0;
         private int msgOutCnt = 0;
@@ -29,18 +34,81 @@
         private OutgoingPacket SuccessOutgoingPacket = new OutgoingPacket(true);
         private OutgoingPacket NotRecognisedOutgoingPacket = new OutgoingPacket(false);
         private CancellationTokenSource powerbaseListenerCancellationTokenSource;
+        private TypedEventHandler<SerialDevice, ErrorReceivedEventArgs> ErrorReceivedEventHandler;
+
+        private async void ErrorReceivedEvent(SerialDevice sender, ErrorReceivedEventArgs eventArgs)
+        {
+            // Reset and re-initialise
+            this.CancelListening();
+
+            System.Diagnostics.Debug.WriteLine("Error Received Event Received", eventArgs.Error.ToString());
+
+            while (sender != null)
+            {
+                sender.Dispose();
+                System.Diagnostics.Debug.WriteLine("Waiting for Serial Device to dispose.");
+            }
+
+            this.serialDevice = await this.InitialiseDevice();
+            if (this.serialDevice != null)
+            {
+                await this.Listen();
+            }
+        }
 
         /// <summary>
-        /// Constructs the Powerbase class, which initiliases an ActionBlock 
-        /// to manage IO from the Powerbase device.
+        /// Constructs the Powerbase class to manage IO from the Powerbase device.
         /// </summary>
         public Powerbase()
         {
+           
         }
 
         public RaceSession RaceSession { get => this.raceSession; }
 
         public CancellationTokenSource PowerbaseListenerCancellationTokenSource { get => this.powerbaseListenerCancellationTokenSource; set => this.powerbaseListenerCancellationTokenSource = value; }
+
+        /// <summary>
+        /// Initialises the Serial Port as a device using Vendor Id and Product Id and configures
+        /// it's parameters.
+        /// </summary>
+        /// <returns>The new Serial Device.</returns>
+        private async Task<SerialDevice> InitialiseDevice()
+        {
+            var deviceSelector = SerialDevice.GetDeviceSelector();
+            var deviceList = await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(deviceSelector);
+
+            if (deviceList.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                try
+                {
+                    SerialDevice serialDevice = await SerialDevice.FromIdAsync(deviceList[0].Id);
+                    serialDevice.BaudRate = 19200;
+                    serialDevice.DataBits = 8;
+                    serialDevice.Handshake = SerialHandshake.None;
+                    serialDevice.Parity = SerialParity.None;
+                    serialDevice.ReadTimeout = new TimeSpan(0, 5, 0);
+                    serialDevice.StopBits = SerialStopBitCount.One;
+                    serialDevice.WriteTimeout = new TimeSpan(0, 0, 0, 2);
+                    this.ErrorReceivedEventHandler = new TypedEventHandler<SerialDevice, ErrorReceivedEventArgs>(this.ErrorReceivedEvent);
+                    serialDevice.ErrorReceived += this.ErrorReceivedEventHandler;
+
+                    return serialDevice;
+
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine("SerialPort not found, check Manifest." + e.Message);
+                }
+            }
+
+            return null;
+        }
+
 
         /// <summary>
         /// Starts listening to messages from the Powerbase for the current Race Session.
@@ -50,10 +118,21 @@
             this.raceSession = session;
             // TODO: is this needed if dynamic working?
             this.ledStatusLightByte = (byte) this.CalculateLEDStatusLightsStatic(session.NumberOfPlayers);
-            this.PowerbaseListenerCancellationTokenSource = new CancellationTokenSource();
+            SuccessOutgoingPacket.LEDStatus = this.ledStatusLightByte;
             try
             {
-                await this.Listen(this.PowerbaseListenerCancellationTokenSource.Token);
+                // Try to initialise the serial device
+                this.serialDevice = await this.InitialiseDevice();
+
+                if (this.serialDevice != null)
+                {
+                    // Instantiate new action blocks for buffering new packets
+                    this.incomingPacketActionBlock = new ActionBlock<byte[]>(async input => await this.ProcessIncomingPacket(input));
+                    this.updateRaceSessionActionBlock = new ActionBlock<byte[]>(input => this.UpdateRaceSessionData(input));
+
+                    // Start communicating
+                    await this.Listen();
+                }
             }
             catch (Exception e)
             {
@@ -61,16 +140,14 @@
             }
         }
 
+
+
         /// <summary>
         /// Stops listening to messages from the Powerbase.
         /// </summary>
         public void Stop()
         {
             this.CancelListening();
-            // TODO: flush actionblock
-            // send neutral LED message MessageType.GameTimerStopped;
-            this.msgOutCnt = 0;
-            this.msgRcvdCnt = 0;
         }
 
         /// <summary>
@@ -78,62 +155,77 @@
         /// and listens for incoming messages that will be sent to the IncomingActionBlock for
         /// processing.
         /// </summary>
-        /// <param name="token">The cancellation </param>
-        private async Task Listen(CancellationToken token)
+        private async Task Listen()
         {
-            int byteIndex = 0;
-            DateTime lastMsgTime = DateTime.Now;
-
-            using (SerialDevice serialDevice = await this.InitialiseDevice())
+            if (serialDevice != null)
             {
-                if (serialDevice != null)
+                this.PowerbaseListenerCancellationTokenSource = new CancellationTokenSource();
+                CancellationToken token = PowerbaseListenerCancellationTokenSource.Token;
+
+                this.reader = new DataReader(serialDevice.InputStream);
+                this.reader.InputStreamOptions = InputStreamOptions.Partial;
+                this.writer = new DataWriter(serialDevice.OutputStream);
+
+                int byteIndex = 0;
+                DateTime nextMsgTime = DateTime.Now.AddMilliseconds(msResponseTime);
+
+                using (this.serialDevice)
                 {
-                    using (DataWriter writer = new DataWriter(serialDevice.OutputStream))
+                    await this.SendPacketToPowerbase(this.SuccessOutgoingPacket.Data);
+
+                    // Race session listening loop
+                    while (!token.IsCancellationRequested)
                     {
-                        using (DataReader reader = new DataReader(serialDevice.InputStream))
+                        // periofdic timer.
+                        // 19200 / 230 baud over bits = 83.5 cycles per sec = 1 per 11.97 ms.
+                        // so check ervery 12 ms for a new message and send retry if not found?
+
+                        byte[] packet = new byte[(int)PacketType.Incoming];
+                        await reader.LoadAsync((int)PacketType.Incoming);
+
+                        while (reader.UnconsumedBufferLength > 0)
                         {
-                            // Instantiate new action blocks for buffering new packets
-                            this.incomingPacketActionBlock = new ActionBlock<byte[]>(async input => await this.ProcessIncomingPacket(writer, input));
-                            this.updateRaceSessionActionBlock = new ActionBlock<byte[]>(input => this.UpdateRaceSessionData(input));
+                            packet[byteIndex++] = reader.ReadByte();
+                        }
 
-                            // Start communicating
-                            await this.SendPacketToPowerbase(writer, this.SuccessOutgoingPacket.Data);
+                        byteIndex = 0;
 
-                            // Race session listening loop
-                            while (!token.IsCancellationRequested)
-                            {
-                                byte[] packet = new byte[(int)PacketType.Incoming];
-                                await reader.LoadAsync((int)PacketType.Incoming);
-
-                                while (reader.UnconsumedBufferLength > 0)
-                                {
-                                    packet[byteIndex++] = reader.ReadByte();
-                                }
-
-                                byteIndex = 0;
-
-                                if (packet.Length == (int)PacketType.Incoming)
-                                {
-                                    // CRC check, send notunderstood if fails
-                                    if (packet[(int)PacketType.Incoming - 1] == this.CalculateCrcChecksum(packet, PacketType.Incoming))
-                                    {
-                                        await this.incomingPacketActionBlock.SendAsync(packet);
-                                    }
-                                    else
-                                    {
-                                        await this.SendPacketToPowerbase(writer, NotRecognisedOutgoingPacket.Data);
-                                        System.Diagnostics.Debug.WriteLine("Sent Unrecognised");
-                                        this.msgRcvdCnt -= 1;
-                                    }
-                                }
-                            }
-
-                            byte[] resetGameTimerPacket = new byte[(int)PacketType.Outgoing];
-                            resetGameTimerPacket[0] = (byte)MessageBytes.GameTimerStopped;
-                            await this.SendPacketToPowerbase(writer, resetGameTimerPacket);
+                        // CRC check, send notunderstood if fails
+                        if (packet[(int)PacketType.Incoming - 1] == this.CalculateCrcChecksum(packet, PacketType.Incoming))
+                        {
+                            await this.incomingPacketActionBlock.SendAsync(packet);
+                            nextMsgTime = DateTime.Now.AddMilliseconds(msResponseTime);
+                        }
+                        else
+                        {
+                            await this.incomingPacketActionBlock.SendAsync(NotRecognisedOutgoingPacket.Data);
+                            System.Diagnostics.Debug.WriteLine("Sent Unrecognised");
                         }
                     }
+
+                    if (this.RaceSession.Finished)
+                    {
+                        OutgoingPacket resetGameTimerPacket = new OutgoingPacket(true);
+                        resetGameTimerPacket.LEDStatus = (byte)MessageBytes.GameTimerStopped;
+
+                        while (this.incomingPacketActionBlock.InputCount > 0)
+                        {
+
+                        }
+
+                        await this.SendPacketToPowerbase(resetGameTimerPacket.Data);
+                        System.Diagnostics.Debug.WriteLine("Sent Reset.");
+                    }
+
+                    // Stop listening routine
+//                    this.reader.DetachStream();
+//                    this.writer.DetachStream();  
                 }
+
+ //               if (this.serialDevice != null)
+//                {
+//                    this.serialDevice.Dispose();
+//                }
             }
         }
 
@@ -142,7 +234,7 @@
         /// </summary>
         /// <param name="writer">The DataWriter object for the active serial port stream.</param>
         /// <param name="incoming">The incoming packet of bytes.</param>
-        private async Task ProcessIncomingPacket(DataWriter writer, byte[] incomingPacket)
+        private async Task ProcessIncomingPacket(byte[] incomingPacket)
         {
             if (this.RaceSession != null)
             {
@@ -153,8 +245,7 @@
                 byte[] outgoingPacket = this.BuildOutgoingPacket(incomingPacket);
 
                 // Send to Powerbase
-                await this.SendPacketToPowerbase(writer, outgoingPacket);
-                System.Diagnostics.Debug.WriteLine($"Sent Success {++this.msgOutCnt}");
+                await this.SendPacketToPowerbase(outgoingPacket);
             }
         }
 
@@ -194,7 +285,7 @@
                             incomingPacket[9]
                         });
 
-                    this.RaceSession.ProcessFinishLineData(carIdOnFinishLine, gameTimer);
+                    this.RaceSession.ProcessFinishLineData(carIdOnFinishLine , gameTimer);
                 }
             }
             catch (Exception e)
@@ -220,15 +311,14 @@
                 (byte)MessageBytes.NoThrottle,
                 (byte)MessageBytes.NoThrottle,
                 (byte)MessageBytes.NoThrottle,
-                (byte)MessageBytes.GameTimerStarted,
+                this.ledStatusLightByte,
                 (byte)MessageBytes.ZeroByte
             };
 
             // Calculate throttle for each active driver
             for (var i = 1; i <= this.RaceSession.NumberOfPlayers; i++)
             {
-                outgoingPacket[i] = this.CalculateThrottle(incomingPacket[i], this.RaceSession.DriversFinished[i],
-                    this.RaceSession.PlayerFuel[i]);
+                outgoingPacket[i] = this.CalculateThrottle(incomingPacket[i], this.RaceSession.DriversFinished[i-1], this.RaceSession.PlayerFuel[i-1]);
             }
 
             return outgoingPacket;
@@ -266,14 +356,7 @@
                 }
             }
 
-            System.Diagnostics.Debug.WriteLine($"Before:{incomingByte} After:{bitVector.Data}/{throttle}");
             return (byte)bitVector.Data;
-        }
-
-
-        internal byte CalculateLEDStatusDynamic(byte ledByte)
-        {
-            return 0;
         }
 
         /// <summary>
@@ -326,24 +409,30 @@
         /// <param name="writer">The DataWriter object for the active serial port stream.</param>
         /// <param name="outgoingPacket">The outgoing packet of bytes.</param>
         /// <returns></returns>
-        private async Task SendPacketToPowerbase(DataWriter writer, byte[] outgoingPacket)
+        private async Task SendPacketToPowerbase(byte[] outgoingPacket)
         {
-            // Calculate CRC for new outgoing packet
-            outgoingPacket[8] = this.CalculateCrcChecksum(outgoingPacket, PacketType.Outgoing);
+            try
+            {
+                // Calculate CRC for new outgoing packet
+                outgoingPacket[8] = this.CalculateCrcChecksum(outgoingPacket, PacketType.Outgoing);
 
-            // Send to the Powerbase
-            writer.WriteBytes(outgoingPacket);
-            await writer.StoreAsync();
+                // Send to the Powerbase
+                writer.WriteBytes(outgoingPacket);
+                await writer.StoreAsync();
+                System.Diagnostics.Debug.WriteLine($"Sent Success {++this.msgOutCnt}");
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine($"Powerbase Exception thrown while writing to data writer: {e.Message}");
+            }
         }
 
         /// <summary>
-        /// Cancels the PowerbaseListener token and instructs the incoming ActionBlock to stop
-        /// processing messages.
+        /// Cancels the token for the Powerbase Listen loop.
         /// </summary>
         private void CancelListening()
         {
             this.PowerbaseListenerCancellationTokenSource.Cancel();
-            incomingPacketActionBlock.Complete();
         }
 
         /// <summary>
@@ -390,33 +479,6 @@
             }
 
             return crc8Rx;
-        }
-
-        /// <summary>
-        /// Initialises the Serial Port as a device using Vendor Id and Product Id and configures
-        /// it's parameters.
-        /// </summary>
-        /// <returns>The new Serial Device.</returns>
-        private async Task<SerialDevice> InitialiseDevice()
-        {
-            var deviceSelector = SerialDevice.GetDeviceSelector();
-            var deviceList = await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(deviceSelector);
-
-            if (deviceList.Count == 0)
-            {
-                return null;
-            }
-
-            SerialDevice serialDevice = await SerialDevice.FromIdAsync(deviceList[0].Id);
-            serialDevice.BaudRate = 19200;
-            serialDevice.DataBits = 8;
-            serialDevice.Handshake = SerialHandshake.None;
-            serialDevice.Parity = SerialParity.None;
-            serialDevice.ReadTimeout = new TimeSpan(0, 5, 0);
-            serialDevice.StopBits = SerialStopBitCount.One;
-            serialDevice.WriteTimeout = new TimeSpan(0, 0, 0, 2);
-
-            return serialDevice;
         }
     }
 }

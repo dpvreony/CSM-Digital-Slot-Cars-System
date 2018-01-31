@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Views;
 using Windows.UI.Xaml.Navigation;
+using GalaSoft.MvvmLight.Ioc;
+using SlotCarsGo.Services;
 
 namespace SlotCarsGo.ViewModels
 {
@@ -23,6 +25,11 @@ namespace SlotCarsGo.ViewModels
 
         public override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
+        }
+
+        public void RaceTypeSelectClicked()
+        {
+            SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(RaceTypeSelectViewModel).FullName);
         }
     }
 }

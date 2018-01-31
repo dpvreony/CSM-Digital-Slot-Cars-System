@@ -2,11 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-
 using GalaSoft.MvvmLight;
-
 using Microsoft.Toolkit.Uwp.UI.Controls;
-
 using SlotCarsGo.Models;
 using SlotCarsGo.Services;
 using SlotCarsGo.Models.Racing;

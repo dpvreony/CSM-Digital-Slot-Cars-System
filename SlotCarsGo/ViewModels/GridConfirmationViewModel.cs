@@ -11,6 +11,7 @@ using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using GalaSoft.MvvmLight.Ioc;
+using SlotCarsGo.Models.Comms;
 
 namespace SlotCarsGo.ViewModels
 {
@@ -37,6 +38,7 @@ namespace SlotCarsGo.ViewModels
         {
             try
             {
+                // USE DispatchHelper.CheckBeginInvokeOnUI
                 this.LoggedInUsers.RemoveAt(userIndexInGrid);
                 // TODO: send message to server/client that theyve been removed
 

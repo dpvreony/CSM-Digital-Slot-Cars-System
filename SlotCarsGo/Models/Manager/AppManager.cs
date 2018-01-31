@@ -31,7 +31,6 @@ namespace SlotCarsGo.Models.Manager
             AppManager.localSettings = ApplicationData.Current.LocalSettings;
             AppManager.localFolder = ApplicationData.Current.LocalFolder;
             AppManager.toastService = new ToastNotificationsService();
-
             AppManager.localSettings.Values["Track"] = null;
             var trackCompositeValue = (ApplicationDataCompositeValue)localSettings.Values["Track"];
             if (trackCompositeValue != null)
