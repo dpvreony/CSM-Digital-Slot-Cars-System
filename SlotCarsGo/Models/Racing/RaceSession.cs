@@ -19,6 +19,7 @@ namespace SlotCarsGo.Models.Racing
         private string sessionName;
         private int trackID; // TODO: Retrieve from XML on startup and store above Powerbase? RaceManager class?
         private RaceTypeBase raceType;
+        private ObservableCollection<User> users;
         private List<Player> players;
         private DateTime startTime;
         private DateTime endTime;
@@ -53,29 +54,34 @@ namespace SlotCarsGo.Models.Racing
         {
             this.TrackID = AppManager.Track.Id;
             this.RaceType = raceType;
+            this.FuelEnabled = raceType.FuelEnabled;
             this.Players = new List<Player>();
+            this.Users = users;
             foreach (var user in users)
             {
                 this.Players.Add(new Player(user));
             }
             this.NumberOfPlayers = this.Players.Count;
-            this.StartTime = DateTime.Now;
-            this.Started = false;
-            this.Finished = false;
-            this.FuelEnabled = raceType.FuelEnabled;
-            this.zeroLapTime = new TimeSpan();
-            this.DriversLapTimes = new List<TimeSpan>[] { new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>() };
-            this.DriversPreviousLapTime = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
-            this.DriversFastestLapTimes = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
-            this.DriversPreviousGameCounter = new UInt32[] { 0, 0, 0, 0, 0, 0 };
-            this.DriversLapGameCounters = new List<UInt32>[] { new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>() };
-            this.DriversFinished = new bool[] { false, false, false, false, false, false };
-            this.PlayerFuel = new float[] { 0, 0, 0, 0, 0, 0};
+
+            this.InitialiseSession();
+        }
+
+        public RaceSession()
+        {
+            this.TrackID = AppManager.Track.Id;
+            this.RaceType = new FreePlayRace(0, true, false);
+            this.FuelEnabled = false;
+            this.Players = new List<Player>();
+            this.Users = new ObservableCollection<User>();
+            this.NumberOfPlayers = 0;
+            this.InitialiseSession();
         }
 
         public int TrackID { get => this.trackID; set => this.trackID = value; }
 
         public RaceTypeBase RaceType { get => this.raceType; set => this.raceType = value; }
+
+        public ObservableCollection<User> Users { get => this.users; set => this.users = value; }
 
         internal List<Player> Players { get => this.players; set => this.players = value; }
 
@@ -108,25 +114,66 @@ namespace SlotCarsGo.Models.Racing
         public int NumberOfPlayers { get => numberOfPlayers; set => numberOfPlayers = value; }
 
         /// <summary>
+        /// Initialises the data driven session details.
+        /// </summary>
+        private void InitialiseSession()
+        {
+            this.StartTime = DateTime.Now;
+            this.Started = false;
+            this.Finished = false;
+            this.zeroLapTime = new TimeSpan();
+            this.DriversLapTimes = new List<TimeSpan>[] { new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>() };
+            this.DriversPreviousLapTime = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
+            this.DriversFastestLapTimes = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
+            this.DriversPreviousGameCounter = new UInt32[] { 0, 0, 0, 0, 0, 0 };
+            this.DriversLapGameCounters = new List<UInt32>[] { new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>() };
+            this.DriversFinished = new bool[] { false, false, false, false, false, false };
+            this.PlayerFuel = new float[] { 0, 0, 0, 0, 0, 0 };
+        }
+
+        /// <summary>
         /// Starts a race session, which restarts the Powerbase comms and initiates data recording.
         /// </summary>
-        public void RaceStart()
+        public async void StartRace()
         {
+            System.Diagnostics.Debug.WriteLine($"{DateTime.Now.ToString()}: Session start race..");
             this.Started = true;
             this.StartTime = DateTime.Now;
-            SimpleIoc.Default.GetInstance<Powerbase>().Run(this);
+            await SimpleIoc.Default.GetInstance<Powerbase>().Listen(this);
         }
 
         /// <summary>
         /// Finishes the race including stopping the comms to the Powerbase.
         /// </summary>
-        public void RaceFinish()
+        public void FinishRace()
         {
             this.Finished = true;
             this.EndTime = DateTime.Now;
-            SimpleIoc.Default.GetInstance<Powerbase>().Stop();
-            // TODO: check that data is saved before quitting
-            // TODO: Navigate to results page?
+            SimpleIoc.Default.GetInstance<Powerbase>().StopListening();
+            // TODO: check that data is saved before ending
+            // TODO: Navigate to results page? For VM to do?
+        }
+
+        /// <summary>
+        /// Finishes race and stops the powerbase listening loop.
+        /// </summary>
+        public void QuitRace()
+        {
+            this.Finished = true;
+            this.EndTime = DateTime.Now;
+            SimpleIoc.Default.GetInstance<Powerbase>().StopListening();
+        }
+
+        /// <summary>
+        /// Resets this session data and stops the powerbase listening loop.
+        /// </summary>
+        public void ResetRace()
+        {
+            this.Started = false;
+            this.Finished = true;
+            this.EndTime = DateTime.Now;
+            SimpleIoc.Default.GetInstance<Powerbase>().StopListening();
+            this.InitialiseSession();
         }
 
         /// <summary>
@@ -171,7 +218,7 @@ namespace SlotCarsGo.Models.Racing
                     this.Finished = true;
                     this.EndTime = DateTime.Now;
                     this.DriversFinished[carId] = true;
-                    this.RaceFinish();
+                    this.FinishRace();
                     // TODO: create a routine that drives all cars to finish line! (before closing PB) 
                 }
             }

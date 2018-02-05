@@ -34,15 +34,21 @@
             Grid.Row="0"
             Grid.Column="1">
             <Button
+                FontSize="28" FontFamily="Segoe MDL2 Assets"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"                
                 x:Name="RefreshButton"
-                Content="Refresh"
-                Background="Orange"
-                Click="RefreshButton_Click"/>
+                Content="&#xE72C;"
+                Background="Transparent"
+                Foreground="LimeGreen"
+                Click="RefreshButton_Click">
+            </Button>
             <Button
                 x:Name="StartButton"
                 Content="Next"
                 FontWeight="Bold"
-                Background="Orange"
+                Background="DarkOrange"
+                Margin="30,0,10,0"
                 Click="StartButton_Click"/>
         </StackPanel>
         <Grid 
@@ -61,54 +67,61 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="10*"/>
                     <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>                    
                 </Grid.ColumnDefinitions>
 
                 <TextBlock
                     Grid.Column="0" Grid.Row="0"
                     Text="{Binding Player1_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="1"
                     Text="{Binding Player2_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="2"
                     Text="{Binding Player3_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="3"
                     Text="{Binding Player4_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="4"
                     Text="{Binding Player5_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
+                    Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="5"
                     Text="{Binding Player6_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource PageTitleStyle}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="0"
-                    Source="{Binding Player1_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="1"
-                    Source="{Binding Player2_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="2"
-                    Source="{Binding Player3_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="3"
-                    Source="{Binding Player4_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="4"
-                    Source="{Binding Player5_Avatar, Mode=TwoWay}"/>
-                <Image
-                    Grid.Column="1" Grid.Row="5"
-                    Source="{Binding Player6_Avatar, Mode=TwoWay}"/>
+                    Style="{StaticResource GridPositionVerticalTextStyle}"/>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="0">
+                    <Image Source="{Binding Player1_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="1">
+                    <Image Source="{Binding Player2_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="2">
+                    <Image Source="{Binding Player3_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="3">
+                    <Image Source="{Binding Player4_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="4">
+                    <Image Source="{Binding Player5_Avatar, Mode=TwoWay}"/>
+                </Border>
+                <Border BorderThickness="5"
+                    Grid.Column="1" Grid.Row="5">
+                    <Image Source="{Binding Player6_Avatar, Mode=TwoWay}"/>
+                </Border>
                 <TextBlock
                     Grid.Column="2" Grid.Row="0"
                     Text="{Binding Player1_Name, Mode=TwoWay}"
@@ -158,37 +171,82 @@
                     Grid.Column="3" Grid.Row="5"
                     Text="{Binding Player6_Car, Mode=TwoWay}"
                     Style="{StaticResource GridItemTextStyle}"/>
+                
+                <!-- Confirm Setup Question Mark buttons -->
+                <Button
+                    x:Name="ConfirmUser1Button"
+                    Grid.Column="4" Grid.Row="0"
+                    Content="?"
+                    Foreground="White"
+                    Background="OrangeRed"
+                    Click="ConfirmUserButton_Click"/>
+                <Button
+                    x:Name="ConfirmUser2Button"
+                    Grid.Column="4" Grid.Row="1"
+                    Content="?"
+                    Foreground="White"
+                    Background="OrangeRed"
+                    Click="ConfirmUserButton_Click"/>
+                <Button
+                    x:Name="ConfirmUser3Button"
+                    Grid.Column="4" Grid.Row="2"
+                    Content="?"
+                    Foreground="White"
+                    Background="OrangeRed"
+                    Click="ConfirmUserButton_Click"/>
+                <Button
+                    x:Name="ConfirmUser4Button"
+                    Grid.Column="4" Grid.Row="3"
+                    Content="?"
+                    Foreground="White"
+                    Background="OrangeRed"
+                    Click="ConfirmUserButton_Click"/>
+                <Button
+                    x:Name="ConfirmUser5Button"
+                    Grid.Column="4" Grid.Row="4"
+                    Content="?"
+                    Foreground="White"
+                    Background="OrangeRed"
+                    Click="ConfirmUserButton_Click"/>
+                <Button
+                    x:Name="ConfirmUser6Button"
+                    Grid.Column="4" Grid.Row="5"
+                    Content="?"
+                    Foreground="White"
+                    Background="OrangeRed"
+                    Click="ConfirmUserButton_Click"/>
+            <!-- Remove player buttons -->
                 <Button
                     x:Name="RemoveUser1Button"
-                    Grid.Column="4" Grid.Row="0"
+                    Grid.Column="5" Grid.Row="0"
                     Content="X"
                     Foreground="OrangeRed"
-                    Background="Transparent"     
+                    Background="Transparent"
                     Click="RemoveUserButton_Click"/>
                 <Button
                     x:Name="RemoveUser2Button"
-                    Grid.Column="4" Grid.Row="1"
+                    Grid.Column="5" Grid.Row="1"
                     Content="X"
                     Foreground="OrangeRed"
-                    Background="Transparent"                    
+                    Background="Transparent"
                     Click="RemoveUserButton_Click"/>
                 <Button
                     x:Name="RemoveUser3Button"
-                    Grid.Column="4" Grid.Row="2"
+                    Grid.Column="5" Grid.Row="2"
                     Content="X"
                     Foreground="OrangeRed"
-                    Background="Transparent"                    
+                    Background="Transparent"
                     Click="RemoveUserButton_Click"/>
                 <Button
                     x:Name="RemoveUser4Button"
-                    Grid.Column="4" Grid.Row="3"
+                    Grid.Column="5" Grid.Row="3"
                     Content="X"
                     Foreground="OrangeRed"
                     Background="Transparent"
                     Click="RemoveUserButton_Click"/>
                 <Button
                     x:Name="RemoveUser5Button"
-                    Grid.Column="4" Grid.Row="4"
+                    Grid.Column="5" Grid.Row="4"
                     Content="X"
                     Foreground="OrangeRed"
                     Background="Transparent"
@@ -198,10 +256,10 @@
                     Grid.Column="4" Grid.Row="5"
                     Content="X"
                     Foreground="OrangeRed"
-                    Background="Transparent"                    
-                    Click="RemoveUserButton_Click"/>                
-            </Grid>                
-        </Grid>
+                    Background="Transparent"
+                    Click="RemoveUserButton_Click"/>
+            </Grid>
+        </Grid>                
         <!--  Adaptive triggers  -->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="WindowStates">

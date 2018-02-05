@@ -38,9 +38,23 @@ namespace SlotCarsGo.ViewModels
         {
             try
             {
+                // TODO: set frame page layout for new number of players
+                // 5 players page should use 6 rows but show + sign to add new player
+                // 4 players page should use 5 rows etc...
+                // How to select a player from a range? Exclude players in users list, show only logged in.
+
+                // Replace page with a scrollable list of loggedin players not in grid
+                // Button click adds user to grid list, and changes page to +1 layout
+                //Need individual pages
+
+                // See how pages are managed in RaceHUD display.
+
                 // USE DispatchHelper.CheckBeginInvokeOnUI
                 this.LoggedInUsers.RemoveAt(userIndexInGrid);
-                // TODO: send message to server/client that theyve been removed
+                // Dont actually remove from logged in (dont log out).
+                // Create a new list of players on grid.
+
+                // TODO: send message to server/client that theyve been removed from grid
 
 
 
@@ -86,7 +100,7 @@ namespace SlotCarsGo.ViewModels
 
         public async Task LoadDataAsync()
         {
-            LoggedInUsers.Clear();
+            LoggedInUsers.Clear(); // No, only clear users on grid list
 
             var data = await LoggedInUsersDataService.GetLoggedInUsersAsync();
 

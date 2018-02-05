@@ -19,18 +19,14 @@ namespace SlotCarsGo.Views
             InitializeComponent();
         }
 
-        private void StartRaceButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void RaceButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            ViewModel.StartButtonClicked();
-            Button button = sender as Button;
-            button.IsEnabled = false;
+            ViewModel.RaceButtonClicked();
         }
 
-        private void StopRaceButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void QuitRaceButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            ViewModel.StopButtonClicked();
-            Button button = sender as Button;
-            button.IsEnabled = false;
+            ViewModel.QuitButtonClicked();
         }
     }
 }

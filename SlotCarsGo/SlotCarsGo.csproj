@@ -29,6 +29,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -173,6 +174,9 @@
     <Compile Include="Views\GridConfirmationPage.xaml.cs">
       <DependentUpon>GridConfirmationPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\GridConfirmationPanelFor1Player.xaml.cs">
+      <DependentUpon>GridConfirmationPanelFor1Player.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -181,6 +185,24 @@
     </Compile>
     <Compile Include="Views\GridSetupPage.xaml.cs">
       <DependentUpon>GridSetupPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor1Player.xaml.cs">
+      <DependentUpon>RaceGridPanelFor1Player.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor2Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor2Players.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor3Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor3Players.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor4Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor4Players.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor5Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor5Players.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor6Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor6Players.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RaceHUDPage.xaml.cs">
       <DependentUpon>RaceHUDPage.xaml</DependentUpon>
@@ -254,6 +276,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\GridConfirmationPanelFor1Player.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -269,6 +295,30 @@
     <Page Include="Views\GridSetupPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor1Player.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor2Players.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor3Players.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor4Players.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor5Players.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor6Players.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RaceHUDPage.xaml">
       <Generator>MSBuild:Compile</Generator>
