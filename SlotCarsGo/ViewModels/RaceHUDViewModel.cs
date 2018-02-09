@@ -25,6 +25,7 @@ namespace SlotCarsGo.ViewModels
         private DispatcherTimer countdownDisplayTimer;
         private DispatcherTimer raceTimeDisplayTimer;
         private string raceTimeDisplay = "00:00:00.0";
+        private string remainingDisplay;
         private int countdown = 4;
         private string raceButtonText = "START";
         private SolidColorBrush greenBrush = new SolidColorBrush(Windows.UI.Colors.LimeGreen);
@@ -50,12 +51,9 @@ namespace SlotCarsGo.ViewModels
         public string StartTime => this.Session.StartTime.ToString("HH:mm");
         public string RaceButtonText { get => this.raceButtonText; set => Set(ref raceButtonText, value); }
         public string RaceTimeDisplay { get => raceTimeDisplay; set => Set(ref raceTimeDisplay, value); }
+        public string RemainingDisplay { get => remainingDisplay; set => Set(ref remainingDisplay, value); }
         public Page RaceGridPage { get => raceGridPage; set => raceGridPage = value; }
         public SolidColorBrush RaceButtonBrush { get => raceButtonBrush; set => Set(ref raceButtonBrush, value); }
-
-
-        //        public string Remaining => this.session.RaceType.LapsNotDuration ? $"{this.session.RaceType.RaceLimitValue} Laps" : this.session.RaceType.RaceLength. - (DateTime.Now - this.session.StartTime;
-
 
         public string Player1_GridNumber => "1";
         public string Player2_GridNumber => "2";
@@ -86,7 +84,15 @@ namespace SlotCarsGo.ViewModels
         public string Player4_BestLap { get => this.player4_BestLap; set => Set(ref player4_BestLap, value); }
         public string Player5_BestLap { get => this.player5_BestLap; set => Set(ref player5_BestLap, value); }
         public string Player6_BestLap { get => this.player6_BestLap; set => Set(ref player6_BestLap, value); }
-        public string Player1_LastLap { get => this.player1_LastLap; set => Set(ref player1_LastLap, value); }
+        public string Player1_LastLap
+        {
+            get => this.player1_LastLap;
+            set
+            {
+                Set(ref player1_LastLap, value);
+
+            }
+        }
         public string Player2_LastLap { get => this.player2_LastLap; set => Set(ref player2_LastLap, value); }
         public string Player3_LastLap { get => this.player3_LastLap; set => Set(ref player3_LastLap, value); }
         public string Player4_LastLap { get => this.player4_LastLap; set => Set(ref player4_LastLap, value); }
@@ -133,10 +139,28 @@ namespace SlotCarsGo.ViewModels
             if (this.Session.Started)
             {
                 this.raceTimeDisplayTimer.Stop();
+                this.Session.ResetRace();
                 this.RaceButtonBrush = this.greenBrush;
                 this.RaceTimeDisplay = "00:00:00.0";
                 this.RaceButtonText = "START";
-                this.Session.ResetRace();
+                this.Player1_BestLap = EmptyLapTime;
+                this.Player2_BestLap = EmptyLapTime;
+                this.Player3_BestLap = EmptyLapTime;
+                this.Player4_BestLap = EmptyLapTime;
+                this.Player5_BestLap = EmptyLapTime;
+                this.Player6_BestLap = EmptyLapTime;
+                this.Player1_LastLap = EmptyLapTime;
+                this.Player2_LastLap = EmptyLapTime;
+                this.Player3_LastLap = EmptyLapTime;
+                this.Player4_LastLap = EmptyLapTime;
+                this.Player5_LastLap = EmptyLapTime;
+                this.Player6_LastLap = EmptyLapTime;
+                this.Player1_Diff = EmptyDiffTime;
+                this.Player2_Diff = EmptyDiffTime;
+                this.Player3_Diff = EmptyDiffTime;
+                this.Player4_Diff = EmptyDiffTime;
+                this.Player5_Diff = EmptyDiffTime;
+                this.Player6_Diff = EmptyDiffTime;
             }
             else
             {
@@ -152,7 +176,7 @@ namespace SlotCarsGo.ViewModels
         }
 
         /// <summary>
-        /// Event handler for the quit race button, stops the powerbase and navigates to the Main (home) screen.
+        /// Event handler for the quit race button,navigates to the Main (home) screen which stops the powerbase.
         /// </summary>
         internal void QuitButtonClicked()
         {
@@ -178,6 +202,7 @@ namespace SlotCarsGo.ViewModels
                 this.RaceButtonBrush = this.redBrush;
                 this.RaceButtonText = "RESET";
                 this.Session.StartRace();
+                SimpleIoc.Default.GetInstance<Powerbase>().ResetGameTimer();
 
                 // Setup race display timer
                 this.raceTimeDisplayTimer = new DispatcherTimer();
@@ -201,11 +226,26 @@ namespace SlotCarsGo.ViewModels
             TimeSpan span = DateTime.Now - this.Session.StartTime;
             this.RaceTimeDisplay = span.ToString("hh':'mm':'ss'.'f");
 
-            // For race length, calculate finish time somewhere
-            // Do i need to control the race? Isnt powerbase doing that?
-            // Just need to display time, and stop shwoing new time after race finish?
-            // Who navigates to race results? I'm ok with VM doing the hard work.
+            if (this.Session.RaceType.LapsNotDuration)
+            {
+                this.RemainingDisplay = $"{this.session.LapsRemaining} / {this.session.RaceType.RaceLimitValue} Laps";
+            }
+            else
+            {
+                TimeSpan remaining = this.Session.RaceType.RaceLength - span;
+                this.RemainingDisplay = remaining.ToString("hh':'mm':'ss'.'f");
+            }
+        }
 
+        public void RaceFinished()
+        {
+            // TODO: create a routine that drives all cars to finish line! (before closing PB)
+            // TODO: check that data is saved before ending
+
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(RaceResultsViewModel).FullName, this.Session);
+            });
         }
 
 
@@ -262,6 +302,11 @@ namespace SlotCarsGo.ViewModels
 
         public override Task OnNavigatedToAsync(object parameter, NavigationMode mode)
         {
+            if (!SimpleIoc.Default.GetInstance<Powerbase>().IsPowerbaseConnected)
+            {
+                SimpleIoc.Default.GetInstance<Powerbase>().Listen();
+            }
+
             this.session = parameter as RaceSession;
             switch (this.Session.NumberOfPlayers)
             {
@@ -287,12 +332,29 @@ namespace SlotCarsGo.ViewModels
                     RaceGridPage = new RaceGridPanelFor6Players();
                     break;
             }
+
+            if (this.Session.RaceType.LapsNotDuration)
+            {
+                this.RemainingDisplay = $"{this.session.LapsRemaining} / {this.session.RaceType.RaceLimitValue} Laps";
+            }
+            else
+            {
+                this.RemainingDisplay = this.Session.RaceType.RaceLength.ToString("hh':'mm':'ss'.'f");
+            }
+
+            SimpleIoc.Default.GetInstance<Powerbase>().UpdateRaceSession(this.session);
+
             return Task.CompletedTask;
         }
 
         public override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
+            if (!this.Session.Finished)
+            {
+                this.Session.Finished = true;
+            }
 
+            SimpleIoc.Default.GetInstance<Powerbase>().StopListening();
         }
     }
 }

@@ -33,7 +33,7 @@
                     Style="{StaticResource BodyTextBlockStyle}"
                     Margin="0,10,0,0"/>
             </StackPanel>
-            <Grid Grid.Row="1" Padding="0,15,0,5" HorizontalAlignment="Stretch">
+            <Grid x:Name="SliderGrid"  Grid.Row="1" Padding="0,15,0,5" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>                    

@@ -12,6 +12,7 @@ using GalaSoft.MvvmLight.Ioc;
 using Windows.UI.Xaml.Navigation;
 using GalaSoft.MvvmLight.Views;
 using SlotCarsGo.Views;
+using Windows.UI.Xaml;
 
 namespace SlotCarsGo.ViewModels
 {

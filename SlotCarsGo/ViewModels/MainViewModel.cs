@@ -11,6 +11,7 @@ namespace SlotCarsGo.ViewModels
 {
     public class MainViewModel : NavigableViewModelBase
     {
+
         private bool isPowerbaseConnected;
 
         public MainViewModel()

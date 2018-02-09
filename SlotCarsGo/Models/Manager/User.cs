@@ -1,4 +1,5 @@
 ﻿using SlotCarsGo.Models.Racing;
+using SlotCarsGo.Services;
 using System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -13,17 +14,17 @@ namespace SlotCarsGo.Models.Manager
         string firstname;
         string lastname;
         string avatarSource;
-        Car selectedCar;
         int controllerId;
+        Car selectedCar;
 
-        public User(int id, string nickname, string firstname, string lastname, string avatarPath, Car car)
+        public User(int id, string nickname, string firstname, string lastname, string avatarPath, int carId)
         {
             this.id = id;
             this.nickname = nickname;
             this.firstname = firstname;
             this.lastname = lastname;
             this.avatarSource = avatarPath;
-            this.selectedCar = car;
+            this.selectedCar = CarsInGarageDataService.GetCar(carId);
         }
 
         public int Id { get => id; set => id = value; }

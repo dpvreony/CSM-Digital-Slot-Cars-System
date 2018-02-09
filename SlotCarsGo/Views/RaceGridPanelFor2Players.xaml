@@ -44,19 +44,19 @@
                 <TextBlock
                     Text="{Binding Player1_BestLap, Mode=TwoWay}"
                     Style="{StaticResource LapTimeTextStyle}"
-                    FontSize="{StaticResource XLFontSize}"/>
+                    FontSize="{StaticResource LargeFontSize}"/>
                 <TextBlock
                     Text="{Binding LastLapHeaderText}" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
                     Text="{Binding Player1_LastLap, Mode=TwoWay}"
                     Style="{StaticResource LapTimeTextStyle}"
-                    FontSize="{StaticResource XLFontSize}"/>
+                    FontSize="{StaticResource LargeFontSize}"/>
                 <TextBlock
                     Text="{Binding DiffHeaderText}" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
                     Text="{Binding Player1_Diff, Mode=TwoWay}"
                     Style="{StaticResource LapTimeTextStyle}"
-                    FontSize="{StaticResource XLFontSize}"/>
+                    FontSize="{StaticResource LargeFontSize}"/>
             </StackPanel>
             <!-- Player 2 -->
             <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Center">
@@ -65,19 +65,19 @@
                 <TextBlock
                     Text="{Binding Player2_BestLap, Mode=TwoWay}"
                     Style="{StaticResource LapTimeTextStyle}"
-                    FontSize="{StaticResource XLFontSize}"/>
+                    FontSize="{StaticResource LargeFontSize}"/>
                 <TextBlock
                     Text="{Binding LastLapHeaderText}" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
                     Text="{Binding Player2_LastLap, Mode=TwoWay}"
                     Style="{StaticResource LapTimeTextStyle}"
-                    FontSize="{StaticResource XLFontSize}"/>
+                    FontSize="{StaticResource LargeFontSize}"/>
                 <TextBlock
                     Text="{Binding DiffHeaderText}" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
                     Text="{Binding Player2_Diff, Mode=TwoWay}"
                     Style="{StaticResource LapTimeTextStyle}"
-                    FontSize="{StaticResource XLFontSize}"/>
+                    FontSize="{StaticResource LargeFontSize}"/>
             </StackPanel>
         </Grid>
     </Grid>

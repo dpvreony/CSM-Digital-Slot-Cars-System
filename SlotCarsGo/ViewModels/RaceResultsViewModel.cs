@@ -10,11 +10,13 @@ using Microsoft.Toolkit.Uwp.UI.Controls;
 using SlotCarsGo.Models;
 using SlotCarsGo.Services;
 using Windows.UI.Xaml.Navigation;
+using SlotCarsGo.Models.Racing;
 
 namespace SlotCarsGo.ViewModels
 {
     public class RaceResultsViewModel : NavigableViewModelBase
     {
+        private RaceSession session;
         private SampleOrder _selected;
 
         public SampleOrder Selected
@@ -48,6 +50,8 @@ namespace SlotCarsGo.ViewModels
 
         public override Task OnNavigatedToAsync(object parameter, NavigationMode mode)
         {
+            this.session = parameter as RaceSession;
+
             return Task.CompletedTask;
         }
 

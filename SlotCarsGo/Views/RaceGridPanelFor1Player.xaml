@@ -26,7 +26,7 @@
                 <TextBlock
                     Text="{Binding Player1_Name, Mode=TwoWay}"                
                     Style="{StaticResource GridPositionTextStyle}"
-                    FontSize="{StaticResource XXLFontSize}"/>
+                    FontSize="{StaticResource XLFontSize}"/>
             </StackPanel>
 
             <!-- Player 1 -->
@@ -36,19 +36,19 @@
                 <TextBlock
                     Text="{Binding Player1_BestLap, Mode=TwoWay}"
                     Style="{StaticResource LapTimeTextStyle}"
-                    FontSize="{StaticResource XXLFontSize}"/>
+                    FontSize="{StaticResource XLFontSize}"/>
                 <TextBlock
                     Text="{Binding LastLapHeaderText}" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
                     Text="{Binding Player1_LastLap, Mode=TwoWay}"
                     Style="{StaticResource LapTimeTextStyle}"
-                    FontSize="{StaticResource XXLFontSize}"/>
+                    FontSize="{StaticResource XLFontSize}"/>
                 <TextBlock
                     Text="{Binding DiffHeaderText}" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
                     Text="{Binding Player1_Diff, Mode=TwoWay}"
                     Style="{StaticResource LapTimeTextStyle}"
-                    FontSize="{StaticResource XXLFontSize}"/>
+                    FontSize="{StaticResource XLFontSize}"/>
             </StackPanel>
         </Grid>
     </Grid>

@@ -16,8 +16,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="1.5*"/>
         </Grid.ColumnDefinitions>
 
         <TextBlock
@@ -38,17 +38,17 @@
                 <RowDefinition Height="4*"/>
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="2*"/>                
-                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <Button Grid.Row="0"
-                x:Name="StartRaceButton" Margin="0,5,0,0"
+                x:Name="StartRaceButton" Margin="0,5,0,5"
                     Height="100" Width="100" Content="{Binding RaceButtonText}" FontSize="28" FontWeight="SemiBold"
                     HorizontalAlignment="Center" VerticalAlignment="Top" Background="{Binding RaceButtonBrush}"
                     Click="RaceButton_Click"/>
             <StackPanel Grid.Row="1" Orientation="Vertical">
                 <TextBlock
                     Text="Running:"
-                    Style="{StaticResource GridItemTextStyle}"
+                    Style="{StaticResource GridItemHeaderTextStyle}"
                     HorizontalAlignment="Center"/>
                 <TextBlock
                     Text="{Binding RaceTimeDisplay}"
@@ -58,15 +58,15 @@
             <StackPanel Grid.Row="2" Orientation="Vertical">
                 <TextBlock
                     Text="Remaining:"
-                    Style="{StaticResource GridItemTextStyle}"
+                    Style="{StaticResource GridItemHeaderTextStyle}"
                     HorizontalAlignment="Center"/>
                 <TextBlock
-                    Text="{Binding StartTime}"
+                    Text="{Binding RemainingDisplay}"
                     Style="{StaticResource GridItemTextStyle}"
                     HorizontalAlignment="Center"/>
             </StackPanel>
                 <Button x:Name="QuitRaceButton" Grid.Row="4"
-                    Height="50" Width="75" Content="Quit" FontSize="20" FontWeight="SemiBold"
+                    Height="35" Width="60" Content="Quit" FontSize="{StaticResource MediumFontSize}" FontWeight="SemiBold"
                     HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"
                     Background="OrangeRed"
                     Click="QuitRaceButton_Click"/>

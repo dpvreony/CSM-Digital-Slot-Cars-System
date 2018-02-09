@@ -27,12 +27,11 @@
     <Style x:Key="GridPositionTextStyle" TargetType="TextBlock" BasedOn="{StaticResource GridItemTextStyle}">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="{StaticResource XXLFontSize}"/>
-        <Setter Property="Margin" Value="0,0,10,0"/>
+        <Setter Property="FontSize" Value="{StaticResource XLFontSize}"/>
     </Style>
 
     <Style x:Key="GridPositionVerticalTextStyle" TargetType="TextBlock" BasedOn="{StaticResource GridPositionTextStyle}">
-        <Setter Property="FontSize" Value="{StaticResource XLFontSize}"/>
+        <Setter Property="FontSize" Value="{StaticResource LargeFontSize}"/>
         <Setter Property="Margin" Value="0,0,5,0"/>
     </Style>
 

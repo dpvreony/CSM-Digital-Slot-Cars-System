@@ -38,13 +38,13 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"                
                 x:Name="RefreshButton"
-                Content="&#xE72C;"
+                Content="&#xE777;"
                 Background="Transparent"
                 Foreground="LimeGreen"
                 Click="RefreshButton_Click">
             </Button>
             <Button
-                x:Name="StartButton"
+                x:Name="StartButton" IsEnabled="{Binding GridConfirmed}"
                 Content="Next"
                 FontWeight="Bold"
                 Background="DarkOrange"
@@ -55,7 +55,6 @@
             Grid.Row="1"
             Grid.ColumnSpan="2"
             Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
-
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
@@ -70,193 +69,229 @@
                     <ColumnDefinition Width="1.5*"/>
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="10*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>                    
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="1.5*"/>                    
                 </Grid.ColumnDefinitions>
 
                 <TextBlock
                     Grid.Column="0" Grid.Row="0"
                     Text="{Binding Player1_GridNumber, Mode=TwoWay}"
+                    Visibility="{Binding Player1Visibility}"                    
                     Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="1"
                     Text="{Binding Player2_GridNumber, Mode=TwoWay}"
+                    Visibility="{Binding Player2Visibility}"
                     Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="2"
                     Text="{Binding Player3_GridNumber, Mode=TwoWay}"
+                    Visibility="{Binding Player3Visibility}"                    
                     Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="3"
                     Text="{Binding Player4_GridNumber, Mode=TwoWay}"
+                    Visibility="{Binding Player4Visibility}"
                     Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="4"
                     Text="{Binding Player5_GridNumber, Mode=TwoWay}"
+                    Visibility="{Binding Player5Visibility}"
                     Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <TextBlock
                     Grid.Column="0" Grid.Row="5"
                     Text="{Binding Player6_GridNumber, Mode=TwoWay}"
+                    Visibility="{Binding Player6Visibility}"
                     Style="{StaticResource GridPositionVerticalTextStyle}"/>
                 <Border BorderThickness="5"
                     Grid.Column="1" Grid.Row="0">
-                    <Image Source="{Binding Player1_Avatar, Mode=TwoWay}"/>
+                    <Image Source="{Binding Player1_Avatar, Mode=TwoWay}"
+                           Visibility="{Binding Player1Visibility}"/>
                 </Border>
                 <Border BorderThickness="5"
                     Grid.Column="1" Grid.Row="1">
-                    <Image Source="{Binding Player2_Avatar, Mode=TwoWay}"/>
+                    <Image Source="{Binding Player2_Avatar, Mode=TwoWay}"
+                           Visibility="{Binding Player2Visibility}"/>
                 </Border>
                 <Border BorderThickness="5"
                     Grid.Column="1" Grid.Row="2">
-                    <Image Source="{Binding Player3_Avatar, Mode=TwoWay}"/>
+                    <Image Source="{Binding Player3_Avatar, Mode=TwoWay}"
+                           Visibility="{Binding Player3Visibility}"/>
                 </Border>
                 <Border BorderThickness="5"
                     Grid.Column="1" Grid.Row="3">
-                    <Image Source="{Binding Player4_Avatar, Mode=TwoWay}"/>
+                    <Image Source="{Binding Player4_Avatar, Mode=TwoWay}"
+                           Visibility="{Binding Player4Visibility}"/>
                 </Border>
                 <Border BorderThickness="5"
                     Grid.Column="1" Grid.Row="4">
-                    <Image Source="{Binding Player5_Avatar, Mode=TwoWay}"/>
+                    <Image Source="{Binding Player5_Avatar, Mode=TwoWay}"
+                           Visibility="{Binding Player5Visibility}"/>
                 </Border>
                 <Border BorderThickness="5"
                     Grid.Column="1" Grid.Row="5">
-                    <Image Source="{Binding Player6_Avatar, Mode=TwoWay}"/>
+                    <Image Source="{Binding Player6_Avatar, Mode=TwoWay}"
+                           Visibility="{Binding Player6Visibility}"/>
                 </Border>
                 <TextBlock
                     Grid.Column="2" Grid.Row="0"
                     Text="{Binding Player1_Name, Mode=TwoWay}"
                     VerticalAlignment="Center"
-                    Style="{StaticResource GridItemTextStyle}"/>
+                    Style="{StaticResource GridItemTextStyle}"
+                    Visibility="{Binding Player1Visibility}"/>
                 <TextBlock
                     Grid.Column="2" Grid.Row="1"
                     Text="{Binding Player2_Name, Mode=TwoWay}"
+                    Visibility="{Binding Player2Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="2" Grid.Row="2"
                     Text="{Binding Player3_Name, Mode=TwoWay}"
+                    Visibility="{Binding Player3Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="2" Grid.Row="3"
                     Text="{Binding Player4_Name, Mode=TwoWay}"
+                    Visibility="{Binding Player4Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="2" Grid.Row="4"
                     Text="{Binding Player5_Name, Mode=TwoWay}"
+                    Visibility="{Binding Player5Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="2" Grid.Row="5"
                     Text="{Binding Player6_Name, Mode=TwoWay}"
+                    Visibility="{Binding Player6Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="3" Grid.Row="0"
                     Text="{Binding Player1_Car, Mode=TwoWay}"
+                    Visibility="{Binding Player1Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="3" Grid.Row="1"
                     Text="{Binding Player2_Car, Mode=TwoWay}"
+                    Visibility="{Binding Player2Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="3" Grid.Row="2"
                     Text="{Binding Player3_Car, Mode=TwoWay}"
+                    Visibility="{Binding Player3Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="3" Grid.Row="3"
                     Text="{Binding Player4_Car, Mode=TwoWay}"
+                    Visibility="{Binding Player4Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="3" Grid.Row="4"
                     Text="{Binding Player5_Car, Mode=TwoWay}"
+                    Visibility="{Binding Player5Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 <TextBlock
                     Grid.Column="3" Grid.Row="5"
                     Text="{Binding Player6_Car, Mode=TwoWay}"
+                    Visibility="{Binding Player6Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
                 
-                <!-- Confirm Setup Question Mark buttons -->
+                <!-- Confirm Player Setup buttons -->
                 <Button
                     x:Name="ConfirmUser1Button"
                     Grid.Column="4" Grid.Row="0"
-                    Content="?"
-                    Foreground="White"
-                    Background="OrangeRed"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding Player1_ConfirmGridIcon}"
+                    Foreground="{Binding Player1_ConfirmGridColour}"
+                    Visibility="{Binding Player1Visibility}"
                     Click="ConfirmUserButton_Click"/>
                 <Button
                     x:Name="ConfirmUser2Button"
                     Grid.Column="4" Grid.Row="1"
-                    Content="?"
-                    Foreground="White"
-                    Background="OrangeRed"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding Player2_ConfirmGridIcon}"
+                    Foreground="{Binding Player2_ConfirmGridColour}"
+                    Visibility="{Binding Player2Visibility}"                    
                     Click="ConfirmUserButton_Click"/>
                 <Button
                     x:Name="ConfirmUser3Button"
                     Grid.Column="4" Grid.Row="2"
-                    Content="?"
-                    Foreground="White"
-                    Background="OrangeRed"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding Player3_ConfirmGridIcon}"
+                    Foreground="{Binding Player3_ConfirmGridColour}"
+                    Visibility="{Binding Player3Visibility}"                    
                     Click="ConfirmUserButton_Click"/>
                 <Button
                     x:Name="ConfirmUser4Button"
                     Grid.Column="4" Grid.Row="3"
-                    Content="?"
-                    Foreground="White"
-                    Background="OrangeRed"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding Player4_ConfirmGridIcon}"
+                    Foreground="{Binding Player4_ConfirmGridColour}"
+                    Visibility="{Binding Player4Visibility}"                    
                     Click="ConfirmUserButton_Click"/>
                 <Button
                     x:Name="ConfirmUser5Button"
                     Grid.Column="4" Grid.Row="4"
-                    Content="?"
-                    Foreground="White"
-                    Background="OrangeRed"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding Player5_ConfirmGridIcon}"
+                    Foreground="{Binding Player5_ConfirmGridColour}"
+                    Visibility="{Binding Player5Visibility}"                    
                     Click="ConfirmUserButton_Click"/>
                 <Button
                     x:Name="ConfirmUser6Button"
                     Grid.Column="4" Grid.Row="5"
-                    Content="?"
-                    Foreground="White"
-                    Background="OrangeRed"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding Player6_ConfirmGridIcon}"
+                    Foreground="{Binding Player6_ConfirmGridColour}"
+                    Visibility="{Binding Player6Visibility}"                    
                     Click="ConfirmUserButton_Click"/>
-            <!-- Remove player buttons -->
+                <!-- Remove player buttons -->
                 <Button
                     x:Name="RemoveUser1Button"
                     Grid.Column="5" Grid.Row="0"
-                    Content="X"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding RemovePlayerIcon}"
                     Foreground="OrangeRed"
-                    Background="Transparent"
+                    Visibility="{Binding Player1Visibility}"
                     Click="RemoveUserButton_Click"/>
                 <Button
                     x:Name="RemoveUser2Button"
                     Grid.Column="5" Grid.Row="1"
-                    Content="X"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding RemovePlayerIcon}"
                     Foreground="OrangeRed"
-                    Background="Transparent"
+                    Visibility="{Binding Player2Visibility}"                    
                     Click="RemoveUserButton_Click"/>
                 <Button
                     x:Name="RemoveUser3Button"
                     Grid.Column="5" Grid.Row="2"
-                    Content="X"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding RemovePlayerIcon}"
                     Foreground="OrangeRed"
-                    Background="Transparent"
+                    Visibility="{Binding Player3Visibility}"                    
                     Click="RemoveUserButton_Click"/>
                 <Button
                     x:Name="RemoveUser4Button"
                     Grid.Column="5" Grid.Row="3"
-                    Content="X"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding RemovePlayerIcon}"
                     Foreground="OrangeRed"
-                    Background="Transparent"
+                    Visibility="{Binding Player4Visibility}"                    
                     Click="RemoveUserButton_Click"/>
                 <Button
                     x:Name="RemoveUser5Button"
                     Grid.Column="5" Grid.Row="4"
-                    Content="X"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding RemovePlayerIcon}"
                     Foreground="OrangeRed"
-                    Background="Transparent"
+                    Visibility="{Binding Player5Visibility}"                    
                     Click="RemoveUserButton_Click"/>
                 <Button
                     x:Name="RemoveUser6Button"
-                    Grid.Column="4" Grid.Row="5"
-                    Content="X"
+                    Grid.Column="5" Grid.Row="5"
+                    Style="{StaticResource GridConfirmationIconButton}"
+                    Content="{Binding RemovePlayerIcon}"
                     Foreground="OrangeRed"
-                    Background="Transparent"
+                    Visibility="{Binding Player6Visibility}"                    
                     Click="RemoveUserButton_Click"/>
             </Grid>
         </Grid>                

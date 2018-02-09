@@ -80,6 +80,8 @@ namespace SlotCarsGo.Views
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            this.MasterMenuItem.LapsNotDuration = (bool)SelectLaps.IsChecked;
+            this.MasterMenuItem.RaceLimitValue = (int)RaceLimitSlider.Value;
             SimpleIoc.Default.GetInstance<RaceTypeSelectViewModel>().ProceedToDriverSetup(this.MasterMenuItem);
         }
     }

@@ -167,14 +167,13 @@ namespace SlotCarsGo.ViewModels
             // More on Segoe UI Symbol icons: https://docs.microsoft.com/windows/uwp/style/segoe-ui-symbol-font
             // Or to use an IconElement instead of a Symbol see https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/projectTypes/navigationpane.md
             // Edit String/en-US/Resources.resw: Add a menu item title for each page
-            _primaryItems.Add(new ShellNavigationItem("Shell_Main".GetLocalized(), Symbol.Document, typeof(MainViewModel).FullName));
-            _primaryItems.Add(new ShellNavigationItem("Shell_RaceTypeSelect".GetLocalized(), Symbol.Document, typeof(RaceTypeSelectViewModel).FullName));
-            _primaryItems.Add(new ShellNavigationItem("Shell_RaceDriverSetup".GetLocalized(), Symbol.Document, typeof(GridSetupViewModel).FullName));
-            _primaryItems.Add(new ShellNavigationItem("Shell_RaceHUD".GetLocalized(), Symbol.Document, typeof(RaceHUDViewModel).FullName));
-            _primaryItems.Add(new ShellNavigationItem("Shell_RaceResults".GetLocalized(), Symbol.Document, typeof(RaceResultsViewModel).FullName));
-            _primaryItems.Add(new ShellNavigationItem("Shell_Garage".GetLocalized(), Symbol.Document, typeof(GarageViewModel).FullName));
+            _primaryItems.Add(new ShellNavigationItem("Shell_Home".GetLocalized(), Symbol.Home, typeof(MainViewModel).FullName));
+            _primaryItems.Add(new ShellNavigationItem("Shell_Select Race".GetLocalized(), Symbol.Flag, typeof(RaceTypeSelectViewModel).FullName));
+            _primaryItems.Add(new ShellNavigationItem("Shell_Grid".GetLocalized(), Symbol.ViewAll, typeof(GridConfirmationViewModel).FullName));
+            _primaryItems.Add(new ShellNavigationItem("Shell_Race".GetLocalized(), Symbol.Play, typeof(RaceHUDViewModel).FullName));
+            _primaryItems.Add(new ShellNavigationItem("Shell_Results".GetLocalized(), Symbol.ZeroBars, typeof(RaceResultsViewModel).FullName));
+            _primaryItems.Add(new ShellNavigationItem("Shell_Garage".GetLocalized(), Symbol.Street, typeof(GarageViewModel).FullName));
             _secondaryItems.Add(new ShellNavigationItem("Shell_Settings".GetLocalized(), Symbol.Setting, typeof(SettingsViewModel).FullName));
-            _primaryItems.Add(new ShellNavigationItem("Shell_GridConfirmation".GetLocalized(), Symbol.Document, typeof(GridConfirmationViewModel).FullName));
         }
 
         private void ItemSelected(ItemClickEventArgs args)
