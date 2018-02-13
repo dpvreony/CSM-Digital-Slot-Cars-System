@@ -26,12 +26,30 @@
             Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
             <!--The SystemControlPageBackgroundChromeLowBrush background represents where you should place your content. 
                 Place your content here.-->
-            <Button x:Name="RaceTypeSelectButton"
-                    Height="50" Width="200" Content="Select Race Type"
-                    FontSize="20" FontWeight="SemiBold"
-                    HorizontalAlignment="Center" Background="Orange" 
-                    Margin="0,0,0,50"                    
-                    Click="RaceTypeSelectButton_Click"/>            
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="RaceTypeSelectButton" Grid.Column="0"
+                    Height="200" Width="200"
+                    HorizontalAlignment="Center" Background="DarkOrange"
+                    Click="RaceTypeSelectButton_Click">
+                    <StackPanel >
+                        <TextBlock Text="&#xEC4A;" FontFamily="Segoe MDL2 Assets" FontSize="96" HorizontalAlignment="Center"/>
+                        <TextBlock Text="RACE" FontSize="{StaticResource XLFontSize}"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="GarageButton" Grid.Column="1"
+                    Height="200" Width="200"
+                    HorizontalAlignment="Center" Background="DeepSkyBlue"
+                    Click="RaceTypeSelectButton_Click">
+                    <StackPanel >
+                        <TextBlock Text="&#xF163;" FontFamily="Segoe MDL2 Assets" FontSize="96" HorizontalAlignment="Center"/>
+                        <TextBlock Text="GARAGE" FontSize="{StaticResource XLFontSize}"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
         </Grid>
         <!--  Adaptive triggers  -->
         <VisualStateManager.VisualStateGroups>

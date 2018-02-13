@@ -14,7 +14,8 @@
                 <ResourceDictionary Source="/Styles/_Thickness.xaml"/>
 
                 <ResourceDictionary Source="/Styles/TextBlock.xaml"/>
-                <ResourceDictionary Source="Styles/MasterDetailView800x480.xaml"/>
+                <ResourceDictionary Source="/Styles/Button.xaml"/>                
+                <ResourceDictionary Source="/Styles/MasterDetailView800x480.xaml"/>
                 <ResourceDictionary Source="/Styles/Page.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

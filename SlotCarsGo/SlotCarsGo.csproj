@@ -29,6 +29,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -121,25 +122,27 @@
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\Json.cs" />
     <Compile Include="Helpers\SettingsStorageExtensions.cs" />
+    <Compile Include="Models\Comms\DrivePacket.cs" />
     <Compile Include="Models\Comms\HandsetTrackStatusPacket.cs" />
     <Compile Include="Models\Comms\IncomingPacket.cs" />
     <Compile Include="Models\Comms\OutgoingPacket.cs" />
     <Compile Include="Models\Comms\Powerbase.cs" />
     <Compile Include="Models\Manager\AppManager.cs" />
     <Compile Include="Models\Manager\Track.cs" />
-    <Compile Include="Models\Manager\User.cs" />
+    <Compile Include="Models\Manager\Driver.cs" />
     <Compile Include="Models\Racing\Car.cs" />
     <Compile Include="Models\Racing\QualifyingRace.cs" />
     <Compile Include="Models\Racing\GrandPrixRace.cs" />
+    <Compile Include="Models\Racing\DriverResult.cs" />
     <Compile Include="Models\Racing\TimeTrialRace.cs" />
     <Compile Include="Models\Racing\FreePlayRace.cs" />
-    <Compile Include="Models\Racing\Player.cs" />
     <Compile Include="Models\Racing\RaceSession.cs" />
     <Compile Include="Models\Racing\RaceTypeBase.cs" />
     <Compile Include="Models\SampleOrder.cs" />
     <Compile Include="Services\ActivationService.cs" />
     <Compile Include="Activation\DefaultLaunchActivationHandler.cs" />
     <Compile Include="Services\FirstRunDisplayService.cs" />
+    <Compile Include="Services\CarsInGarageDataService.cs" />
     <Compile Include="Services\LoggedInUsersDataService.cs" />
     <Compile Include="Services\NavigationServiceEx.cs" />
     <Compile Include="Services\SelectRaceTypeService.cs" />
@@ -153,7 +156,6 @@
     <Compile Include="ViewModels\INavigable.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\NavigableViewModelBase.cs" />
-    <Compile Include="ViewModels\GridSetupViewModel.cs" />
     <Compile Include="ViewModels\RaceHUDViewModel.cs" />
     <Compile Include="ViewModels\RaceResultsViewModel.cs" />
     <Compile Include="ViewModels\RaceTypeSelectViewModel.cs" />
@@ -176,11 +178,23 @@
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RaceDriverSetupDetailControl.xaml.cs">
-      <DependentUpon>RaceDriverSetupDetailControl.xaml</DependentUpon>
+    <Compile Include="Views\RaceGridPanelFor1Player.xaml.cs">
+      <DependentUpon>RaceGridPanelFor1Player.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\GridSetupPage.xaml.cs">
-      <DependentUpon>GridSetupPage.xaml</DependentUpon>
+    <Compile Include="Views\RaceGridPanelFor2Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor2Players.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor3Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor3Players.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor4Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor4Players.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor5Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor5Players.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RaceGridPanelFor6Players.xaml.cs">
+      <DependentUpon>RaceGridPanelFor6Players.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RaceHUDPage.xaml.cs">
       <DependentUpon>RaceHUDPage.xaml</DependentUpon>
@@ -217,6 +231,11 @@
     <Page Include="Styles\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Button.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Styles\_Colors.xaml">
       <SubType>Designer</SubType>
@@ -262,13 +281,29 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\RaceDriverSetupDetailControl.xaml">
+    <Page Include="Views\RaceGridPanelFor1Player.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor2Players.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor3Players.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor4Players.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RaceGridPanelFor5Players.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\GridSetupPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Views\RaceGridPanelFor6Players.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RaceHUDPage.xaml">
       <Generator>MSBuild:Compile</Generator>

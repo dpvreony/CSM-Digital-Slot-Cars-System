@@ -3,6 +3,7 @@
 using SlotCarsGo.ViewModels;
 
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace SlotCarsGo.Views
 {
@@ -16,6 +17,12 @@ namespace SlotCarsGo.Views
         public GridConfirmationPage()
         {
             InitializeComponent();
+            Loaded += GridConfirmationPage_Loaded;
+        }
+
+        private async void GridConfirmationPage_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await ViewModel.LoadDataAsync();
         }
 
         private void StartButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -28,6 +35,39 @@ namespace SlotCarsGo.Views
             ViewModel.RefreshLoggedInUsers();
         }
 
+        private void ConfirmUserButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            switch (button.Name)
+            {
+                case "ConfirmUser1Button":
+                    ViewModel.ConfirmUserOnGrid(0);
+                    break;
+                case "ConfirmUser2Button":
+                    ViewModel.ConfirmUserOnGrid(1);
+                    break;
+                case "ConfirmUser3Button":
+                    ViewModel.ConfirmUserOnGrid(2);
+                    break;
+                case "ConfirmUser4Button":
+                    ViewModel.ConfirmUserOnGrid(3);
+                    break;
+                case "ConfirmUser5Button":
+                    ViewModel.ConfirmUserOnGrid(4);
+                    break;
+                case "ConfirmUser6Button":
+                    ViewModel.ConfirmUserOnGrid(5);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Remove button event handler to remove a player from the grid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RemoveUserButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             Button button = sender as Button;
@@ -54,7 +94,6 @@ namespace SlotCarsGo.Views
                 default:
                     break;
             }
-
         }
     }
 }

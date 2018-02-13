@@ -5,6 +5,8 @@ using SlotCarsGo.ViewModels;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.ViewManagement;
 using Windows.Foundation;
+using GalaSoft.MvvmLight.Ioc;
+using SlotCarsGo.Models.Comms;
 
 namespace SlotCarsGo.Views
 {

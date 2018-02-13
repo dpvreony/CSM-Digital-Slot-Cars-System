@@ -60,5 +60,17 @@ namespace PowerbaseFunctionsTest
 
             Assert.AreEqual(validCrc8Rx, crc8Rx);
         }
+
+        [TestMethod]
+        public void FailingLastPacketTest()
+        {
+
+            Enums.PacketType packetType = Enums.PacketType.Outgoing;
+            byte validCrc8Rx = 152;
+
+            byte crc8Rx = powerbase.CalculateCrcChecksum(this.outgoingPacketNotRecognised.Data, packetType);
+
+            Assert.AreEqual(validCrc8Rx, crc8Rx);
+        }
     }
 }

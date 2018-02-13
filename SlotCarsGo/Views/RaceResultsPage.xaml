@@ -4,10 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Interactions="using:Microsoft.Xaml.Interactions.Core"    
     Style="{StaticResource PageStyle}"
     DataContext="{Binding RaceResultsViewModel, Source={StaticResource Locator}}"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    xmlns:model="using:SlotCarsGo.Models"
+    xmlns:model="using:SlotCarsGo.Models.Racing"
     xmlns:views="using:SlotCarsGo.Views"
     mc:Ignorable="d">
     <Page.Transitions>
@@ -16,17 +17,36 @@
         </TransitionCollection>
     </Page.Transitions>
     <Page.Resources>
-        <DataTemplate x:Key="ItemTemplate" x:DataType="model:SampleOrder">
-            <Grid Height="64" Padding="0,8">
+        <DataTemplate x:Key="ItemTemplate" x:DataType="model:DriverResult">
+            <Grid Height="40">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="4*"/>                    
                 </Grid.ColumnDefinitions>
-                <FontIcon Grid.Column="0" Tag="{x:Bind HashIdentIcon}" FontSize="40" Glyph="{x:Bind SymbolAsChar}" VerticalAlignment="Center" />
-                <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind Company}" Tag="{x:Bind HashIdentTitle}" Style="{ThemeResource ListTitleStyle}"/>
-                    <TextBlock Text="{x:Bind Status}" Style="{StaticResource ListSubTitleStyle}"/>
-                </StackPanel>
+                <TextBlock  Grid.Column="0" Padding="0,0,0,5" Text="{x:Bind SymbolAsChar}" Foreground="Transparent">
+<!--
+                    <Interactivity:Interaction.Behaviors>
+                        <Interactions:DataTriggerBehavior Binding="{x:Bind Position}" Value="1">
+                            <Interactions:ChangePropertyAction PropertyName="Foreground" Value="Gold" />
+                        </Interactions:DataTriggerBehavior>
+                        <Interactions:DataTriggerBehavior Binding="{x:Bind Position}" Value="2">
+                            <Interactions:ChangePropertyAction PropertyName="Foreground" Value="Silver" />
+                        </Interactions:DataTriggerBehavior>
+                        <Interactions:DataTriggerBehavior Binding="{x:Bind Position}" Value="3">
+                            <Interactions:ChangePropertyAction PropertyName="Foreground" Value="DarkGoldenrod" />
+                        </Interactions:DataTriggerBehavior>                        
+                    </Interactivity:Interaction.Behaviors>
+-->                    
+                </TextBlock>
+                <TextBlock Grid.Column="1" Padding="0,0,0,5" Text="{x:Bind Position}" Style="{StaticResource GridPositionTextStyle}" HorizontalAlignment="Left"/>
+                <Border Grid.Column="2" BorderThickness="2">
+                    <Image Source="{Binding Driver.AvatarSource}"/>
+                </Border>
+                <TextBlock Grid.Column="3" Padding="0,0,0,5" Text="{x:Bind Driver.ControllerId}" Style="{StaticResource GridPositionTextStyle}" HorizontalAlignment="Left"/>
+                <TextBlock Grid.Column="4" Padding="0,0,0,5" Text="{x:Bind Driver.Nickname}" Tag="{x:Bind HashIdentTitle}" Style="{StaticResource GridPositionVerticalTextStyle}"/>
             </Grid>
         </DataTemplate>
 
@@ -45,17 +65,32 @@
             <RowDefinition x:Name="TitleRow" Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="1*"/>            
+        </Grid.ColumnDefinitions>
 
         <TextBlock
             x:Uid="RaceResults_Title"
+            Grid.Row="0" Grid.Column="0"
             x:Name="TitlePage"
             Margin="12,0,12,7"
             Style="{StaticResource PageTitleStyle}" />
 
+        <Button
+            x:Name="HomeButton"
+            Grid.Row="0" Grid.Column="1"
+            HorizontalAlignment="Right"
+            Margin="0,0,10,0"
+            Content="&#xE80F;"
+            Style="{StaticResource IconButton}"
+            Click="HomeButton_Click"/>
+
+
         <controls:MasterDetailsView
-            Grid.Row="1"
+            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
             x:Name="MasterDetailsViewControl"
-            ItemsSource="{x:Bind ViewModel.SampleItems, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.Results, Mode=OneWay}"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
             ItemTemplate="{StaticResource ItemTemplate}"
             DetailsTemplate="{StaticResource DetailsTemplate}"

@@ -5,13 +5,18 @@ using GalaSoft.MvvmLight.Views;
 using Windows.UI.Xaml.Navigation;
 using GalaSoft.MvvmLight.Ioc;
 using SlotCarsGo.Services;
+using SlotCarsGo.Models.Comms;
 
 namespace SlotCarsGo.ViewModels
 {
     public class MainViewModel : NavigableViewModelBase
     {
+
+        private bool isPowerbaseConnected;
+
         public MainViewModel()
         {
+//            this.isPowerbaseConnected = SimpleIoc.Default.GetInstance<Powerbase>().IsPowerbaseConnected;
         }
 
         public override void OnNavigatedFrom()

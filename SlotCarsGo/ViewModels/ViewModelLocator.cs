@@ -20,7 +20,6 @@ namespace SlotCarsGo.ViewModels
             SimpleIoc.Default.Register<ShellViewModel>();
             Register<MainViewModel, MainPage>();
             Register<RaceTypeSelectViewModel, RaceTypeSelectPage>();
-            Register<GridSetupViewModel, GridSetupPage>();
             Register<RaceHUDViewModel, RaceHUDPage>();
             Register<RaceResultsViewModel, RaceResultsPage>();
             Register<GarageViewModel, GaragePage>();
@@ -39,8 +38,6 @@ namespace SlotCarsGo.ViewModels
         public RaceResultsViewModel RaceResultsViewModel => ServiceLocator.Current.GetInstance<RaceResultsViewModel>();
 
         public RaceHUDViewModel RaceHUDViewModel => ServiceLocator.Current.GetInstance<RaceHUDViewModel>();
-
-        public GridSetupViewModel RaceDriverSetupViewModel => ServiceLocator.Current.GetInstance<GridSetupViewModel>();
 
         public RaceTypeSelectViewModel RaceTypeSelectViewModel => ServiceLocator.Current.GetInstance<RaceTypeSelectViewModel>();
 

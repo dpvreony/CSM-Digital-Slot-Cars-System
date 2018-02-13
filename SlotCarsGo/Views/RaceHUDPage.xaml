@@ -16,254 +16,61 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="1.5*"/>
         </Grid.ColumnDefinitions>
 
         <TextBlock
             x:Name="TitlePage"
             Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
             x:Uid="GridConfirmation_Title"
-            Text="{Binding Title}"
+            Text="{Binding RaceTypeTitle}"
             Style="{StaticResource PageTitleStyle}" Padding="50, 0,0,0"/>
         <Grid 
             Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1"
             Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="4*"/>                    
-                </Grid.ColumnDefinitions>
-
-                <TextBlock
-                    Grid.Column="0" Grid.Row="0"
-                    Text="{Binding Player1_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource GridPositionTextStyle}"/>
-                <TextBlock
-                    Grid.Column="0" Grid.Row="1"
-                    Text="{Binding Player2_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource GridPositionTextStyle}"/>
-                <TextBlock
-                    Grid.Column="0" Grid.Row="2"
-                    Text="{Binding Player3_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource GridPositionTextStyle}"/>
-                <TextBlock
-                    Grid.Column="0" Grid.Row="3"
-                    Text="{Binding Player4_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource GridPositionTextStyle}"/>
-                <TextBlock
-                    Grid.Column="0" Grid.Row="4"
-                    Text="{Binding Player5_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource GridPositionTextStyle}"/>
-                <TextBlock
-                    Grid.Column="0" Grid.Row="5"
-                    Text="{Binding Player6_GridNumber, Mode=TwoWay}"
-                    Style="{StaticResource GridPositionTextStyle}"/>
-                <Border BorderThickness="5"
-                    Grid.Column="1" Grid.Row="0">
-                    <Image Source="{Binding Player1_Avatar, Mode=TwoWay}"/>
-                </Border>
-                <Border BorderThickness="5"
-                    Grid.Column="1" Grid.Row="1">
-                    <Image Source="{Binding Player2_Avatar, Mode=TwoWay}"/>
-                </Border>
-                <Border BorderThickness="5"
-                    Grid.Column="1" Grid.Row="2">
-                    <Image Source="{Binding Player3_Avatar, Mode=TwoWay}"/>
-                </Border>
-                <Border BorderThickness="5"
-                    Grid.Column="1" Grid.Row="3">
-                    <Image Source="{Binding Player4_Avatar, Mode=TwoWay}"/>
-                </Border>
-                <Border BorderThickness="5"
-                    Grid.Column="1" Grid.Row="4">
-                    <Image Source="{Binding Player5_Avatar, Mode=TwoWay}"/>
-                </Border>
-                <Border BorderThickness="5"
-                    Grid.Column="1" Grid.Row="5">
-                    <Image Source="{Binding Player6_Avatar, Mode=TwoWay}"/>
-                </Border>                
-                <!-- Player 1 -->
-                <StackPanel Grid.Column="2" Grid.Row="0" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding BestLapHeaderText1}"/>
-                    <TextBlock
-                        Text="{Binding Player1_BestLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="3" Grid.Row="0" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding LastLapHeaderText1}"/>
-                    <TextBlock
-                        Text="{Binding Player1_LastLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="4" Grid.Row="0" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding DiffHeaderText1}"/>
-                    <TextBlock
-                        Text="{Binding Player1_Diff, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <!-- Player 2 -->                
-                <StackPanel Grid.Column="2" Grid.Row="1" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding BestLapHeaderText2}"/>
-                    <TextBlock
-                        Text="{Binding Player2_BestLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="3" Grid.Row="1" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding LastLapHeaderText2}"/>
-                    <TextBlock
-                        Text="{Binding Player2_LastLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="4" Grid.Row="1" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding DiffHeaderText2}"/>
-                    <TextBlock
-                        Text="{Binding Player2_Diff, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <!-- Player 3 -->
-                <StackPanel Grid.Column="2" Grid.Row="2" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding BestLapHeaderText3}"/>
-                    <TextBlock
-                        Text="{Binding Player3_BestLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="3" Grid.Row="2" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding LastLapHeaderText3}"/>
-                    <TextBlock
-                        Text="{Binding Player3_LastLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="4" Grid.Row="2" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding DiffHeaderText3}"/>
-                    <TextBlock
-                        Text="{Binding Player3_Diff, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <!-- Player 4 -->
-                <StackPanel Grid.Column="2" Grid.Row="3" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding BestLapHeaderText4}"/>
-                    <TextBlock
-                        Text="{Binding Player4_BestLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="3" Grid.Row="3" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding LastLapHeaderText4}"/>
-                    <TextBlock
-                        Text="{Binding Player4_LastLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="4" Grid.Row="3" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding DiffHeaderText4}"/>
-                    <TextBlock
-                        Text="{Binding Player4_Diff, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <!-- Player 5 -->
-                <StackPanel Grid.Column="2" Grid.Row="4" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding BestLapHeaderText5}"/>
-                    <TextBlock
-                        Text="{Binding Player5_BestLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="3" Grid.Row="4" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding LastLapHeaderText5}"/>
-                    <TextBlock
-                        Text="{Binding Player5_LastLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="4" Grid.Row="4" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding DiffHeaderText5}"/>
-                    <TextBlock
-                        Text="{Binding Player5_Diff, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <!-- Player 6 -->
-                <StackPanel Grid.Column="2" Grid.Row="5" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding BestLapHeaderText6}"/>
-                    <TextBlock
-                        Text="{Binding Player6_BestLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="3" Grid.Row="5" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding LastLapHeaderText6}"/>
-                    <TextBlock
-                        Text="{Binding Player6_LastLap, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="4" Grid.Row="5" VerticalAlignment="Center">
-                    <TextBlock
-                        Text="{Binding DiffHeaderText6}"/>
-                    <TextBlock
-                        Text="{Binding Player6_Diff, Mode=TwoWay}"
-                        Style="{StaticResource LapTimeTextStyle}"/>
-                </StackPanel>
-            </Grid>
+            <Frame x:Name="RaceGridPanelFrame" Content="{Binding RaceGridPage}">
+            </Frame>
         </Grid>
         <!-- Race Panel -->
-        <StackPanel Grid.Row="1" Grid.Column="1"
-            Orientation="Vertical" HorizontalAlignment="Center">
-            <TextBlock
-                Text="{Binding RaceTypeTitle}"
-                Style="{StaticResource PageTitleStyle}"
-                Margin="0,0,0,50"/>
-            <Button x:Name="StartRaceButton"
-                    Height="100" Width="100" Content="{Binding StartButtonText}" FontSize="28" FontWeight="SemiBold"
-                    HorizontalAlignment="Center" Background="Orange" 
-                    Margin="0,0,0,50"                    
-                    Click="StartRaceButton_Click"/>
-            <TextBlock
-                Text="Running:"
-                Style="{StaticResource GridItemTextStyle}"
-                HorizontalAlignment="Center"/>
-            <TextBlock
-                Text="{Binding RaceTimeDisplay}"
-                Style="{StaticResource GridItemTextStyle}"
-                HorizontalAlignment="Center"/>
-            <TextBlock
-                Text="Remaining:"
-                Style="{StaticResource GridItemTextStyle}"
-                HorizontalAlignment="Center"/>
-            <TextBlock
-                Text="{Binding StartTime}"
-                Style="{StaticResource GridItemTextStyle}"
-                HorizontalAlignment="Center"/>
-            <Button x:Name="StopRaceButton"
-                    Height="50" Width="100" Content="Cancel" FontSize="20" FontWeight="SemiBold"
-                    HorizontalAlignment="Center" VerticalAlignment="Bottom"
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*"/>                
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0"
+                x:Name="StartRaceButton" Margin="0,5,0,5"
+                    Height="100" Width="100" Content="{Binding RaceButtonText}" FontSize="28" FontWeight="SemiBold"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Background="{Binding RaceButtonBrush}"
+                    Click="RaceButton_Click"/>
+            <StackPanel Grid.Row="1" Orientation="Vertical">
+                <TextBlock
+                    Text="Running:"
+                    Style="{StaticResource GridItemHeaderTextStyle}"
+                    HorizontalAlignment="Center"/>
+                <TextBlock
+                    Text="{Binding RaceTimeDisplay}"
+                    Style="{StaticResource GridItemTextStyle}"
+                    HorizontalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Vertical">
+                <TextBlock
+                    Text="Remaining:"
+                    Style="{StaticResource GridItemHeaderTextStyle}"
+                    HorizontalAlignment="Center"/>
+                <TextBlock
+                    Text="{Binding RemainingDisplay}"
+                    Style="{StaticResource GridItemTextStyle}"
+                    HorizontalAlignment="Center"/>
+            </StackPanel>
+                <Button x:Name="QuitRaceButton" Grid.Row="4"
+                    Height="35" Width="60" Content="Quit" FontSize="{StaticResource MediumFontSize}" FontWeight="SemiBold"
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"
                     Background="OrangeRed"
-                    Margin="0,100,0,0"                    
-                    Click="StopRaceButton_Click"/>
-        </StackPanel>
+                    Click="QuitRaceButton_Click"/>
+        </Grid>
 
         <!--  Adaptive triggers  -->
         <VisualStateManager.VisualStateGroups>

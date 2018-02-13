@@ -1,33 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
+using static SlotCarsGo.Helpers.Enums;
 
 namespace SlotCarsGo.Models.Racing
 {
     public abstract class RaceTypeBase
     {
-        internal string Name { get; set; }
-        internal string Rules { get; set; }
-        internal int RaceLimitValue { get; set; }
-        internal TimeSpan RaceLength { get; set; }
-        internal bool LapsNotDuration { get; set; }
-        internal bool FuelEnabled { get; set; }
-        internal Int32 CrashPenalty { get; set; }
-        public Symbol Symbol { get; set; }
+        protected RaceTypesEnum raceTypeEnum;
+        protected string name;
+        protected string rules;
+        protected int raceLimitValue;
+        protected TimeSpan raceLength;
+        protected bool lapsNotDuration;
+        protected bool fuelEnabled;
+        protected Int32 crashPenalty;
+        protected Symbol symbol;
 
         /// <summary>
         /// Base constructor for race type base class.
         /// </summary>
         public RaceTypeBase(int raceLimitValue, bool lapsNotDuration, bool fuelEnabled)
         {
-            this.RaceLimitValue = raceLimitValue;
-            this.RaceLength = new TimeSpan(0, raceLimitValue, 0);
-            this.LapsNotDuration = lapsNotDuration;
-            this.FuelEnabled = fuelEnabled;
+            this.raceLimitValue = raceLimitValue;
+            this.raceLength = new TimeSpan(0, raceLimitValue, 0);
+            this.lapsNotDuration = lapsNotDuration;
+            this.fuelEnabled = fuelEnabled;
         }
+
+        public RaceTypesEnum RaceTypeEnum { get => raceTypeEnum; }
+        public string Name { get => name; }
+        public string Rules { get => rules; }
+        public int RaceLimitValue { get => raceLimitValue; set => raceLimitValue = value; }
+        public TimeSpan RaceLength { get => raceLength; set => raceLength = value; }
+        public bool LapsNotDuration { get => lapsNotDuration; set => lapsNotDuration = value; }
+        public bool FuelEnabled { get => fuelEnabled; }
+        public int CrashPenalty { get => crashPenalty; }
+        public Symbol Symbol { get => symbol; }
 
         public char SymbolAsChar
         {
@@ -46,7 +54,7 @@ namespace SlotCarsGo.Models.Racing
 
         public override string ToString()
         {
-            return $"{Name} Race";
+            return $"{this.Name} Race";
         }
     }
 }

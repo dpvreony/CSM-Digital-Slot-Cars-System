@@ -6,52 +6,66 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400">
-    <ScrollViewer Name="ForegroundElement" VerticalScrollMode="Disabled" HorizontalAlignment="Stretch" Padding="12,0">
-        <StackPanel HorizontalAlignment="Stretch">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,8,0,0">
-                <FontIcon
-                    FontSize="40"
-                    Glyph="{x:Bind MasterMenuItem.SymbolAsChar, Mode=OneWay}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"/>
+>
+    <ScrollViewer Name="ForegroundElement"
+                  VerticalScrollMode="Disabled" HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="12,0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*"/>                
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,8,0,0">
+                    <FontIcon
+                        FontSize="40"
+                        Glyph="{x:Bind MasterMenuItem.SymbolAsChar, Mode=OneWay}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"/>
+                    <TextBlock
+                        Margin="12,0,0,0"
+                        Text="{x:Bind MasterMenuItem.Name, Mode=OneWay}"
+                        Style="{StaticResource SubheaderTextBlockStyle}" />
+                </StackPanel>
                 <TextBlock
-                    Margin="12,0,0,0"
-                    Text="{x:Bind MasterMenuItem.Name, Mode=OneWay}"
-                    Style="{StaticResource SubheaderTextBlockStyle}" />
-            </StackPanel>
-            <StackPanel Name="block" Padding="0,15,0,5">
-                <TextBlock
-                    Height="70"
                     Text="{x:Bind MasterMenuItem.Rules, Mode=OneWay}"
-                    Style="{StaticResource BodyTextBlockStyle}" />
-                <StackPanel Orientation="Horizontal">
+                    Style="{StaticResource BodyTextBlockStyle}"
+                    Margin="0,10,0,0"/>
+            </StackPanel>
+            <Grid x:Name="SliderGrid"  Grid.Row="1" Padding="0,15,0,5" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>                    
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock
                         x:Name="RaceLimitValue"
                         Text="15"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Width="70"
+                        MinWidth="70"
                         Padding="25,0,0,0"/>
-                    <RadioButton x:Name="SelectLaps" Content="Laps" GroupName="RaceLimitGroup" Checked="SelectLaps_Checked" IsChecked="True"/>
-                    <RadioButton x:Name="SelectTime" Content="Minutes" GroupName="RaceLimitGroup" Checked="SelectTime_Checked"/>
+                    <RadioButton x:Name="SelectLaps" Content="Laps" GroupName="RaceLimitGroup" IsChecked="True"/>
+                    <RadioButton x:Name="SelectTime" Content="Minutes" GroupName="RaceLimitGroup"/>
                 </StackPanel>
                 <Slider
                     x:Name="RaceLimitSlider"
+                    Grid.Row="1"
                     Minimum="1"
                     Maximum="60"
                     Value="15"
+                    VerticalAlignment="Center" Margin="0,0,20,0"
                     ValueChanged="RaceLimitSlider_ValueChanged"
                     IsThumbToolTipEnabled="False"/>
-            </StackPanel>
-            <Grid Margin="0,10,0,0">
+            </Grid>
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,20" HorizontalAlignment="Stretch">
                     <TextBlock
                         Text="Name:"
                         VerticalAlignment="Center"
@@ -64,17 +78,17 @@
                         IsSpellCheckEnabled="False"
                         InputScope="Text"
                         Height="30"
-                        Width="190"/>
+                        MinWidth="200"/>
                 </StackPanel>
                 <Button
                     Grid.Column="1"
-                    Content="Create Race"
+                    Content="Create"
                     Click="Button_Click"
                     HorizontalAlignment="Right"
-                    Padding="5,8,5,10"
-                    FontSize="20"
-                    Background="Orange"/>
+                    Margin="0,0,20,20" Padding="5,8,5,10"
+                    FontSize="20" FontWeight="SemiBold"
+                    Background="DarkOrange"/>
             </Grid>
-        </StackPanel>
+        </Grid>
     </ScrollViewer>
 </UserControl>
