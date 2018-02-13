@@ -4,18 +4,19 @@ using SlotCarsGo.Models;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using SlotCarsGo.Models.Racing;
 
 namespace SlotCarsGo.Views
 {
     public sealed partial class RaceResultsDetailControl : UserControl
     {
-        public SampleOrder MasterMenuItem
+        public DriverResult MasterMenuItem
         {
-            get { return GetValue(MasterMenuItemProperty) as SampleOrder; }
+            get { return GetValue(MasterMenuItemProperty) as DriverResult; }
             set { SetValue(MasterMenuItemProperty, value); }
         }
 
-        public static readonly DependencyProperty MasterMenuItemProperty = DependencyProperty.Register("MasterMenuItem", typeof(SampleOrder), typeof(RaceResultsDetailControl), new PropertyMetadata(null, OnMasterMenuItemPropertyChanged));
+        public static readonly DependencyProperty MasterMenuItemProperty = DependencyProperty.Register("MasterMenuItem", typeof(DriverResult), typeof(RaceResultsDetailControl), new PropertyMetadata(null, OnMasterMenuItemPropertyChanged));
 
         public RaceResultsDetailControl()
         {

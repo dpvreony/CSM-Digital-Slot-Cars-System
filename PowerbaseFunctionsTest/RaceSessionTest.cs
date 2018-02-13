@@ -18,17 +18,19 @@ namespace PowerbaseFunctionsTest
     class RaceSessionTest
     {
 
-        List<Player> players;
+        List<DriverResult> players;
         RaceSession raceSession;
         Powerbase powerbase = new Powerbase();
 
         public RaceSessionTest()
         {
+/*
             List<Player> players = new List<Player> { new Player() };
             RaceTypeBase raceType = new FreePlayRace(5, true);
             RaceSession raceSession = new RaceSession(1, raceType, players, false);
 
             powerbase.Run(raceSession);
+*/
         }
 
         private TestContext testContextInstance;
@@ -82,17 +84,17 @@ namespace PowerbaseFunctionsTest
             int ok5 = 128 + 16 + 8 + 4 + 2 + 1;
             int ok6 = 128 + 32 + 16 + 8 + 4 + 2 + 1;
 
-            ledStatus = powerbase.CalculateLEDStatusLightsStatic(1);
+            ledStatus = powerbase.CalculateLEDStatusLights(true, 1);
             Assert.AreEqual(ok1, ledStatus);
-            ledStatus = powerbase.CalculateLEDStatusLightsStatic(2);
+            ledStatus = powerbase.CalculateLEDStatusLights(true, 2);
             Assert.AreEqual(ok2, ledStatus);
-            ledStatus = powerbase.CalculateLEDStatusLightsStatic(3);
+            ledStatus = powerbase.CalculateLEDStatusLights(true, 3);
             Assert.AreEqual(ok3, ledStatus);
-            ledStatus = powerbase.CalculateLEDStatusLightsStatic(4);
+            ledStatus = powerbase.CalculateLEDStatusLights(true, 4);
             Assert.AreEqual(ok4, ledStatus);
-            ledStatus = powerbase.CalculateLEDStatusLightsStatic(5);
+            ledStatus = powerbase.CalculateLEDStatusLights(true, 5);
             Assert.AreEqual(ok5, ledStatus);
-            ledStatus = powerbase.CalculateLEDStatusLightsStatic(6);
+            ledStatus = powerbase.CalculateLEDStatusLights(true, 6);
             Assert.AreEqual(ok6, ledStatus);
         }
     }

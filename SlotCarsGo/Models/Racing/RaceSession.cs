@@ -4,6 +4,8 @@ using SlotCarsGo.Models.Comms;
 using SlotCarsGo.Models.Manager;
 using SlotCarsGo.ViewModels;
 using System;
+using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -12,31 +14,29 @@ using static SlotCarsGo.Helpers.Enums;
 
 namespace SlotCarsGo.Models.Racing
 {
-    class RaceSession
+    public class RaceSession
     {
         const float GameTimerToMicroSecondsConstant = 6.4f;
 
+        private int sessionId;
         private string sessionName;
         private int trackID; // TODO: Retrieve from XML on startup and store above Powerbase? RaceManager class?
         private RaceTypeBase raceType;
-        private ObservableCollection<User> users;
-        private List<Player> players;
+        private List<Driver> drivers;
         private DateTime startTime;
         private DateTime endTime;
         private int lapsRemaining;
         private TimeSpan timeRemaining;
-        private int numberOfPlayers;
+        private int numberOfDrivers;
         private bool started;
         private bool finished;
+        private int finishPosition = 1;
         private UInt32 startingGameTimer;
         // TODO: fastest lap of session - what format, to include driver?
-        private TimeSpan zeroLapTime;
-        private List<TimeSpan>[] driversLapTimes;
-        private TimeSpan[] driversPreviousLapTime;
-        private TimeSpan[] driversFastestLapTimes;
-        private List<UInt32>[] driversLapGameCounters;
-        private UInt32[] driversPreviousGameCounter;
+        private TimeSpan zeroLapTime = new TimeSpan(0);
+        private Dictionary<int, DriverResult> driverResults;
         private bool[] driversFinished;
+        private TimeSpan winningTime;
         private bool fuelEnabled;
         private float fuelFullTankWeight; // TODO: will be settable as a % to calculate initial weight penalty
         private float fuelBurnRatePerLap; // TODO: will be decremented from playerFuel each lap / game Timer span
@@ -48,53 +48,31 @@ namespace SlotCarsGo.Models.Racing
         /// <param name="trackID"></param>
         /// <param name="raceType"></param>
         /// <param name="players"></param>
-        public RaceSession(RaceTypeBase raceType, ObservableCollection<User> users)
+        public RaceSession(RaceTypeBase raceType, ObservableCollection<Driver> users)
         {
+            this.SessionId = 0; // Updated at end of race
             this.TrackID = AppManager.Track.Id;
             this.RaceType = raceType;
             this.FuelEnabled = raceType.FuelEnabled;
-            this.Players = new List<Player>();
-            this.Users = users;
-            this.LapsRemaining = this.RaceType.LapsNotDuration ? this.RaceType.RaceLimitValue : 0;
-            foreach (var user in users)
-            {
-                this.Players.Add(new Player(user));
-            }
-            this.NumberOfPlayers = this.Players.Count;
+            this.Drivers = users.ToList();
+            this.NumberOfDrivers = this.Drivers.Count;
 
-            this.InitialiseSession();
-        }
-
-        public RaceSession()
-        {
-            this.TrackID = AppManager.Track.Id;
-            this.RaceType = new FreePlayRace(0, true, false);
-            this.FuelEnabled = false;
-            this.Players = new List<Player>();
-            this.Users = new ObservableCollection<User>();
-            this.NumberOfPlayers = 0;
             this.InitialiseSession();
         }
 
         public int TrackID { get => this.trackID; set => this.trackID = value; }
         public RaceTypeBase RaceType { get => this.raceType; set => this.raceType = value; }
-        public ObservableCollection<User> Users { get => this.users; set => this.users = value; }
-        internal List<Player> Players { get => this.players; set => this.players = value; }
         public DateTime StartTime { get => this.startTime; set => this.startTime = value; }
         public DateTime EndTime { get => this.endTime; set => this.endTime = value; }
-        internal List<TimeSpan>[] DriversLapTimes { get => driversLapTimes; set => driversLapTimes = value; }
-        internal TimeSpan[] DriversPreviousLapTime { get => driversPreviousLapTime; set => driversPreviousLapTime = value; }
-        internal TimeSpan[] DriversFastestLapTimes { get => driversFastestLapTimes; set => driversFastestLapTimes = value; }
-        internal List<uint>[] DriversLapGameCounters { get => driversLapGameCounters; set => driversLapGameCounters = value; }
-        internal uint[] DriversPreviousGameCounter { get => driversPreviousGameCounter; set => driversPreviousGameCounter = value; }
-        internal bool[] DriversFinished { get => driversFinished; set => driversFinished = value; }
-        public float[] PlayerFuel { get => playerFuel; set => playerFuel = value; }
         public bool FuelEnabled { get => fuelEnabled; set => fuelEnabled = value; }
         public uint StartingGameTimer { get => startingGameTimer; set => startingGameTimer = value; }
         internal bool Started { get => started; set => started = value; }
         internal bool Finished { get => finished; set => finished = value; }
-        public int NumberOfPlayers { get => numberOfPlayers; set => numberOfPlayers = value; }
+        public int NumberOfDrivers { get => numberOfDrivers; set => numberOfDrivers = value; }
         public int LapsRemaining { get => lapsRemaining; set => lapsRemaining = value; }
+        public List<Driver> Drivers { get => drivers; set => drivers = value; }
+        internal Dictionary<int, DriverResult> DriverResults { get => driverResults; }
+        public int SessionId { get => sessionId; set => sessionId = value; }
 
         /// <summary>
         /// Initialises the data driven session details.
@@ -104,14 +82,13 @@ namespace SlotCarsGo.Models.Racing
             this.StartTime = DateTime.Now;
             this.Started = false;
             this.Finished = false;
-            this.zeroLapTime = new TimeSpan();
-            this.DriversLapTimes = new List<TimeSpan>[] { new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>(), new List<TimeSpan>() };
-            this.DriversPreviousLapTime = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
-            this.DriversFastestLapTimes = new TimeSpan[] { new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan() };
-            this.DriversPreviousGameCounter = new UInt32[] { 0, 0, 0, 0, 0, 0 };
-            this.DriversLapGameCounters = new List<UInt32>[] { new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>(), new List<UInt32>() };
-            this.DriversFinished = new bool[] { false, false, false, false, false, false };
-            this.PlayerFuel = new float[] { 0, 0, 0, 0, 0, 0 };
+            this.driverResults = new Dictionary<int, DriverResult>();
+            int playerNumber = 1;
+            foreach (Driver driver in this.Drivers)
+            {
+                this.driverResults.Add(driver.ControllerId,  new DriverResult(driver, playerNumber++));
+            }
+            this.LapsRemaining = this.RaceType.LapsNotDuration ? this.RaceType.RaceLimitValue : 0;
         }
 
         /// <summary>
@@ -147,9 +124,6 @@ namespace SlotCarsGo.Models.Racing
         /// </summary>
         public void ResetRace()
         {
-            this.Started = false;
-            this.Finished = true;
-            this.EndTime = DateTime.Now;
             this.InitialiseSession();
         }
 
@@ -160,68 +134,108 @@ namespace SlotCarsGo.Models.Racing
         /// <param name="gameTimer">The game timer data.</param>
         internal void ProcessFinishLineData(int carId, UInt32 gameTimer)
         {
-            // Calculate last lap as a counter;
-            UInt32 lastLapAsGameTimer = gameTimer - this.DriversPreviousGameCounter[carId];
-
-            // Calculate last lap counter as a timespan
-            TimeSpan lapTime = this.ConvertGameTimerToTimeSpan(lastLapAsGameTimer);
-
-            if (lapTime > TimeSpan.FromMilliseconds(500))
+            if (this.DriverResults.ContainsKey(carId))
             {
-                // Add to Driver's game counters list
-                this.DriversLapGameCounters[carId].Add(gameTimer);
+                // Calculate last lap as a counter;
+                UInt32 lastLapAsGameTimer = gameTimer - this.driverResults[carId].PreviousGameCounter;
 
-                // Update driver's previous game counter
-                this.DriversPreviousGameCounter[carId] = gameTimer;
+                // Calculate last lap counter as a timespan
+                TimeSpan lapTime = this.ConvertGameTimerToTimeSpan(lastLapAsGameTimer);
 
-                // Add last lap time to driver's lap times list
-                this.DriversLapTimes[carId].Add(lapTime);
-
-                // Update driver's previous lap time
-                this.DriversPreviousLapTime[carId] = lapTime;
-
-                // Check if last lap time is this driver's fastest in this session
-                if (lapTime < this.DriversFastestLapTimes[carId] || this.DriversFastestLapTimes[carId] == zeroLapTime)
+                if (lapTime > TimeSpan.FromMilliseconds(750))
                 {
-                    this.DriversFastestLapTimes[carId] = lapTime;
-                }
-
-                // Notify the HUD View Model that session values updated.
-                SimpleIoc.Default.GetInstance<RaceHUDViewModel>().UpdateLapTimes(carId);
-
-                // Check for race end conditions
-                if (this.RaceType.LapsNotDuration)
-                {
-                    int laps = this.DriversLapTimes[carId].Count;
-                    int thisCarLapsRemaining = this.RaceType.RaceLimitValue - laps;
-                    if (thisCarLapsRemaining < this.LapsRemaining)
+                    if (!this.driverResults[carId].Finished)
                     {
-                        this.LapsRemaining = thisCarLapsRemaining;
-                        if (laps >= this.RaceType.RaceLimitValue)
+                        // Calculate current race duration
+                        TimeSpan raceDuration = this.ConvertGameTimerToTimeSpan(gameTimer);
+
+                        // Increment laps
+                        this.driverResults[carId].Laps += 1;
+
+                        // Add to Driver's game counters list
+                        this.driverResults[carId].LapGameCounters.Add(gameTimer);
+
+                        // Update driver's previous game counter
+                        this.driverResults[carId].PreviousGameCounter = gameTimer;
+
+                        // Add last lap time to driver's lap times list
+                        this.driverResults[carId].LapTimes.Add(lapTime);
+
+                        // Update driver's previous lap time
+                        this.driverResults[carId].PreviousLapTime = lapTime;
+
+                        // Check if last lap time is this driver's fastest in this session
+                        if (lapTime < this.driverResults[carId].BestLapTime || this.driverResults[carId].BestLapTime == zeroLapTime)
                         {
-                            this.DriversFinished[carId] = true;
-                            this.FinishRace();
-                            SimpleIoc.Default.GetInstance<RaceHUDViewModel>().RaceFinished();
+                            this.driverResults[carId].BestLapTime = lapTime;
                         }
-                    }
-                }
-                else
-                {
-                    TimeSpan raceDuration = this.ConvertGameTimerToTimeSpan(gameTimer);
-                    if (raceDuration >= this.RaceType.RaceLength)
-                    {
-                        this.DriversFinished[0] = true;
-                        this.DriversFinished[1] = true;
-                        this.DriversFinished[2] = true;
-                        this.DriversFinished[3] = true;
-                        this.DriversFinished[4] = true;
-                        this.DriversFinished[5] = true;
-                        this.FinishRace();
-                        SimpleIoc.Default.GetInstance<RaceHUDViewModel>().RaceFinished();
-                    }
-                }
 
-                System.Diagnostics.Debug.WriteLine($"CarId {carId + 1} : {lapTime}");
+                        // Notify the HUD View Model that session values updated.
+                        SimpleIoc.Default.GetInstance<RaceHUDViewModel>().UpdateLapTimes(carId);
+
+                        // Check for race end conditions
+                        if (this.RaceType.LapsNotDuration)
+                        {
+                            int thisCarLapsRemaining = this.RaceType.RaceLimitValue - this.driverResults[carId].Laps;
+                            this.LapsRemaining = thisCarLapsRemaining < this.LapsRemaining ? thisCarLapsRemaining : this.LapsRemaining;
+
+                            // Has driver finished?
+                            if (this.driverResults[carId].Laps >= this.RaceType.RaceLimitValue)
+                            {
+                                // Check if first driver to finish
+                                this.winningTime = this.winningTime == this.zeroLapTime ? raceDuration : this.winningTime;
+
+                                this.driverResults[carId].Finished = true;
+                                this.driverResults[carId].Position = this.finishPosition++;
+                                this.driverResults[carId].TotalTime = raceDuration;
+                                this.driverResults[carId].TimeOffPace = raceDuration - this.winningTime;
+                            }
+
+                            // Have all drivers finished?
+                            bool raceFinished = true;
+                            foreach (KeyValuePair<int, DriverResult> player in this.driverResults)
+                            {
+                                raceFinished = player.Value.Finished;
+                            }
+
+                            if (raceFinished)
+                            {
+                                this.FinishRace();
+//                                SimpleIoc.Default.GetInstance<RaceHUDViewModel>().RaceFinished();
+                            }
+                        }
+                        else
+                        {
+                            if (raceDuration >= this.RaceType.RaceLength)
+                            {
+                                if (this.winningTime == this.zeroLapTime)
+                                {
+                                    this.winningTime = raceDuration;
+                                }
+                                this.driverResults[carId].Finished = true;
+                                this.driverResults[carId].TotalTime = raceDuration;
+
+
+                                var playersList = this.DriverResults.Values.ToList();
+                                foreach(DriverResult driver in playersList.OrderByDescending(d => d.Laps))
+                                {
+                                    driver.Position = this.finishPosition++;
+                                    driver.Finished = true;
+                                    driver.TotalTime = raceDuration;
+                                }
+
+                                this.FinishRace();
+//                                SimpleIoc.Default.GetInstance<RaceHUDViewModel>().RaceFinished();
+                            }
+                        }
+
+                        System.Diagnostics.Debug.WriteLine($"CarId {carId + 1} : {lapTime}");
+                    }
+                }
+            }
+            else
+            {
+                this.QuitRace();
             }
         }
 
@@ -232,12 +246,10 @@ namespace SlotCarsGo.Models.Racing
         internal void SetRaceStartGameTimer(UInt32 gameTimer)
         {
             this.StartingGameTimer = gameTimer;
-            this.DriversPreviousGameCounter[0] = gameTimer;
-            this.DriversPreviousGameCounter[1] = gameTimer;
-            this.DriversPreviousGameCounter[2] = gameTimer;
-            this.DriversPreviousGameCounter[3] = gameTimer;
-            this.DriversPreviousGameCounter[4] = gameTimer;
-            this.DriversPreviousGameCounter[5] = gameTimer;
+            foreach (KeyValuePair<int, DriverResult> player in this.driverResults)
+            {
+                player.Value.PreviousGameCounter = gameTimer;
+            }
         }
 
         /// <summary>

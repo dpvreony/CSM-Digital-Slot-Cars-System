@@ -12,28 +12,28 @@ namespace SlotCarsGo.Services
 {
     public static class LoggedInUsersDataService
     {
-        private static ObservableCollection<User> users;
+        private static ObservableCollection<Driver> users;
 
-        private static IEnumerable<User> LoggedInUsers()
+        private static IEnumerable<Driver> LoggedInUsers()
         {
-            // TODO: Query logins 
-            var data = new ObservableCollection<User>
+            // TODO: Query logins from server
+            var data = new ObservableCollection<Driver>
             {
-                new User(1, "Tyler", "Tim", "Tyler", "/Assets/UserImages/1.png", 1)
-                ,new User(2, "Cake", "Dave", "Armshaw", "/Assets/UserImages/2.png", 2)
-                ,new User(3, "Bowes", "Adam", "Bowes", "/Assets/UserImages/3.png", 3)
-                ,new User(4, "Susie", "Susie", "Tyler", "/Assets/UserImages/4.png", 4)
-                ,new User(5, "Lauz", "Laura", "Atkins", "/Assets/UserImages/5.png", 5)
-                ,new User(6, "Botts", "Robin", "Bottington", "/Assets/UserImages/6.png", 6)
+                new Driver(1, "Tyler", "Tim", "Tyler", "/Assets/UserImages/1.png", 1, 1)
+                ,new Driver(2, "Cake", "Dave", "Armshaw", "/Assets/UserImages/2.png", 2, 2)
+                ,new Driver(3, "Bowes", "Adam", "Bowes", "/Assets/UserImages/3.png", 3, 3)
+                ,new Driver(4, "Susie", "Susie", "Tyler", "/Assets/UserImages/4.png", 4, 4)
+                ,new Driver(5, "Lauz", "Laura", "Atkins", "/Assets/UserImages/5.png", 5, 5)
+                ,new Driver(6, "Botts", "Robin", "Bottington", "/Assets/UserImages/6.png", 6, 6)
             };
+            
+            users = new ObservableCollection<Driver>(data.OrderBy(u => u.ControllerId));
 
-            users = data;
-
-            return data;
+            return users;
         }
 
         // TODO WTS: Remove this once your MasterDetail pages are displaying real data
-        public static async Task<IEnumerable<User>> GetLoggedInUsersAsync()
+        public static async Task<IEnumerable<Driver>> GetLoggedInUsersAsync()
         {
             await Task.CompletedTask;
 
@@ -45,8 +45,12 @@ namespace SlotCarsGo.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static User GetUser(int userId)
+        public static Driver GetUser(int userId)
         {
+            if (users == null)
+            {
+                LoggedInUsers();
+            }
             return users.SingleOrDefault(u => u.Id == userId);
         }
     }

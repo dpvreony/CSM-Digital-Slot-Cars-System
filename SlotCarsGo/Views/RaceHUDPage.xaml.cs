@@ -4,6 +4,7 @@ using SlotCarsGo.ViewModels;
 
 using Windows.UI.Xaml.Controls;
 using GalaSoft.MvvmLight.Ioc;
+using Windows.UI.Xaml;
 
 namespace SlotCarsGo.Views
 {
@@ -17,6 +18,12 @@ namespace SlotCarsGo.Views
         public RaceHUDPage()
         {
             InitializeComponent();
+            Loaded += RaceHUDPage_Loaded;
+        }
+
+        private async void RaceHUDPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.LoadDataAsync();
         }
 
         private void RaceButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -26,7 +33,8 @@ namespace SlotCarsGo.Views
 
         private void QuitRaceButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            ViewModel.QuitButtonClicked();
+            //            ViewModel.QuitButtonClicked();
+            ViewModel.RaceFinished();
         }
     }
 }

@@ -33,6 +33,7 @@ namespace SlotCarsGo.Views
             control.ForegroundElement.ChangeView(0, 0, 1);
         }
 
+        
         /// <summary>
         /// Toggles the selected Race Type's LapsNotDuration property to true.
         /// </summary>
@@ -69,10 +70,10 @@ namespace SlotCarsGo.Views
             this.RaceLimitValue.Text = e.NewValue.ToString();
             if (this.MasterMenuItem != null)
             {
-                this.MasterMenuItem.RaceLimitValue = (int)this.RaceLimitSlider.Value;
+                this.MasterMenuItem.RaceLimitValue = (int)e.NewValue;
             }
         }
-
+  
         /// <summary>
         /// Selects the race type to create.
         /// </summary>
@@ -82,6 +83,7 @@ namespace SlotCarsGo.Views
         {
             this.MasterMenuItem.LapsNotDuration = (bool)SelectLaps.IsChecked;
             this.MasterMenuItem.RaceLimitValue = (int)RaceLimitSlider.Value;
+            this.MasterMenuItem.RaceLength = new TimeSpan(0, this.MasterMenuItem.RaceLimitValue, 0);
             SimpleIoc.Default.GetInstance<RaceTypeSelectViewModel>().ProceedToDriverSetup(this.MasterMenuItem);
         }
     }

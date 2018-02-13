@@ -15,6 +15,8 @@ using SlotCarsGo.Services;
 using Windows.UI.Xaml.Controls;
 using SlotCarsGo.Views;
 using Windows.UI.Xaml.Media;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace SlotCarsGo.ViewModels
 {
@@ -34,7 +36,11 @@ namespace SlotCarsGo.ViewModels
         private SolidColorBrush raceButtonBrush;
         private const string EmptyLapTime = "0:00.00";
         private const string EmptyDiffTime = "00.00";
+        private TimeSpan zeroTimeSpan = new TimeSpan(0);
+        private CancellationTokenSource checkForRaceFinishCancellationTokenSource;
+        private CancellationToken checkForRaceFinishCancellationToken;
         // Backing fields for players 1-6 lap time details
+        private string player1_GridNumber, player2_GridNumber, player3_GridNumber, player4_GridNumber, player5_GridNumber, player6_GridNumber;
         private string player1_BestLap = EmptyLapTime, player2_BestLap = EmptyLapTime, player3_BestLap = EmptyLapTime, player4_BestLap = EmptyLapTime, player5_BestLap = EmptyLapTime, player6_BestLap = EmptyLapTime;
         private string player1_LastLap = EmptyLapTime, player2_LastLap = EmptyLapTime, player3_LastLap = EmptyLapTime, player4_LastLap = EmptyLapTime, player5_LastLap = EmptyLapTime, player6_LastLap = EmptyLapTime;
         private string player1_Diff = EmptyDiffTime, player2_Diff = EmptyDiffTime, player3_Diff = EmptyDiffTime, player4_Diff = EmptyDiffTime, player5_Diff = EmptyDiffTime, player6_Diff = EmptyDiffTime;
@@ -42,6 +48,7 @@ namespace SlotCarsGo.ViewModels
 
         public RaceHUDViewModel()
         {
+            this.session = new RaceSession(new FreePlayRace(0,false,false), new ObservableCollection<Driver>());
             this.RaceButtonBrush = this.greenBrush;
         }
 
@@ -55,24 +62,24 @@ namespace SlotCarsGo.ViewModels
         public Page RaceGridPage { get => raceGridPage; set => raceGridPage = value; }
         public SolidColorBrush RaceButtonBrush { get => raceButtonBrush; set => Set(ref raceButtonBrush, value); }
 
-        public string Player1_GridNumber => "1";
-        public string Player2_GridNumber => "2";
-        public string Player3_GridNumber => "3";
-        public string Player4_GridNumber => "4";
-        public string Player5_GridNumber => "5";
-        public string Player6_GridNumber => "6";
-        public string Player1_Avatar => this.Session.NumberOfPlayers >= 1 ? this.Session.Players[0].User.AvatarSource : User.DefaultUser.AvatarSource;
-        public string Player2_Avatar => this.Session.NumberOfPlayers >= 2 ? this.Session.Players[1].User.AvatarSource : User.DefaultUser.AvatarSource;
-        public string Player3_Avatar => this.Session.NumberOfPlayers >= 3 ? this.Session.Players[2].User.AvatarSource : User.DefaultUser.AvatarSource;
-        public string Player4_Avatar => this.Session.NumberOfPlayers >= 4 ? this.Session.Players[3].User.AvatarSource : User.DefaultUser.AvatarSource;
-        public string Player5_Avatar => this.Session.NumberOfPlayers >= 5 ? this.Session.Players[4].User.AvatarSource : User.DefaultUser.AvatarSource;
-        public string Player6_Avatar => this.Session.NumberOfPlayers >= 6 ? this.Session.Players[5].User.AvatarSource : User.DefaultUser.AvatarSource;
-        public string Player1_Name => this.Session.NumberOfPlayers >= 1 ? this.Session.Players[0].User.Nickname : String.Empty;
-        public string Player2_Name => this.Session.NumberOfPlayers >= 2 ? this.Session.Players[1].User.Nickname : String.Empty;
-        public string Player3_Name => this.Session.NumberOfPlayers >= 3 ? this.Session.Players[2].User.Nickname : String.Empty;
-        public string Player4_Name => this.Session.NumberOfPlayers >= 4 ? this.Session.Players[3].User.Nickname : String.Empty;
-        public string Player5_Name => this.Session.NumberOfPlayers >= 5 ? this.Session.Players[4].User.Nickname : String.Empty;
-        public string Player6_Name => this.Session.NumberOfPlayers >= 6 ? this.Session.Players[5].User.Nickname : String.Empty;
+        public string Player1_GridNumber { get => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].ControllerId.ToString() : String.Empty; set => Set(ref player1_GridNumber, value); }
+        public string Player2_GridNumber { get => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].ControllerId.ToString() : String.Empty; set => Set(ref player2_GridNumber, value); }
+        public string Player3_GridNumber { get => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].ControllerId.ToString() : String.Empty; set => Set(ref player3_GridNumber, value); }
+        public string Player4_GridNumber { get => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].ControllerId.ToString() : String.Empty; set => Set(ref player4_GridNumber, value); }
+        public string Player5_GridNumber { get => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].ControllerId.ToString() : String.Empty; set => Set(ref player5_GridNumber, value); }
+        public string Player6_GridNumber { get => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].ControllerId.ToString() : String.Empty; set => Set(ref player6_GridNumber, value); }
+        public string Player1_Avatar => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].AvatarSource : Driver.DefaultDriver.AvatarSource;
+        public string Player2_Avatar => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].AvatarSource : Driver.DefaultDriver.AvatarSource;
+        public string Player3_Avatar => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].AvatarSource : Driver.DefaultDriver.AvatarSource;
+        public string Player4_Avatar => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].AvatarSource : Driver.DefaultDriver.AvatarSource;
+        public string Player5_Avatar => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].AvatarSource : Driver.DefaultDriver.AvatarSource;
+        public string Player6_Avatar => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].AvatarSource : Driver.DefaultDriver.AvatarSource;
+        public string Player1_Name => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].Nickname : String.Empty;
+        public string Player2_Name => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].Nickname : String.Empty;
+        public string Player3_Name => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].Nickname : String.Empty;
+        public string Player4_Name => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].Nickname : String.Empty;
+        public string Player5_Name => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].Nickname : String.Empty;
+        public string Player6_Name => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].Nickname : String.Empty;
 
         public string BestLapHeaderText => "Best Lap";
         public string LastLapHeaderText => "Last Lap";
@@ -84,15 +91,7 @@ namespace SlotCarsGo.ViewModels
         public string Player4_BestLap { get => this.player4_BestLap; set => Set(ref player4_BestLap, value); }
         public string Player5_BestLap { get => this.player5_BestLap; set => Set(ref player5_BestLap, value); }
         public string Player6_BestLap { get => this.player6_BestLap; set => Set(ref player6_BestLap, value); }
-        public string Player1_LastLap
-        {
-            get => this.player1_LastLap;
-            set
-            {
-                Set(ref player1_LastLap, value);
-
-            }
-        }
+        public string Player1_LastLap { get => this.player1_LastLap; set => Set(ref player1_LastLap, value); }
         public string Player2_LastLap { get => this.player2_LastLap; set => Set(ref player2_LastLap, value); }
         public string Player3_LastLap { get => this.player3_LastLap; set => Set(ref player3_LastLap, value); }
         public string Player4_LastLap { get => this.player4_LastLap; set => Set(ref player4_LastLap, value); }
@@ -105,30 +104,6 @@ namespace SlotCarsGo.ViewModels
         public string Player5_Diff { get => this.player5_Diff; set => Set(ref player5_Diff, value); }
         public string Player6_Diff { get => this.player6_Diff; set => Set(ref player6_Diff, value); }
 
-
-        /*
-                public string Player1_BestLap { get => this.Session.NumberOfPlayers >= 1 ? "03.316" : String.Empty; set => Set(ref player1_BestLap, value); }
-                public string Player2_BestLap { get => this.Session.NumberOfPlayers >= 2 ? "04.576" : String.Empty; set => Set(ref player2_BestLap, value); }
-                public string Player3_BestLap { get => this.Session.NumberOfPlayers >= 3 ? "03.812" : String.Empty; set => Set(ref player3_BestLap, value); }
-                public string Player4_BestLap { get => this.Session.NumberOfPlayers >= 4 ? "05.043" : String.Empty; set => Set(ref player4_BestLap, value); }
-                public string Player5_BestLap { get => this.Session.NumberOfPlayers >= 5 ? "06.542" : String.Empty; set => Set(ref player5_BestLap, value); }
-                public string Player6_BestLap { get => this.Session.NumberOfPlayers >= 6 ? "03.986" : String.Empty; set => Set(ref player6_BestLap, value); }
-
-
-                public string Player1_LastLap { get => this.Session.NumberOfPlayers >= 1 ? "03.786" : String.Empty; set => Set(ref player1_LastLap, value); }
-                public string Player2_LastLap { get => this.Session.NumberOfPlayers >= 2 ? "05.213" : String.Empty; set => Set(ref player2_LastLap, value); }
-                public string Player3_LastLap { get => this.Session.NumberOfPlayers >= 3 ? "04.265" : String.Empty; set => Set(ref player3_LastLap, value); }
-                public string Player4_LastLap { get => this.Session.NumberOfPlayers >= 4 ? "07.253" : String.Empty; set => Set(ref player4_LastLap, value); }
-                public string Player5_LastLap { get => this.Session.NumberOfPlayers >= 5 ? "08.386" : String.Empty; set => Set(ref player5_LastLap, value); }
-                public string Player6_LastLap { get => this.Session.NumberOfPlayers >= 6 ? "04.034" : String.Empty; set => Set(ref player6_LastLap, value); }
-                public string Player1_Diff { get => this.Session.NumberOfPlayers >= 1 ? "00.470" : String.Empty; set => Set(ref player1_Diff, value); }
-                public string Player2_Diff { get => this.Session.NumberOfPlayers >= 2 ? "00.637" : String.Empty; set => Set(ref player2_Diff, value); }
-                public string Player3_Diff { get => this.Session.NumberOfPlayers >= 3 ? "00.453" : String.Empty; set => Set(ref player3_Diff, value); }
-                public string Player4_Diff { get => this.Session.NumberOfPlayers >= 4 ? "02.210" : String.Empty; set => Set(ref player4_Diff, value); }
-                public string Player5_Diff { get => this.Session.NumberOfPlayers >= 5 ? "01.844" : String.Empty; set => Set(ref player5_Diff, value); }
-                public string Player6_Diff { get => this.Session.NumberOfPlayers >= 6 ? "00.048" : String.Empty; set => Set(ref player6_Diff, value); }
-        */
-
         /// <summary>
         /// Event handler for the start button, starts a race timer and starts the Powerbase communications.
         /// </summary>
@@ -138,11 +113,36 @@ namespace SlotCarsGo.ViewModels
 
             if (this.Session.Started)
             {
-                this.raceTimeDisplayTimer.Stop();
+                this.checkForRaceFinishCancellationTokenSource.Cancel();
                 this.Session.ResetRace();
+                SimpleIoc.Default.GetInstance<Powerbase>().UpdateRaceSession(this.Session);
+                this.ResetDisplay();
+            }
+            else
+            {
+                this.RaceButtonBrush = this.amberBrush;
+
+                // Setup countdown display timer
+                this.countdown = 4;
+                this.countdownDisplayTimer = new DispatcherTimer();
+                this.countdownDisplayTimer.Tick += CountdownDisplayTimer_Tick;
+                this.countdownDisplayTimer.Interval = new TimeSpan(0, 0, 1);
+                this.countdownDisplayTimer.Start();
+            }
+        }
+
+        /// <summary>
+        /// Resets fields to starting values.
+        /// </summary>
+        private void ResetDisplay()
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                this.raceTimeDisplayTimer.Stop();
                 this.RaceButtonBrush = this.greenBrush;
                 this.RaceTimeDisplay = "00:00:00.0";
                 this.RaceButtonText = "START";
+                this.UpdateRemainingDisplay();
                 this.Player1_BestLap = EmptyLapTime;
                 this.Player2_BestLap = EmptyLapTime;
                 this.Player3_BestLap = EmptyLapTime;
@@ -161,18 +161,21 @@ namespace SlotCarsGo.ViewModels
                 this.Player4_Diff = EmptyDiffTime;
                 this.Player5_Diff = EmptyDiffTime;
                 this.Player6_Diff = EmptyDiffTime;
-            }
-            else
-            {
-                this.RaceButtonBrush = this.amberBrush;
+            });
+        }
 
-                // Setup countdown display timer
-                this.countdown = 4;
-                this.countdownDisplayTimer = new DispatcherTimer();
-                this.countdownDisplayTimer.Tick += CountdownDisplayTimer_Tick;
-                this.countdownDisplayTimer.Interval = new TimeSpan(0, 0, 1);
-                this.countdownDisplayTimer.Start();
-            }
+        /// <summary>
+        /// Resets the session and display then navigates back to GridConfirmationPage if controllers are misconfigured.
+        /// </summary>
+        internal void GoBackToGridConfirmation()
+        {
+            this.Session.ResetRace();
+            this.ResetDisplay();
+
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(GridConfirmationViewModel).FullName);
+            });
         }
 
         /// <summary>
@@ -180,14 +183,13 @@ namespace SlotCarsGo.ViewModels
         /// </summary>
         internal void QuitButtonClicked()
         {
-            if (this.raceTimeDisplayTimer != null)
-            {
-                this.raceTimeDisplayTimer.Stop();
-            }
-            this.RaceButtonText = "END";
+            this.checkForRaceFinishCancellationTokenSource.Cancel();
             this.Session.QuitRace();
+            this.ResetDisplay();
+
             SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(MainViewModel).FullName);
         }
+
 
         /// <summary>
         /// Event handler for displaying the race time duration from DispatcherTimer.
@@ -196,13 +198,17 @@ namespace SlotCarsGo.ViewModels
         /// <param name="e"></param>
         private void CountdownDisplayTimer_Tick(object sender, object e)
         {
-            if (--this.countdown == 0)
+            if (this.countdown == 0)
             {
                 this.countdownDisplayTimer.Stop();
                 this.RaceButtonBrush = this.redBrush;
                 this.RaceButtonText = "RESET";
                 this.Session.StartRace();
                 SimpleIoc.Default.GetInstance<Powerbase>().ResetGameTimer();
+
+                this.checkForRaceFinishCancellationTokenSource = new CancellationTokenSource();
+                CancellationToken token = this.checkForRaceFinishCancellationTokenSource.Token;
+                Task.Factory.StartNew(() => this.CheckForRaceFinish(token));
 
                 // Setup race display timer
                 this.raceTimeDisplayTimer = new DispatcherTimer();
@@ -212,6 +218,7 @@ namespace SlotCarsGo.ViewModels
             }
             else
             {
+                this.countdown -= 1;
                 this.RaceButtonText = this.countdown.ToString();
             }
         }
@@ -237,10 +244,57 @@ namespace SlotCarsGo.ViewModels
             }
         }
 
+        /// <summary>
+        /// Asynchronously checks for the race session to have finished, either at end of race
+        /// or after controllers are misconfigured.
+        /// </summary>
+        /// <param name="token">Cancellation token to use.</param>
+        /// <returns>Task</returns>
+        private async Task CheckForRaceFinish(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                if (this.Session.Finished)
+                {
+                    this.checkForRaceFinishCancellationTokenSource.Cancel();
+                    SimpleIoc.Default.GetInstance<Powerbase>().StopListening();
+
+                    if (this.Session.Started)
+                    {
+                        // race finished correctly
+                        this.RaceFinished();
+                    }
+                    else
+                    {
+                        // Controllers are misconfigured, stop and return to GridConfirmation
+                        this.GoBackToGridConfirmation();
+                    }
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+        }
+
+        /// <summary>
+        /// Race finished naturally, stop display and save session Id, update instance and navigate to Results.
+        /// </summary>
         public void RaceFinished()
         {
-            // TODO: create a routine that drives all cars to finish line! (before closing PB)
+            if (this.raceTimeDisplayTimer != null)
+            {
+                DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                {
+                    this.raceTimeDisplayTimer.Stop();
+                });
+            }
+
             // TODO: check that data is saved before ending
+            // TODO: int sessionId = getSessionIdFromServer (post to server)
+            int sessionId = 1;
+            foreach (KeyValuePair<int, DriverResult> driver in this.Session.DriverResults)
+            {
+                driver.Value.SessionId = sessionId;
+            }
 
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
@@ -252,43 +306,46 @@ namespace SlotCarsGo.ViewModels
         /// <summary>
         /// Called by race session to update a given players lap times when crossed the finish line.
         /// </summary>
-        /// <param name="carId">The player to refresh (1 index).</param>
+        /// <param name="carId">The player to refresh (0 index).</param>
         internal void UpdateLapTimes(int carId)
         {
+            TimeSpan diff = this.Session.DriverResults[carId].PreviousLapTime - this.Session.DriverResults[carId].BestLapTime;
+            string sign = diff > this.zeroTimeSpan ? "+" : "-";
+            string diffString = sign + diff.ToString(@"ss\.fff");
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 // Dispatch back to the main thread
-                switch (carId)
+                switch (this.Session.DriverResults[carId].PlayerNumber)
                 {
-                    case 0:
-                        Player1_BestLap = this.Session.DriversFastestLapTimes[0].ToString("m':'ss'.'fff");
-                        Player1_LastLap = this.Session.DriversPreviousLapTime[0].ToString("m':'ss'.'fff");
-                        Player1_Diff = (this.Session.DriversPreviousLapTime[0] - this.Session.DriversFastestLapTimes[0]).ToString(@"ss\.fff");
-                        break;
                     case 1:
-                        Player2_BestLap = this.Session.DriversFastestLapTimes[1].ToString("m':'ss'.'fff");
-                        Player2_LastLap = this.Session.DriversPreviousLapTime[1].ToString("m':'ss'.'fff");
-                        Player2_Diff = (this.Session.DriversPreviousLapTime[1] - this.Session.DriversFastestLapTimes[1]).ToString(@"ss\.fff");
+                        Player1_BestLap = this.Session.DriverResults[carId].BestLapTime.ToString("m':'ss'.'fff");
+                        Player1_LastLap = this.Session.DriverResults[carId].PreviousLapTime.ToString("m':'ss'.'fff");
+                        Player1_Diff = diffString;
                         break;
                     case 2:
-                        Player3_BestLap = this.Session.DriversFastestLapTimes[2].ToString("m':'ss'.'fff");
-                        Player3_LastLap = this.Session.DriversPreviousLapTime[2].ToString("m':'ss'.'fff");
-                        Player3_Diff = (this.Session.DriversPreviousLapTime[2] - this.Session.DriversFastestLapTimes[2]).ToString(@"ss\.fff");
+                        Player2_BestLap = this.Session.DriverResults[carId].BestLapTime.ToString("m':'ss'.'fff");
+                        Player2_LastLap = this.Session.DriverResults[carId].PreviousLapTime.ToString("m':'ss'.'fff");
+                        Player2_Diff = $"{sign}{diff.ToString(@"ss\.fff")}";
                         break;
                     case 3:
-                        Player4_BestLap = this.Session.DriversFastestLapTimes[3].ToString("m':'ss'.'fff");
-                        Player4_LastLap = this.Session.DriversPreviousLapTime[3].ToString("m':'ss'.'fff");
-                        Player4_Diff = (this.Session.DriversPreviousLapTime[3] - this.Session.DriversFastestLapTimes[3]).ToString(@"ss\.fff");
+                        Player3_BestLap = this.Session.DriverResults[carId].BestLapTime.ToString("m':'ss'.'fff");
+                        Player3_LastLap = this.Session.DriverResults[carId].PreviousLapTime.ToString("m':'ss'.'fff");
+                        Player3_Diff = $"{sign}{diff.ToString(@"ss\.fff")}";
                         break;
                     case 4:
-                        Player5_BestLap = this.Session.DriversFastestLapTimes[4].ToString("m':'ss'.'fff");
-                        Player5_LastLap = this.Session.DriversPreviousLapTime[4].ToString("m':'ss'.'fff");
-                        Player5_Diff = (this.Session.DriversPreviousLapTime[4] - this.Session.DriversFastestLapTimes[4]).ToString(@"ss\.fff");
+                        Player4_BestLap = this.Session.DriverResults[carId].BestLapTime.ToString("m':'ss'.'fff");
+                        Player4_LastLap = this.Session.DriverResults[carId].PreviousLapTime.ToString("m':'ss'.'fff");
+                        Player4_Diff = $"{sign}{diff.ToString(@"ss\.fff")}";
                         break;
                     case 5:
-                        Player6_BestLap = this.Session.DriversFastestLapTimes[5].ToString("m':'ss'.'fff");
-                        Player6_LastLap = this.Session.DriversPreviousLapTime[5].ToString("m':'ss'.'fff");
-                        Player6_Diff = (this.Session.DriversPreviousLapTime[5] - this.Session.DriversFastestLapTimes[5]).ToString(@"ss\.fff");
+                        Player5_BestLap = this.Session.DriverResults[carId].BestLapTime.ToString("m':'ss'.'fff");
+                        Player5_LastLap = this.Session.DriverResults[carId].PreviousLapTime.ToString("m':'ss'.'fff");
+                        Player5_Diff = $"{sign}{diff.ToString(@"ss\.fff")}";
+                        break;
+                    case 6:
+                        Player6_BestLap = this.Session.DriverResults[carId].BestLapTime.ToString("m':'ss'.'fff");
+                        Player6_LastLap = this.Session.DriverResults[carId].PreviousLapTime.ToString("m':'ss'.'fff");
+                        Player6_Diff = $"{sign}{diff.ToString(@"ss\.fff")}";
                         break;
                     default:
                         break;
@@ -300,39 +357,63 @@ namespace SlotCarsGo.ViewModels
         {
         }
 
-        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode)
+        public async Task LoadDataAsync()
         {
-            if (!SimpleIoc.Default.GetInstance<Powerbase>().IsPowerbaseConnected)
+            if (this.session != null)
             {
-                SimpleIoc.Default.GetInstance<Powerbase>().Listen();
+                if (!SimpleIoc.Default.GetInstance<Powerbase>().IsPowerbaseConnected)
+                {
+                    SimpleIoc.Default.GetInstance<Powerbase>().Listen(this.Session);
+                }
+            }
+        }
+
+    public override Task OnNavigatedToAsync(object parameter, NavigationMode mode)
+        {
+            if (parameter == null)
+            {
+                SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(MainViewModel).FullName);
+            }
+            else
+            {
+                this.session = parameter as RaceSession;
+
+                switch (this.Session.NumberOfDrivers)
+                {
+                    case 1:
+                        RaceGridPage = new RaceGridPanelFor1Player();
+                        break;
+                    case 2:
+                        RaceGridPage = new RaceGridPanelFor2Players();
+                        break;
+                    case 3:
+                        RaceGridPage = new RaceGridPanelFor3Players();
+                        break;
+                    case 4:
+                        RaceGridPage = new RaceGridPanelFor4Players();
+                        break;
+                    case 5:
+                        RaceGridPage = new RaceGridPanelFor5Players();
+                        break;
+                    case 6:
+                        RaceGridPage = new RaceGridPanelFor6Players();
+                        break;
+                    default:
+                        RaceGridPage = new RaceGridPanelFor6Players();
+                        break;
+                }
+
+                this.UpdateRemainingDisplay();
             }
 
-            this.session = parameter as RaceSession;
-            switch (this.Session.NumberOfPlayers)
-            {
-                case 1:
-                    RaceGridPage = new RaceGridPanelFor1Player();
-                    break;
-                case 2:
-                    RaceGridPage = new RaceGridPanelFor2Players();
-                    break;
-                case 3:
-                    RaceGridPage = new RaceGridPanelFor3Players();
-                    break;
-                case 4:
-                    RaceGridPage = new RaceGridPanelFor4Players();
-                    break;
-                case 5:
-                    RaceGridPage = new RaceGridPanelFor5Players();
-                    break;
-                case 6:
-                    RaceGridPage = new RaceGridPanelFor6Players();
-                    break;
-                default:
-                    RaceGridPage = new RaceGridPanelFor6Players();
-                    break;
-            }
+            return Task.CompletedTask;
+        }
 
+        /// <summary>
+        /// Updates the remaining laps/time display.
+        /// </summary>
+        private void UpdateRemainingDisplay()
+        {
             if (this.Session.RaceType.LapsNotDuration)
             {
                 this.RemainingDisplay = $"{this.session.LapsRemaining} / {this.session.RaceType.RaceLimitValue} Laps";
@@ -341,10 +422,6 @@ namespace SlotCarsGo.ViewModels
             {
                 this.RemainingDisplay = this.Session.RaceType.RaceLength.ToString("hh':'mm':'ss'.'f");
             }
-
-            SimpleIoc.Default.GetInstance<Powerbase>().UpdateRaceSession(this.session);
-
-            return Task.CompletedTask;
         }
 
         public override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -354,7 +431,7 @@ namespace SlotCarsGo.ViewModels
                 this.Session.Finished = true;
             }
 
-            SimpleIoc.Default.GetInstance<Powerbase>().StopListening();
+//            SimpleIoc.Default.GetInstance<Powerbase>().StopListening();
         }
     }
 }

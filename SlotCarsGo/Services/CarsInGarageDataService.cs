@@ -20,11 +20,11 @@ namespace SlotCarsGo.Services
             var data = new ObservableCollection<Car>
             {
                 new Car(1, "Ferrari F50", "/Assets/CarImages/1.png", new TimeSpan(0,0,5), 1)
-                ,new Car(1, "Bentley Continental GT3", "/Assets/CarImages/2.png", new TimeSpan(0,0,5), 1)
-                ,new Car(1, "Ford Escort 1980 MKII", "/Assets/CarImages/3.png", new TimeSpan(0,0,5), 1)
-                ,new Car(1, "Lancia Delta S4", "/Assets/CarImages/4.png", new TimeSpan(0,0,5), 1)
-                ,new Car(1, "Volkswagon Polo WRC 2013", "/Assets/CarImages/5.png", new TimeSpan(0,0,5), 1)
-                ,new Car(1, "Mini Countryman WRC 2012", "/Assets/CarImages/6.png", new TimeSpan(0,0,5), 1)
+                ,new Car(2, "Bentley Continental GT3", "/Assets/CarImages/2.png", new TimeSpan(0,0,5), 1)
+                ,new Car(3, "Ford Escort 1980 MKII", "/Assets/CarImages/3.png", new TimeSpan(0,0,5), 1)
+                ,new Car(4, "Lancia Delta S4", "/Assets/CarImages/4.png", new TimeSpan(0,0,5), 1)
+                ,new Car(5, "Volkswagon Polo WRC 2013", "/Assets/CarImages/5.png", new TimeSpan(0,0,5), 1)
+                ,new Car(6, "Mini Countryman WRC 2012", "/Assets/CarImages/6.png", new TimeSpan(0,0,5), 1)
             };
 
             garage = data;
@@ -47,6 +47,10 @@ namespace SlotCarsGo.Services
         /// <returns></returns>
         public static Car GetCar(int carId)
         {
+            if (garage == null)
+            {
+                CarsInGarage();
+            }
             return garage.SingleOrDefault(c => c.CarID == carId);
         }
     }

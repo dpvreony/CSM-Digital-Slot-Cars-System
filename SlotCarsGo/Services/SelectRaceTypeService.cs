@@ -19,6 +19,7 @@ namespace SlotCarsGo.Services
             // The following is order summary data
             var data = new ObservableCollection<RaceTypeBase>
             {
+                //TODO: replace with single class, no need for different classes. Rename RaceTypeBase to racetype
                 new FreePlayRace(999, false, false),
                 new QualifyingRace(10, true, false),
                 new GrandPrixRace(30, true, true),

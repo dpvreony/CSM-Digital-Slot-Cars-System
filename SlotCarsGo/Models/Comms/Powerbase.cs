@@ -3,6 +3,7 @@
     using SlotCarsGo.Models.Racing;
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.IO;
     using System.Runtime.InteropServices;
@@ -44,7 +45,6 @@
         /// </summary>
         public Powerbase()
         {
-            this.raceSession = new RaceSession();
             this.resetGameTimerPacket.LEDStatus = (byte)MessageBytes.GameTimerStopped;
             System.Diagnostics.Debug.WriteLine($"{DateTime.Now.ToString()}: Powerbase constructor.");
         }
@@ -142,8 +142,9 @@
         public void UpdateRaceSession(RaceSession session)
         {
             this.raceSession = session;
-            this.ledStatusLightByte = (byte)this.CalculateLEDStatusLightsStatic(this.raceSession.NumberOfPlayers);
+            this.ledStatusLightByte = (byte)this.CalculateLEDStatusLights(false, this.raceSession.NumberOfDrivers);
         }
+
 
         /// <summary>
         /// Resets the game timer for a new race session.
@@ -156,8 +157,10 @@
         /// <summary>
         /// Listens for incoming messages that will be sent to the IncomingActionBlock for processing.
         /// </summary>
-        public async void Listen()
+        public async void Listen(RaceSession session)
         {
+            this.raceSession = session;
+
             if (!this.IsPowerbaseConnected)
             {
                 await this.Connect();
@@ -168,7 +171,8 @@
                 this.powerbaseListenerCancellationTokenSource = new CancellationTokenSource();
                 CancellationToken token = this.powerbaseListenerCancellationTokenSource.Token;
 
-                this.ledStatusLightByte = (byte)this.CalculateLEDStatusLightsStatic(this.raceSession.NumberOfPlayers);
+                this.resetGameTimerPacket.LEDStatus = (byte)this.CalculateLEDStatusLights(false, this.raceSession.NumberOfDrivers);
+                this.ledStatusLightByte = (byte)this.CalculateLEDStatusLights(true, this.raceSession.NumberOfDrivers);
                 this.SuccessOutgoingPacket.LEDStatus = this.ledStatusLightByte;
 
                 await this.SendPacketToPowerbase(this.SuccessOutgoingPacket.Data);
@@ -271,7 +275,7 @@
                 }
                 else if (carIdOnFinishLine <= 6)
                 {
-                    carIdOnFinishLine -= 1; // Adjust for zero index arrays
+//                    carIdOnFinishLine -= 1; // Adjust for zero index arrays
 
                     UInt32 gameTimer = this.ConvertBytesToGameTimerValue(
                         new byte[] {
@@ -313,20 +317,16 @@
             };
             
             // Calculate throttle for each active driver
-            for (var i = 1; i <= this.RaceSession.NumberOfPlayers; i++)
+            for (var i = 1; i <= this.RaceSession.NumberOfDrivers; i++)
             {
                 if (this.RaceSession.Started)
                 {
-                    /*
-                                        BitVector32 bits = new BitVector32(incomingPacket[i]);
-                                        byte power = (byte)bits[this.powerSection];
-                                        System.Diagnostics.Debug.WriteLine($"Power bit = {power}");
-                                        bits[this.powerSection] = power > (byte)MessageBytes.MaxThrottleTimeout ? power : (byte)MessageBytes.MaxThrottleTimeout;
-                                        outgoingPacket[i] = (byte)bits.Data;
-                                        */
-                    outgoingPacket[i] = this.CalculateThrottle(incomingPacket[i], this.RaceSession.DriversFinished[i-1], this.RaceSession.PlayerFuel[i-1]);
+                    BitVector32 bits = new BitVector32(incomingPacket[i]);
+                    byte power = (byte)bits[this.powerSection]; // No power = 63
+                    bits[this.powerSection] = power > (byte)MessageBytes.MaxThrottleTimeout ? power : (byte)MessageBytes.MaxThrottleTimeout;
+                    outgoingPacket[i] = (byte)bits.Data;
+// TODO: Fuel management                                       outgoingPacket[i] = this.CalculateThrottle(incomingPacket[i], this.RaceSession.PlayerResults[i-1].Finished, this.RaceSession.PlayerResults[i-1].Fuel);
                 }
-
             }
 
             return outgoingPacket;
@@ -382,31 +382,42 @@
         /// Calculates the LED status byte based on number of active players in sesion. 
         /// </summary>
         /// <param name="numPlayers">The number of active players.</param>
+        /// <param name="started">Whether the session has started.</param>
         /// <returns>the LED status byte</returns>
-        internal int CalculateLEDStatusLightsStatic(int numPlayers)
+        internal int CalculateLEDStatusLights(bool started, int numPlayers)
         {
-            int ledStatus = (byte)MessageBytes.GameTimerStarted; // Default Powerbase Green Light
-            switch (numPlayers)
+            int ledStatus = started ? (byte)MessageBytes.GameTimerStarted : (byte)MessageBytes.GameTimerStopped; // Default Powerbase Green Light
+
+            foreach (KeyValuePair<int, DriverResult> driver in this.RaceSession.DriverResults)
             {
-                case 1:
-                    ledStatus += 1;
-                    break;
-                case 2:
-                    ledStatus += 2 + 1;
-                    break;
-                case 3:
-                    ledStatus += 4 + 2 + 1;
-                    break;
-                case 4:
-                    ledStatus += 8 + 4 + 2 + 1;
-                    break;
-                case 5:
-                    ledStatus += 16 + 8 + 4 + 2 + 1;
-                    break;
-                case 6:
-                    ledStatus += 32 + 16 + 8 + 4 + 2 + 1;
-                    break;
+                switch (driver.Value.Driver.ControllerId)
+                {
+                    case 1:
+                        ledStatus += 1;
+                        break;
+                    case 2:
+//                        ledStatus += 2 + 1;
+                        ledStatus += 2;
+                        break;
+                    case 3:
+//                        ledStatus += 4 + 2 + 1;
+                        ledStatus += 4;
+                        break;
+                    case 4:
+//                        ledStatus += 8 + 4 + 2 + 1;
+                        ledStatus += 8;
+                        break;
+                    case 5:
+//                        ledStatus += 16 + 8 + 4 + 2 + 1;
+                        ledStatus += 16;
+                        break;
+                    case 6:
+//                        ledStatus += 32 + 16 + 8 + 4 + 2 + 1;
+                        ledStatus += 32;
+                        break;
+                }
             }
+
             return ledStatus;
         }
 
@@ -525,7 +536,7 @@
             this.serialDevice = await this.InitialiseDevice();
             if (this.serialDevice != null)
             {
-                this.Listen();
+                this.Listen(this.RaceSession);
             }
         }
     }

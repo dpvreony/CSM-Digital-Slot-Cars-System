@@ -47,8 +47,8 @@
                         Style="{StaticResource BodyTextBlockStyle}"
                         MinWidth="70"
                         Padding="25,0,0,0"/>
-                    <RadioButton x:Name="SelectLaps" Content="Laps" GroupName="RaceLimitGroup" Checked="SelectLaps_Checked" IsChecked="True"/>
-                    <RadioButton x:Name="SelectTime" Content="Minutes" GroupName="RaceLimitGroup" Checked="SelectTime_Checked"/>
+                    <RadioButton x:Name="SelectLaps" Content="Laps" GroupName="RaceLimitGroup" IsChecked="True"/>
+                    <RadioButton x:Name="SelectTime" Content="Minutes" GroupName="RaceLimitGroup"/>
                 </StackPanel>
                 <Slider
                     x:Name="RaceLimitSlider"

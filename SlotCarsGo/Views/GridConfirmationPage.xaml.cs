@@ -17,6 +17,12 @@ namespace SlotCarsGo.Views
         public GridConfirmationPage()
         {
             InitializeComponent();
+            Loaded += GridConfirmationPage_Loaded;
+        }
+
+        private async void GridConfirmationPage_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await ViewModel.LoadDataAsync();
         }
 
         private void StartButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
