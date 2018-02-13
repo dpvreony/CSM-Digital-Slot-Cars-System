@@ -40,7 +40,7 @@ namespace SlotCarsGo.ViewModels
 
             foreach (var item in data)
             {
-                RaceTypeItems.Add(item);
+                this.RaceTypeItems.Add(item);
             }
 
             if (viewState == MasterDetailsViewState.Both)

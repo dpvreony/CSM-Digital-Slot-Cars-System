@@ -53,6 +53,12 @@
         <Setter Property="FontFamily" Value="LCD"/>
     </Style>
 
+    <Style x:Key="GlyphText" TargetType="TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="FontSize" Value="{StaticResource LargeFontSize}"/>
+    </Style>
+
     <!--MasterDetail TextBlock Styles-->
     <Style x:Key="ListTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
         <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />

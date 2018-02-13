@@ -26,7 +26,7 @@ namespace SlotCarsGo.ViewModels
             set { Set(ref _selected, value); }
         }
 
-        public ObservableCollection<DriverResult> Results { get; private set; } 
+        public ObservableCollection<DriverResult> Results { get; private set; } = new ObservableCollection<DriverResult>();
 
         public RaceResultsViewModel()
         {
@@ -36,7 +36,12 @@ namespace SlotCarsGo.ViewModels
         {
             if (this.session != null)
             {
-                var Results = this.session.DriverResults.Values.ToList().OrderByDescending(d => d.Position);
+                var data = this.session.DriverResults.Values.ToList().OrderBy(d => d.Position);
+
+                foreach (var item in data)
+                {
+                    this.Results.Add(item);
+                }
 
                 if (viewState == MasterDetailsViewState.Both)
                 {

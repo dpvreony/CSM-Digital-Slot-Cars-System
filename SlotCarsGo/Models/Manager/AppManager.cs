@@ -20,8 +20,7 @@ namespace SlotCarsGo.Models.Manager
         private static ToastNotificationsService toastService;
         private static ApplicationDataContainer localSettings;
         private static StorageFolder localFolder;
-        private static Track track = new Track("Tim's Raceway", 1, 3.6f, "00:34:A9:DE:29");
-        //        private static Track track;
+        private static Track track = new Track("Tim's Raceway", 1, 3.6f, "00:34:A9:DE:29"); // TODO: replace with real data
 
         /// <summary>
         /// Static constructor for AppManager class.
@@ -54,9 +53,6 @@ namespace SlotCarsGo.Models.Manager
         }
 
         internal static Track Track { get => AppManager.track; }
-
-//        public static NavigationServiceEx NavigationServiceEx { get => SimpleIoc.Default.GetInstance<NavigationServiceEx>(); }
-//        public static ViewModelLocator ViewModelLocator { get => SimpleIoc.Default.GetInstance<ViewModelLocator>(); }
 
         /// <summary>
         /// Registers the track name on the server and saves the name and Id to local settings.
@@ -95,7 +91,7 @@ namespace SlotCarsGo.Models.Manager
 
             ToastNotification toast = new ToastNotification(toastXml);
             toast.ExpirationTime = DateTime.Now.AddSeconds(4);
-            AppManager.toastService.ShowToastNotification(toast);
+            // AppManager.toastService.ShowToastNotification(toast);
         }
     }
 }
