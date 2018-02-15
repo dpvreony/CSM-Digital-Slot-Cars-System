@@ -59,7 +59,7 @@ namespace SlotCarsGo.Services
             };
 
             // And show the toast
-            ShowToastNotification(toast);
+            // ShowToastNotification(toast);
         }
     }
 }

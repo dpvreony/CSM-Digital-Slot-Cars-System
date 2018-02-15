@@ -6,73 +6,72 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignHeight="200"
+    d:DesignWidth="300">
     
     <ScrollViewer Name="ForegroundElement" VerticalScrollMode="Enabled" HorizontalAlignment="Stretch" Padding="12,0">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.5*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"  VerticalAlignment="Center">
+            <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
                 <TextBlock
                     Text="Race Time" Style="{StaticResource GridItemHeaderTextStyle}" />
                 <TextBlock
-                    Text="{x:Bind MasterMenuItem.TotalTime.ToString('mm:ss:fff')}"
+                    Text="{x:Bind MasterMenuItem.TotalTime, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:h\\\\:mm\\\\:ss}'}"
                     Style="{StaticResource LapTimeTextStyle}"/>
             </StackPanel>
-            <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"  VerticalAlignment="Center">
+            <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">
                 <TextBlock
                     Text="Time Off Pace" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
-                    Text="{x:Bind MasterMenuItem.TimeOffPace.ToString('mm:ss:fff')}"
+                    Text="{x:Bind MasterMenuItem.TimeOffPace, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:mm\\\\:ss\\\\.f}'}"
                     Style="{StaticResource LapTimeVerticalTextStyle}"/>
             </StackPanel>
-            <StackPanel Grid.Column="3" Grid.Row="1" Grid.ColumnSpan="3"  VerticalAlignment="Center">
+            <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
                 <TextBlock
                     Text="Number of Laps" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
-                    Text="{x:Bind MasterMenuItem.Laps}"
+                    Text="{x:Bind MasterMenuItem.Laps, Mode=OneWay}"
                     Style="{StaticResource LapTimeVerticalTextStyle}"/>
             </StackPanel>
-            <StackPanel Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Center">
+            <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
                 <TextBlock
                     Text="Best Lap" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
-                    Text="{x:Bind MasterMenuItem.BestLapTime.ToString('mm:ss:fff') }"
+                    Text="{x:Bind MasterMenuItem.BestLapTime, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:ss\\\\.fff}' }"
                     Style="{StaticResource LapTimeTextStyle}"/>
             </StackPanel>            
 
             <!-- Bottom Half - Car Details -->
-            <Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="3" BorderThickness="50" >
-                <Image Source="{x:Bind MasterMenuItem.Car.ImagePath}" />
+            <Border BorderThickness="10" >
+                <Image Source="{x:Bind MasterMenuItem.Car.ImagePath, Mode=OneWay}" />
             </Border>
-            <TextBlock Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="3" Text="{x:Bind MasterMenuItem.Car.Name}" FontSize="{StaticResource XLFontSize}"/>
-            <StackPanel Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="3"  VerticalAlignment="Center">
+            <TextBlock
+                Grid.Column="1" Grid.Row="2"
+                Text="{x:Bind MasterMenuItem.Car.Name, Mode=OneWay}"
+                FontSize="{StaticResource LargeFontSize}"/>
+            <StackPanel Grid.Column="1" Grid.Row="3" VerticalAlignment="Center">
                 <TextBlock
                     Text="Track Record" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
-                    Text="{x:Bind MasterMenuItem.Car.TrackRecord.ToString('mm:ss:fff')}"
+                    Text="{x:Bind MasterMenuItem.Car.TrackRecord, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:ss\\\\.fff}'}"
                     Style="{StaticResource LapTimeVerticalTextStyle}"/>
             </StackPanel>
-            <StackPanel Grid.Column="3" Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Center">
+            <StackPanel Grid.Column="1" Grid.Row="4" VerticalAlignment="Center">
                 <TextBlock
                     Text="Record Holder" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
-                    Text="{x:Bind MasterMenuItem.Car.RecordHolder.Nickname }"
+                    Text="{x:Bind MasterMenuItem.Car.RecordHolder.Nickname, Mode=OneWay }"
                     Style="{StaticResource LapTimeVerticalTextStyle}"/>
             </StackPanel>                
         </Grid>

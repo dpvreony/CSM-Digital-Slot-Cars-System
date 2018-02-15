@@ -36,6 +36,8 @@ namespace SlotCarsGo.ViewModels
         {
             if (this.session != null)
             {
+                this.Results.Clear();
+
                 var data = this.session.DriverResults.Values.ToList().OrderBy(d => d.Position);
 
                 foreach (var item in data)

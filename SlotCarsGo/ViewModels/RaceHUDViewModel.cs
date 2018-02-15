@@ -257,7 +257,6 @@ namespace SlotCarsGo.ViewModels
                 if (this.Session.Finished)
                 {
                     this.checkForRaceFinishCancellationTokenSource.Cancel();
-                    SimpleIoc.Default.GetInstance<Powerbase>().StopListening();
 
                     if (this.Session.Started)
                     {
@@ -269,6 +268,8 @@ namespace SlotCarsGo.ViewModels
                         // Controllers are misconfigured, stop and return to GridConfirmation
                         this.GoBackToGridConfirmation();
                     }
+
+                    SimpleIoc.Default.GetInstance<Powerbase>().StopListening();
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(1));

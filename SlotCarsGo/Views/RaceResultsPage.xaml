@@ -21,12 +21,11 @@
             <Grid Height="40">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="1.5*"/>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="1.5*"/>
                     <ColumnDefinition Width="4*"/>                    
                 </Grid.ColumnDefinitions>
-                <TextBlock  Grid.Column="0" Margin="0,0,5,0"  Text="{x:Bind SymbolAsChar}" Style="{StaticResource GlyphText}"  Foreground="White">
+                <TextBlock  Grid.Column="0" Margin="0,0,5,0"  Text="{x:Bind SymbolAsChar}" Style="{StaticResource GlyphText}"  Foreground="Orange">
                     <Interactivity:Interaction.Behaviors>
                         <Interactions:DataTriggerBehavior Binding="{x:Bind Position}" Value="1">
                             <Interactions:ChangePropertyAction PropertyName="Foreground" Value="Gold" />
@@ -36,15 +35,36 @@
                         </Interactions:DataTriggerBehavior>
                         <Interactions:DataTriggerBehavior Binding="{x:Bind Position}" Value="3">
                             <Interactions:ChangePropertyAction PropertyName="Foreground" Value="DarkGoldenrod" />
-                        </Interactions:DataTriggerBehavior>                        
+                        </Interactions:DataTriggerBehavior>
+                        <Interactions:DataTriggerBehavior Binding="{x:Bind Position}" Value="4">
+                            <Interactions:ChangePropertyAction PropertyName="Text" Value="4th" />
+                        </Interactions:DataTriggerBehavior>
+                        <Interactions:DataTriggerBehavior Binding="{x:Bind Position}" Value="5">
+                            <Interactions:ChangePropertyAction PropertyName="Text" Value="5th" />
+                        </Interactions:DataTriggerBehavior>
+                        <Interactions:DataTriggerBehavior Binding="{x:Bind Position}" Value="6">
+                            <Interactions:ChangePropertyAction PropertyName="Text" Value="6th" />
+                        </Interactions:DataTriggerBehavior>                                                
                     </Interactivity:Interaction.Behaviors>
                 </TextBlock>
-                <TextBlock Grid.Column="1" Padding="0,0,5,5" Text="{x:Bind Position}" Style="{StaticResource GridPositionTextStyle}" HorizontalAlignment="Left"/>
-                <Border Grid.Column="2" BorderThickness="2" Padding="0,0,10,0">
+<!--                
+                <TextBlock
+                    Grid.Column="1" Padding="0,0,5,5"
+                    Text="{x:Bind Position}"
+                    Style="{StaticResource GridPositionTextStyle}"
+                    Foreground="Orange"
+                    HorizontalAlignment="Left"/>
+-->                
+                <Border Grid.Column="1" BorderThickness="2" Padding="0,0,10,0">
                     <Image Source="{Binding Driver.AvatarSource}" />
                 </Border>
-                <TextBlock Grid.Column="3" Padding="0,0,5,5" Text="{x:Bind Driver.ControllerId}" Style="{StaticResource GridPositionVerticalTextStyle}" HorizontalAlignment="Left"/>
-                <TextBlock Grid.Column="4" Padding="0,0,0,5" Text="{x:Bind Driver.Nickname}" Tag="{x:Bind HashIdentTitle}" Style="{StaticResource GridPositionVerticalTextStyle}"/>
+                <TextBlock
+                    Grid.Column="2" Padding="0,0,5,5"
+                    Text="{x:Bind Driver.ControllerId}"
+                    Style="{StaticResource GridPositionVerticalTextStyle}"
+                    Foreground="DeepSkyBlue"
+                    HorizontalAlignment="Left"/>
+                <TextBlock Grid.Column="3" Padding="0,0,0,0" Text="{x:Bind Driver.Nickname}" Tag="{x:Bind HashIdentTitle}" Style="{StaticResource LapTimeVerticalTextStyle}"/>
             </Grid>
         </DataTemplate>
 
@@ -58,7 +78,6 @@
     </Page.Resources>
 
     <Grid>
-
         <Grid.RowDefinitions>
             <RowDefinition x:Name="TitleRow" Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -82,11 +101,13 @@
             Margin="0,0,10,0"
             Content="&#xE80F;"
             Style="{StaticResource IconButton}"
+            FontSize="{StaticResource LargeFontSize}"
             Click="HomeButton_Click"/>
 
 
         <controls:MasterDetailsView
-            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+            MasterPaneWidth="220"            
             x:Name="MasterDetailsViewControl"
             ItemsSource="{x:Bind ViewModel.Results, Mode=OneWay}"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
@@ -94,12 +115,13 @@
             DetailsTemplate="{StaticResource DetailsTemplate}"
             NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
             BorderBrush="Transparent" />
+        
         <!--  Adaptive triggers  -->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="WindowStates">
                 <VisualState x:Name="WideState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="640"/>
+                        <AdaptiveTrigger MinWindowWidth="400"/>
                     </VisualState.StateTriggers>
                 </VisualState>
                 <VisualState x:Name="NarrowState">

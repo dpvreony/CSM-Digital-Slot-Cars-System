@@ -151,6 +151,7 @@
     <Compile Include="Services\ToastNotificationsService.cs" />
     <Compile Include="Services\ToastNotificationsService.Samples.cs" />
     <Compile Include="Services\WhatsNewDisplayService.cs" />
+    <Compile Include="Helpers\StringFormatConverter.cs" />
     <Compile Include="ViewModels\GarageViewModel.cs" />
     <Compile Include="ViewModels\GridConfirmationViewModel.cs" />
     <Compile Include="ViewModels\INavigable.cs" />
@@ -349,6 +350,12 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Assets\CarImages\1.jpg" />
+    <Content Include="Assets\CarImages\2.jpg" />
+    <Content Include="Assets\CarImages\3.jpg" />
+    <Content Include="Assets\CarImages\4.jpg" />
+    <Content Include="Assets\CarImages\5.jpg" />
+    <Content Include="Assets\CarImages\6.jpg" />
     <Content Include="Assets\UserImages\0.png" />
     <Content Include="Assets\UserImages\1.png" />
     <Content Include="Assets\UserImages\2.png" />
