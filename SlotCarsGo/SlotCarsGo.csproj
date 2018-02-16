@@ -93,6 +93,9 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AutoMapper">
+      <Version>6.2.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.1</Version>
     </PackageReference>
@@ -127,17 +130,20 @@
     <Compile Include="Models\Comms\IncomingPacket.cs" />
     <Compile Include="Models\Comms\OutgoingPacket.cs" />
     <Compile Include="Models\Comms\Powerbase.cs" />
+    <Compile Include="Models\DTO\CarDTO.cs" />
+    <Compile Include="Models\DTO\DriverDTO.cs" />
+    <Compile Include="Models\DTO\DriverResultDTO.cs" />
+    <Compile Include="Models\DTO\Enums.cs" />
+    <Compile Include="Models\DTO\RaceSessionDTO.cs" />
+    <Compile Include="Models\DTO\RaceTypeDTO.cs" />
+    <Compile Include="Models\DTO\TrackDTO.cs" />
     <Compile Include="Models\Manager\AppManager.cs" />
     <Compile Include="Models\Manager\Track.cs" />
     <Compile Include="Models\Manager\Driver.cs" />
     <Compile Include="Models\Racing\Car.cs" />
-    <Compile Include="Models\Racing\QualifyingRace.cs" />
-    <Compile Include="Models\Racing\GrandPrixRace.cs" />
     <Compile Include="Models\Racing\DriverResult.cs" />
-    <Compile Include="Models\Racing\TimeTrialRace.cs" />
-    <Compile Include="Models\Racing\FreePlayRace.cs" />
     <Compile Include="Models\Racing\RaceSession.cs" />
-    <Compile Include="Models\Racing\RaceTypeBase.cs" />
+    <Compile Include="Models\Racing\RaceType.cs" />
     <Compile Include="Models\SampleOrder.cs" />
     <Compile Include="Services\ActivationService.cs" />
     <Compile Include="Activation\DefaultLaunchActivationHandler.cs" />

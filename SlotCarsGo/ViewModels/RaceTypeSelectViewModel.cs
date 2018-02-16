@@ -18,15 +18,15 @@ namespace SlotCarsGo.ViewModels
 {
     public class RaceTypeSelectViewModel : NavigableViewModelBase
     {
-        private RaceTypeBase _selected;
+        private RaceType _selected;
 
-        public RaceTypeBase Selected
+        public RaceType Selected
         {
             get { return _selected; }
             set { Set(ref _selected, value); }
         }
 
-        public ObservableCollection<RaceTypeBase> RaceTypeItems { get; private set; } = new ObservableCollection<RaceTypeBase>();
+        public ObservableCollection<RaceType> RaceTypeItems { get; private set; } = new ObservableCollection<RaceType>();
 
         public RaceTypeSelectViewModel()
         {
@@ -49,7 +49,7 @@ namespace SlotCarsGo.ViewModels
             }
         }
 
-        public void ProceedToDriverSetup(RaceTypeBase configuredRaceType)
+        public void ProceedToDriverSetup(RaceType configuredRaceType)
         {
             SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(GridConfirmationViewModel).FullName, configuredRaceType);
         }

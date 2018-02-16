@@ -1,9 +1,12 @@
-﻿using GalaSoft.MvvmLight.Ioc;
+﻿using AutoMapper;
+using GalaSoft.MvvmLight.Ioc;
 using SlotCarsGo.Helpers;
 using SlotCarsGo.Models.Comms;
+using SlotCarsGo.Models.Racing;
 using SlotCarsGo.Services;
 using SlotCarsGo.ViewModels;
 using SlotCarsGo.Views;
+using SlotCarsGo_Server.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +44,14 @@ namespace SlotCarsGo.Models.Manager
                     (string)trackCompositeValue["MacAddress"]);
             }
             ThemeSelectorService.Theme = Windows.UI.Xaml.ElementTheme.Dark;
+
+            Mapper.Initialize(cfg => {
+                cfg.CreateMap<RaceSessionDTO, RaceSession>();
+                cfg.CreateMap<DriverResultDTO, DriverResult>();
+                cfg.CreateMap<TrackDTO, Track>();
+                cfg.CreateMap<CarDTO, Car>();
+                cfg.CreateMap<RaceTypeDTO, RaceType>();
+            });
         }
 
         /// <summary>

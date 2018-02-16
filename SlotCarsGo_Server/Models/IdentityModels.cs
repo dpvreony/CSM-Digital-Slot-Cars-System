@@ -29,5 +29,15 @@ namespace SlotCarsGo_Server.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.RaceSession> RaceSessions { get; set; }
+
+        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.Car> Cars { get; set; }
+
+        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.Driver> Drivers { get; set; }
+
+        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.DriverResult> DriverResults { get; set; }
+
+        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.Track> Tracks { get; set; }
     }
 }

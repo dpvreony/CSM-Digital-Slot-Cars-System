@@ -1,20 +1,22 @@
 ﻿using SlotCarsGo.Models.Manager;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace SlotCarsGo.Models.Racing
 {
+    /// <summary>
+    /// Represents a drivers race session result, suitable for displaying in the results
+    /// View and for sending to Entity Framework in the server.
+    /// </summary>
     public class DriverResult
     {
         int sessionId;
         Driver driver;
-        int playerNumber;
+        int controllerNumber;
         int position;
+        int carId;
         Car car;
         int laps;
         private bool finished;
@@ -30,11 +32,10 @@ namespace SlotCarsGo.Models.Racing
         private Symbol symbol = Symbol.Flag;
         private SolidColorBrush symbolBrush;
 
-
-        public DriverResult(Driver driver, int playerNumber)
+        public DriverResult(Driver driver, int controllerNumber)
         {
             this.Driver = driver;
-            this.PlayerNumber = playerNumber;
+            this.ControllerNumber = controllerNumber;
             this.Car = driver.SelectedCar;
             this.Position = 0;
             this.Laps = 0;
@@ -50,7 +51,9 @@ namespace SlotCarsGo.Models.Racing
 
         public Driver Driver { get => driver; private set => driver = value; }
         public int Position { get => position; set => this.position = value; }
-
+        public int SessionId { get => sessionId; set => sessionId = value; }
+        public int ControllerNumber { get => controllerNumber; set => controllerNumber = value; }
+        public int CarId { get => carId; set => carId = value; }
         public Car Car { get => car; private set => car = value; }
         public int Laps { get => laps; set => laps = value; }
         public bool Finished { get => finished; set => finished = value; }
@@ -64,30 +67,10 @@ namespace SlotCarsGo.Models.Racing
         public List<uint> LapGameCounters { get => lapGameCounters; set => lapGameCounters = value; }
         public uint PreviousGameCounter { get => previousGameCounter; set => previousGameCounter = value; }
 
-        public Symbol Symbol { get => symbol; }
-
-        public char SymbolAsChar
-        {
-            get { return (char)Symbol; }
-        }
-
-        public string HashIdentIcon
-        {
-            get { return GetHashCode().ToString() + "-icon"; }
-        }
-
-        public string HashIdentTitle
-        {
-            get { return GetHashCode().ToString() + "-title"; }
-        }
 
         public override string ToString()
         {
             return $"{Driver.ControllerId} {Driver.Nickname}";
         }
-
-        public SolidColorBrush SymbolBrush { get => symbolBrush; set => symbolBrush = value; }
-        public int SessionId { get => sessionId; set => sessionId = value; }
-        public int PlayerNumber { get => playerNumber; set => playerNumber = value; }
     }
 }

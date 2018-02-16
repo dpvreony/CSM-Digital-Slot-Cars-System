@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using AutoMapper;
+using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.DTO;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -18,6 +17,13 @@ namespace SlotCarsGo_Server
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            Mapper.Initialize(cfg => {
+                cfg.CreateMap<RaceSessionDTO, RaceSession>();
+                cfg.CreateMap<DriverResultDTO, DriverResult>();
+                cfg.CreateMap<TrackDTO, Track>();
+                cfg.CreateMap<CarDTO, Car>();
+                cfg.CreateMap<RaceTypeDTO, RaceType>();
+            });
         }
     }
 }

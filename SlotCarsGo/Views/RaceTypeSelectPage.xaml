@@ -17,7 +17,7 @@
         </TransitionCollection>
     </Page.Transitions>
     <Page.Resources>
-        <DataTemplate x:Key="ItemTemplate" x:DataType="model:RaceTypeBase">
+        <DataTemplate x:Key="ItemTemplate" x:DataType="model:RaceType">
             <Grid Height="64" Padding="0,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>

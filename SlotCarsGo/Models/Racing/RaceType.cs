@@ -1,10 +1,11 @@
 ﻿using System;
+using SlotCarsGo.Helpers;
 using Windows.UI.Xaml.Controls;
 using static SlotCarsGo.Helpers.Enums;
 
 namespace SlotCarsGo.Models.Racing
 {
-    public abstract class RaceTypeBase
+    public class RaceType
     {
         protected RaceTypesEnum raceTypeEnum;
         protected string name;
@@ -16,15 +17,18 @@ namespace SlotCarsGo.Models.Racing
         protected Int32 crashPenalty;
         protected Symbol symbol;
 
-        /// <summary>
-        /// Base constructor for race type base class.
-        /// </summary>
-        public RaceTypeBase(int raceLimitValue, bool lapsNotDuration, bool fuelEnabled)
+        public RaceType(RaceTypesEnum raceTypeEnum, string name, string rules, int raceLimitValue, bool lapsNotDuration,
+            bool fuelEnabled, int crashPenalty, Symbol symbol)
         {
+            this.raceTypeEnum = raceTypeEnum;
+            this.name = name;
+            this.rules = rules;
             this.raceLimitValue = raceLimitValue;
-            this.raceLength = new TimeSpan(0, raceLimitValue, 0);
+            this.raceLength = new TimeSpan();
             this.lapsNotDuration = lapsNotDuration;
             this.fuelEnabled = fuelEnabled;
+            this.crashPenalty = crashPenalty;
+            this.symbol = symbol;
         }
 
         public RaceTypesEnum RaceTypeEnum { get => raceTypeEnum; }

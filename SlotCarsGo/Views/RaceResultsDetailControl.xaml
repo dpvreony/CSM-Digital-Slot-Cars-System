@@ -71,7 +71,7 @@
                 <TextBlock
                     Text="Record Holder" Style="{StaticResource GridItemHeaderTextStyle}"/>
                 <TextBlock
-                    Text="{x:Bind MasterMenuItem.Car.RecordHolder.Nickname, Mode=OneWay }"
+                    Text="{x:Bind MasterMenuItem.Car.RecordHolder, Mode=OneWay }"
                     Style="{StaticResource LapTimeVerticalTextStyle}"/>
             </StackPanel>                
         </Grid>

@@ -14,13 +14,13 @@ namespace SlotCarsGo.Views
 {
     public sealed partial class RaceTypeSelectDetailControl : UserControl
     {
-        public RaceTypeBase MasterMenuItem
+        public RaceType MasterMenuItem
         {
-            get { return GetValue(MasterMenuItemProperty) as RaceTypeBase; }
+            get { return GetValue(MasterMenuItemProperty) as RaceType; }
             set { SetValue(MasterMenuItemProperty, value); }
         }
 
-        public static readonly DependencyProperty MasterMenuItemProperty = DependencyProperty.Register("MasterMenuItem", typeof(RaceTypeBase), typeof(RaceTypeSelectDetailControl), new PropertyMetadata(null, OnMasterMenuItemPropertyChanged));
+        public static readonly DependencyProperty MasterMenuItemProperty = DependencyProperty.Register("MasterMenuItem", typeof(RaceType), typeof(RaceTypeSelectDetailControl), new PropertyMetadata(null, OnMasterMenuItemPropertyChanged));
 
         public RaceTypeSelectDetailControl()
         {

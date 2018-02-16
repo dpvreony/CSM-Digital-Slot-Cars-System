@@ -24,7 +24,7 @@ namespace SlotCarsGo.Services
                 ,new Driver(3, "Bowes", "Adam", "Bowes", "/Assets/UserImages/3.png", 3, 3)
                 ,new Driver(4, "Susie", "Susie", "Tyler", "/Assets/UserImages/4.png", 4, 4)
                 ,new Driver(5, "Lauz", "Laura", "Atkins", "/Assets/UserImages/5.png", 5, 5)
-                ,new Driver(6, "Botts", "Robin", "Bottington", "/Assets/UserImages/6.png", 6, 6)
+                ,new Driver(6, "Botts", "Robin", "Botten", "/Assets/UserImages/6.png", 6, 6)
             };
             
             users = new ObservableCollection<Driver>(data.OrderBy(u => u.ControllerId));

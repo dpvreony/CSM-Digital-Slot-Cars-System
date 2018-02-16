@@ -25,7 +25,7 @@
                     <ColumnDefinition Width="1.5*"/>
                     <ColumnDefinition Width="4*"/>                    
                 </Grid.ColumnDefinitions>
-                <TextBlock  Grid.Column="0" Margin="0,0,5,0"  Text="{x:Bind SymbolAsChar}" Style="{StaticResource GlyphText}"  Foreground="Orange">
+                <TextBlock  Grid.Column="0" Margin="0,0,5,0"  Text="&#xEB4B;" Style="{StaticResource GlyphText}"  Foreground="Orange">
                     <Interactivity:Interaction.Behaviors>
                         <Interactions:DataTriggerBehavior Binding="{x:Bind Position}" Value="1">
                             <Interactions:ChangePropertyAction PropertyName="Foreground" Value="Gold" />
@@ -64,7 +64,7 @@
                     Style="{StaticResource GridPositionVerticalTextStyle}"
                     Foreground="DeepSkyBlue"
                     HorizontalAlignment="Left"/>
-                <TextBlock Grid.Column="3" Padding="0,0,0,0" Text="{x:Bind Driver.Nickname}" Tag="{x:Bind HashIdentTitle}" Style="{StaticResource LapTimeVerticalTextStyle}"/>
+                <TextBlock Grid.Column="3" Padding="0,0,0,0" Text="{x:Bind Driver.Nickname}" Style="{StaticResource LapTimeVerticalTextStyle}"/>
             </Grid>
         </DataTemplate>
 

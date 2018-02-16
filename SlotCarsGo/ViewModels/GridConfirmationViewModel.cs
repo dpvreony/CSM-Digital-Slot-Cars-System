@@ -23,7 +23,7 @@ namespace SlotCarsGo.ViewModels
         {
         }
 
-        private RaceTypeBase raceType;
+        private RaceType raceType;
         private Driver _selected;
         private ObservableCollection<Driver> loggedInUsers = new ObservableCollection<Driver>();
         private bool gridConfirmed = false;
@@ -276,7 +276,7 @@ namespace SlotCarsGo.ViewModels
             }
             else
             {                        
-                this.raceType = parameter as RaceTypeBase;
+                this.raceType = parameter as RaceType;
 //                this.RefreshLoggedInUsers();
             }
 

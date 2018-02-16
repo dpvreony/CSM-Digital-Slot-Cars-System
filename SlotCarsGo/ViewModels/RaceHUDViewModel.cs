@@ -17,6 +17,7 @@ using SlotCarsGo.Views;
 using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using static SlotCarsGo.Helpers.Enums;
 
 namespace SlotCarsGo.ViewModels
 {
@@ -38,7 +39,6 @@ namespace SlotCarsGo.ViewModels
         private const string EmptyDiffTime = "00.00";
         private TimeSpan zeroTimeSpan = new TimeSpan(0);
         private CancellationTokenSource checkForRaceFinishCancellationTokenSource;
-        private CancellationToken checkForRaceFinishCancellationToken;
         // Backing fields for players 1-6 lap time details
         private string player1_GridNumber, player2_GridNumber, player3_GridNumber, player4_GridNumber, player5_GridNumber, player6_GridNumber;
         private string player1_BestLap = EmptyLapTime, player2_BestLap = EmptyLapTime, player3_BestLap = EmptyLapTime, player4_BestLap = EmptyLapTime, player5_BestLap = EmptyLapTime, player6_BestLap = EmptyLapTime;
@@ -48,7 +48,16 @@ namespace SlotCarsGo.ViewModels
 
         public RaceHUDViewModel()
         {
-            this.session = new RaceSession(new FreePlayRace(0,false,false), new ObservableCollection<Driver>());
+            RaceType defaultRaceType = new RaceType(
+                RaceTypesEnum.FreePlay,
+                "Free Play",
+                "Players drive for the fun of it - no limit and no rules!",
+                999,
+                false,
+                false,
+                0,
+                Symbol.Play);
+            this.session = new RaceSession(defaultRaceType, new ObservableCollection<Driver>());
             this.RaceButtonBrush = this.greenBrush;
         }
 
@@ -316,7 +325,7 @@ namespace SlotCarsGo.ViewModels
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 // Dispatch back to the main thread
-                switch (this.Session.DriverResults[carId].PlayerNumber)
+                switch (this.Session.DriverResults[carId].ControllerNumber)
                 {
                     case 1:
                         Player1_BestLap = this.Session.DriverResults[carId].BestLapTime.ToString("m':'ss'.'fff");

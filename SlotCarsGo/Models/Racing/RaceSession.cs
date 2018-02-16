@@ -18,10 +18,10 @@ namespace SlotCarsGo.Models.Racing
     {
         const float GameTimerToMicroSecondsConstant = 6.4f;
 
-        private int sessionId;
+        private int id;
         private string sessionName;
-        private int trackID; // TODO: Retrieve from XML on startup and store above Powerbase? RaceManager class?
-        private RaceTypeBase raceType;
+        private int trackID;
+        private RaceType raceType;
         private List<Driver> drivers;
         private DateTime startTime;
         private DateTime endTime;
@@ -48,9 +48,9 @@ namespace SlotCarsGo.Models.Racing
         /// <param name="trackID"></param>
         /// <param name="raceType"></param>
         /// <param name="players"></param>
-        public RaceSession(RaceTypeBase raceType, ObservableCollection<Driver> users)
+        public RaceSession(RaceType raceType, ObservableCollection<Driver> users)
         {
-            this.SessionId = 0; // Updated at end of race
+            this.Id = 0; // Updated at end of race
             this.TrackID = AppManager.Track.Id;
             this.RaceType = raceType;
             this.FuelEnabled = raceType.FuelEnabled;
@@ -61,7 +61,7 @@ namespace SlotCarsGo.Models.Racing
         }
 
         public int TrackID { get => this.trackID; set => this.trackID = value; }
-        public RaceTypeBase RaceType { get => this.raceType; set => this.raceType = value; }
+        public RaceType RaceType { get => this.raceType; set => this.raceType = value; }
         public DateTime StartTime { get => this.startTime; set => this.startTime = value; }
         public DateTime EndTime { get => this.endTime; set => this.endTime = value; }
         public bool FuelEnabled { get => fuelEnabled; set => fuelEnabled = value; }
@@ -72,7 +72,7 @@ namespace SlotCarsGo.Models.Racing
         public int LapsRemaining { get => lapsRemaining; set => lapsRemaining = value; }
         public List<Driver> Drivers { get => drivers; set => drivers = value; }
         internal Dictionary<int, DriverResult> DriverResults { get => driverResults; }
-        public int SessionId { get => sessionId; set => sessionId = value; }
+        public int Id { get => id; set => id = value; }
 
         /// <summary>
         /// Initialises the data driven session details.
