@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.DTO;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 namespace SlotCarsGo_Server.Controllers
 {
@@ -18,9 +21,17 @@ namespace SlotCarsGo_Server.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: api/Tracks
-        public IQueryable<Track> GetTracks()
+        public IQueryable<TrackDTO> GetTracks()
         {
-            return db.Tracks;
+            var tracks = from t in db.Tracks
+                         select new TrackDTO()
+                         {
+                             Id = t.Id,
+                             Name = t.Name,
+                             Length = t.Length
+                         };
+
+            return db.Tracks.ProjectTo<TrackDTO>();
         }
 
         // GET: api/Tracks/5

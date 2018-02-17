@@ -1,6 +1,6 @@
 ﻿namespace SlotCarsGo_Server.Models.DTO
 {
-    class TrackDTO
+    public class TrackDTO
     {
         public string Name { get; set; }
         public int Id { get; set; }

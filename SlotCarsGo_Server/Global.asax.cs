@@ -18,11 +18,11 @@ namespace SlotCarsGo_Server
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             Mapper.Initialize(cfg => {
-                cfg.CreateMap<RaceSessionDTO, RaceSession>();
-                cfg.CreateMap<DriverResultDTO, DriverResult>();
-                cfg.CreateMap<TrackDTO, Track>();
-                cfg.CreateMap<CarDTO, Car>();
-                cfg.CreateMap<RaceTypeDTO, RaceType>();
+                cfg.CreateMap<RaceSession, RaceSessionDTO>();
+                cfg.CreateMap<DriverResult, DriverResultDTO>();
+                cfg.CreateMap<Track, TrackDTO>();
+                cfg.CreateMap<Car, CarDTO>();
+                cfg.CreateMap<RaceType, RaceTypeDTO>();
             });
         }
     }
