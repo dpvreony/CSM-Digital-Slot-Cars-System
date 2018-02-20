@@ -9,65 +9,65 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class TracksRepository<T> : IRepositoryAsync<Track> where T : Track
+    public class DriversRepository<T> : IRepositoryAsync<Driver> where T : Driver
     {
-        public async Task<Track> Delete(int id)
+        public async Task<Driver> Delete(int id)
         {
-            Track track;
+            Driver driver;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = await db.Tracks.FindAsync(id);
-                if (track != null)
+                driver = await db.Drivers.FindAsync(id);
+                if (driver != null)
                 {
-                    db.Tracks.Remove(track);
+                    db.Drivers.Remove(driver);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return track;
+            return driver;
         }
 
         public bool Exists(int id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks.Count(e => e.Id == id) > 0;
+                return db.Drivers.Count(e => e.Id == id) > 0;
             }
         }
 
-        public IQueryable<Track> GetAll()
+        public IQueryable<Driver> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks;
+                return db.Drivers;
             }
         }
 
-        public async Task<Track> GetById(int id)
+        public async Task<Driver> GetById(int id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.Tracks.FindAsync(id);
+                return await db.Drivers.FindAsync(id);
             }
         }
 
-        public async Task<Track> Insert(Track track)
+        public async Task<Driver> Insert(Driver driver)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = db.Tracks.Add(track);
+                driver = db.Drivers.Add(driver);
                 await db.SaveChangesAsync();
             }
 
-            return track;
+            return driver;
         }
 
-        public async Task<EntityState> Update(int id, Track track)
+        public async Task<EntityState> Update(int id, Driver driver)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(track).State = EntityState.Modified;
+                db.Entry(driver).State = EntityState.Modified;
 
                 try
                 {
@@ -75,7 +75,7 @@ namespace SlotCarsGo_Server.Repository
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (db.Tracks.Count(e => e.Id == id) == 0)
+                    if (db.Drivers.Count(e => e.Id == id) == 0)
                     {
                         return EntityState.Unchanged;
                     }
@@ -85,7 +85,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(track).State;
+                return db.Entry(driver).State;
             }
         }
     }

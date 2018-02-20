@@ -77,18 +77,18 @@ namespace SlotCarsGo.ViewModels
         public string Player4_GridNumber { get => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].ControllerId.ToString() : String.Empty; set => Set(ref player4_GridNumber, value); }
         public string Player5_GridNumber { get => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].ControllerId.ToString() : String.Empty; set => Set(ref player5_GridNumber, value); }
         public string Player6_GridNumber { get => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].ControllerId.ToString() : String.Empty; set => Set(ref player6_GridNumber, value); }
-        public string Player1_Avatar => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].AvatarSource : Driver.DefaultDriver.AvatarSource;
-        public string Player2_Avatar => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].AvatarSource : Driver.DefaultDriver.AvatarSource;
-        public string Player3_Avatar => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].AvatarSource : Driver.DefaultDriver.AvatarSource;
-        public string Player4_Avatar => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].AvatarSource : Driver.DefaultDriver.AvatarSource;
-        public string Player5_Avatar => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].AvatarSource : Driver.DefaultDriver.AvatarSource;
-        public string Player6_Avatar => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].AvatarSource : Driver.DefaultDriver.AvatarSource;
-        public string Player1_Name => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].Nickname : String.Empty;
-        public string Player2_Name => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].Nickname : String.Empty;
-        public string Player3_Name => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].Nickname : String.Empty;
-        public string Player4_Name => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].Nickname : String.Empty;
-        public string Player5_Name => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].Nickname : String.Empty;
-        public string Player6_Name => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].Nickname : String.Empty;
+        public string Player1_Avatar => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].ImageName : Driver.DefaultDriver.ImageName;
+        public string Player2_Avatar => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].ImageName : Driver.DefaultDriver.ImageName;
+        public string Player3_Avatar => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].ImageName : Driver.DefaultDriver.ImageName;
+        public string Player4_Avatar => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].ImageName : Driver.DefaultDriver.ImageName;
+        public string Player5_Avatar => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].ImageName : Driver.DefaultDriver.ImageName;
+        public string Player6_Avatar => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].ImageName : Driver.DefaultDriver.ImageName;
+        public string Player1_Name => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].UserName : String.Empty;
+        public string Player2_Name => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].UserName : String.Empty;
+        public string Player3_Name => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].UserName : String.Empty;
+        public string Player4_Name => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].UserName : String.Empty;
+        public string Player5_Name => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].UserName : String.Empty;
+        public string Player6_Name => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].UserName : String.Empty;
 
         public string BestLapHeaderText => "Best Lap";
         public string LastLapHeaderText => "Last Lap";
@@ -303,7 +303,7 @@ namespace SlotCarsGo.ViewModels
             int sessionId = 1;
             foreach (KeyValuePair<int, DriverResult> driver in this.Session.DriverResults)
             {
-                driver.Value.SessionId = sessionId;
+                driver.Value.RaceSessionId = sessionId;
             }
 
             DispatcherHelper.CheckBeginInvokeOnUI(() =>

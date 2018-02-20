@@ -9,65 +9,65 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class TracksRepository<T> : IRepositoryAsync<Track> where T : Track
+    public class CarsRepository<T> : IRepositoryAsync<Car> where T : Car
     {
-        public async Task<Track> Delete(int id)
+        public async Task<Car> Delete(int id)
         {
-            Track track;
+            Car car;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = await db.Tracks.FindAsync(id);
-                if (track != null)
+                car = await db.Cars.FindAsync(id);
+                if (car != null)
                 {
-                    db.Tracks.Remove(track);
+                    db.Cars.Remove(car);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return track;
+            return car;
         }
 
         public bool Exists(int id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks.Count(e => e.Id == id) > 0;
+                return db.Cars.Count(e => e.Id == id) > 0;
             }
         }
 
-        public IQueryable<Track> GetAll()
+        public IQueryable<Car> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks;
+                return db.Cars;
             }
         }
 
-        public async Task<Track> GetById(int id)
+        public async Task<Car> GetById(int id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.Tracks.FindAsync(id);
+                return await db.Cars.FindAsync(id);
             }
         }
 
-        public async Task<Track> Insert(Track track)
+        public async Task<Car> Insert(Car car)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = db.Tracks.Add(track);
+                car = db.Cars.Add(car);
                 await db.SaveChangesAsync();
             }
 
-            return track;
+            return car;
         }
 
-        public async Task<EntityState> Update(int id, Track track)
+        public async Task<EntityState> Update(int id, Car car)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(track).State = EntityState.Modified;
+                db.Entry(car).State = EntityState.Modified;
 
                 try
                 {
@@ -75,7 +75,7 @@ namespace SlotCarsGo_Server.Repository
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (db.Tracks.Count(e => e.Id == id) == 0)
+                    if (db.Cars.Count(e => e.Id == id) == 0)
                     {
                         return EntityState.Unchanged;
                     }
@@ -85,7 +85,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(track).State;
+                return db.Entry(car).State;
             }
         }
     }

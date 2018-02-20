@@ -10,30 +10,34 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Repository;
+using SlotCarsGo_Server.Models.DTO;
+using AutoMapper.QueryableExtensions;
+using AutoMapper;
 
 namespace SlotCarsGo_Server.Controllers
 {
     public class CarsController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private IRepositoryAsync<Car> repo = new CarsRepository<Car>();
 
         // GET: api/Cars
-        public IQueryable<Car> GetCars()
+        public IQueryable<CarDTO> GetCars()
         {
-            return db.Cars;
+            return repo.GetAll().ProjectTo<CarDTO>();
         }
 
         // GET: api/Cars/5
-        [ResponseType(typeof(Car))]
+        [ResponseType(typeof(CarDTO))]
         public async Task<IHttpActionResult> GetCar(int id)
         {
-            Car car = await db.Cars.FindAsync(id);
+            Car car = await repo.GetById(id);
             if (car == null)
             {
                 return NotFound();
             }
 
-            return Ok(car);
+            return Ok(Mapper.Map<CarDTO>(car));
         }
 
         // PUT: api/Cars/5
@@ -50,29 +54,16 @@ namespace SlotCarsGo_Server.Controllers
                 return BadRequest();
             }
 
-            db.Entry(car).State = EntityState.Modified;
-
-            try
+            if (await repo.Update(id, car) != EntityState.Modified)
             {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CarExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Cars
-        [ResponseType(typeof(Car))]
+        [ResponseType(typeof(CarDTO))]
         public async Task<IHttpActionResult> PostCar(Car car)
         {
             if (!ModelState.IsValid)
@@ -80,40 +71,27 @@ namespace SlotCarsGo_Server.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Cars.Add(car);
-            await db.SaveChangesAsync();
+            car = await repo.Insert(car);
 
-            return CreatedAtRoute("DefaultApi", new { id = car.Id }, car);
+            return CreatedAtRoute("DefaultApi", new { id = car.Id }, Mapper.Map<CarDTO>(car));
         }
 
         // DELETE: api/Cars/5
-        [ResponseType(typeof(Car))]
+        [ResponseType(typeof(CarDTO))]
         public async Task<IHttpActionResult> DeleteCar(int id)
         {
-            Car car = await db.Cars.FindAsync(id);
+            Car car = await repo.Delete(id);
             if (car == null)
             {
                 return NotFound();
             }
 
-            db.Cars.Remove(car);
-            await db.SaveChangesAsync();
-
-            return Ok(car);
+            return Ok(Mapper.Map<CarDTO>(car));
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
-        }
-
-        private bool CarExists(int id)
-        {
-            return db.Cars.Count(e => e.Id == id) > 0;
         }
     }
 }

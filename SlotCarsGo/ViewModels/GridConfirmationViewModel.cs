@@ -60,18 +60,18 @@ namespace SlotCarsGo.ViewModels
         public string Player4_GridNumber { get => this.LoggedInUsers.Count >= 4 ? this.LoggedInUsers[3].ControllerId.ToString() : String.Empty; set => Set(ref player4_GridNumber, value); }
         public string Player5_GridNumber { get => this.LoggedInUsers.Count >= 5 ? this.LoggedInUsers[4].ControllerId.ToString() : String.Empty; set => Set(ref player5_GridNumber, value); }
         public string Player6_GridNumber { get => this.LoggedInUsers.Count >= 6 ? this.LoggedInUsers[5].ControllerId.ToString() : String.Empty; set => Set(ref player6_GridNumber, value); }
-        public string Player1_Avatar { get => this.LoggedInUsers.Count >= 1 ? this.player1_Avatar : Driver.DefaultDriver.AvatarSource; set => Set(ref player1_Avatar, value); }
-        public string Player2_Avatar { get => this.LoggedInUsers.Count >= 2 ? this.player2_Avatar : Driver.DefaultDriver.AvatarSource; set => Set(ref player2_Avatar, value); }
-        public string Player3_Avatar { get => this.LoggedInUsers.Count >= 3 ? this.player3_Avatar : Driver.DefaultDriver.AvatarSource; set => Set(ref player3_Avatar, value); }
-        public string Player4_Avatar { get => this.LoggedInUsers.Count >= 4 ? this.player4_Avatar : Driver.DefaultDriver.AvatarSource; set => Set(ref player4_Avatar, value); }
-        public string Player5_Avatar { get => this.LoggedInUsers.Count >= 5 ? this.player5_Avatar : Driver.DefaultDriver.AvatarSource; set => Set(ref player5_Avatar, value); }
-        public string Player6_Avatar { get => this.LoggedInUsers.Count >= 6 ? this.player6_Avatar : Driver.DefaultDriver.AvatarSource; set => Set(ref player6_Avatar, value); }
-        public string Player1_Name { get => this.LoggedInUsers.Count >= 1 ? this.LoggedInUsers[0].Nickname : String.Empty; set => Set(ref player1_Name, value); }
-        public string Player2_Name { get => this.LoggedInUsers.Count >= 2 ? this.LoggedInUsers[1].Nickname : String.Empty; set => Set(ref player2_Name, value); }
-        public string Player3_Name { get => this.LoggedInUsers.Count >= 3 ? this.LoggedInUsers[2].Nickname : String.Empty; set => Set(ref player3_Name, value); }
-        public string Player4_Name { get => this.LoggedInUsers.Count >= 4 ? this.LoggedInUsers[3].Nickname : String.Empty; set => Set(ref player4_Name, value); }
-        public string Player5_Name { get => this.LoggedInUsers.Count >= 5 ? this.LoggedInUsers[4].Nickname : String.Empty; set => Set(ref player5_Name, value); }
-        public string Player6_Name { get => this.LoggedInUsers.Count >= 6 ? this.LoggedInUsers[5].Nickname : String.Empty; set => Set(ref player6_Name, value); }
+        public string Player1_Avatar { get => this.LoggedInUsers.Count >= 1 ? this.player1_Avatar : Driver.DefaultDriver.ImageName; set => Set(ref player1_Avatar, value); }
+        public string Player2_Avatar { get => this.LoggedInUsers.Count >= 2 ? this.player2_Avatar : Driver.DefaultDriver.ImageName; set => Set(ref player2_Avatar, value); }
+        public string Player3_Avatar { get => this.LoggedInUsers.Count >= 3 ? this.player3_Avatar : Driver.DefaultDriver.ImageName; set => Set(ref player3_Avatar, value); }
+        public string Player4_Avatar { get => this.LoggedInUsers.Count >= 4 ? this.player4_Avatar : Driver.DefaultDriver.ImageName; set => Set(ref player4_Avatar, value); }
+        public string Player5_Avatar { get => this.LoggedInUsers.Count >= 5 ? this.player5_Avatar : Driver.DefaultDriver.ImageName; set => Set(ref player5_Avatar, value); }
+        public string Player6_Avatar { get => this.LoggedInUsers.Count >= 6 ? this.player6_Avatar : Driver.DefaultDriver.ImageName; set => Set(ref player6_Avatar, value); }
+        public string Player1_Name { get => this.LoggedInUsers.Count >= 1 ? this.LoggedInUsers[0].UserName : String.Empty; set => Set(ref player1_Name, value); }
+        public string Player2_Name { get => this.LoggedInUsers.Count >= 2 ? this.LoggedInUsers[1].UserName : String.Empty; set => Set(ref player2_Name, value); }
+        public string Player3_Name { get => this.LoggedInUsers.Count >= 3 ? this.LoggedInUsers[2].UserName : String.Empty; set => Set(ref player3_Name, value); }
+        public string Player4_Name { get => this.LoggedInUsers.Count >= 4 ? this.LoggedInUsers[3].UserName : String.Empty; set => Set(ref player4_Name, value); }
+        public string Player5_Name { get => this.LoggedInUsers.Count >= 5 ? this.LoggedInUsers[4].UserName : String.Empty; set => Set(ref player5_Name, value); }
+        public string Player6_Name { get => this.LoggedInUsers.Count >= 6 ? this.LoggedInUsers[5].UserName : String.Empty; set => Set(ref player6_Name, value); }
         public string Player1_Car { get => this.LoggedInUsers.Count >= 1 ? this.LoggedInUsers[0].SelectedCar.Name : String.Empty; set => Set(ref player1_Car, value); }
         public string Player2_Car { get => this.LoggedInUsers.Count >= 2 ? this.LoggedInUsers[1].SelectedCar.Name : String.Empty; set => Set(ref player2_Car, value); }
         public string Player3_Car { get => this.LoggedInUsers.Count >= 3 ? this.LoggedInUsers[2].SelectedCar.Name : String.Empty; set => Set(ref player3_Car, value); }
@@ -133,18 +133,18 @@ namespace SlotCarsGo.ViewModels
             this.Player4Visibility = this.LoggedInUsers.Count >= 4 ? Visibility.Visible : Visibility.Collapsed;
             this.Player5Visibility = this.LoggedInUsers.Count >= 5 ? Visibility.Visible : Visibility.Collapsed;
             this.Player6Visibility = this.LoggedInUsers.Count >= 6 ? Visibility.Visible : Visibility.Collapsed;
-            this.Player1_Avatar = this.LoggedInUsers.Count >= 1 ? LoggedInUsers[0].AvatarSource : Driver.DefaultDriver.AvatarSource;
-            this.Player2_Avatar = this.LoggedInUsers.Count >= 2 ? LoggedInUsers[1].AvatarSource : Driver.DefaultDriver.AvatarSource; 
-            this.Player3_Avatar = this.LoggedInUsers.Count >= 3 ? LoggedInUsers[2].AvatarSource : Driver.DefaultDriver.AvatarSource; 
-            this.Player4_Avatar = this.LoggedInUsers.Count >= 4 ? LoggedInUsers[3].AvatarSource : Driver.DefaultDriver.AvatarSource; 
-            this.Player5_Avatar = this.LoggedInUsers.Count >= 5 ? LoggedInUsers[4].AvatarSource : Driver.DefaultDriver.AvatarSource; 
-            this.Player6_Avatar = this.LoggedInUsers.Count >= 6 ? LoggedInUsers[5].AvatarSource : Driver.DefaultDriver.AvatarSource; 
-            this.Player1_Name = this.LoggedInUsers.Count >= 1 ? LoggedInUsers[0].Nickname : String.Empty; 
-            this.Player2_Name = this.LoggedInUsers.Count >= 2 ? LoggedInUsers[1].Nickname : String.Empty; 
-            this.Player3_Name = this.LoggedInUsers.Count >= 3 ? LoggedInUsers[2].Nickname : String.Empty; 
-            this.Player4_Name = this.LoggedInUsers.Count >= 4 ? LoggedInUsers[3].Nickname : String.Empty; 
-            this.Player5_Name = this.LoggedInUsers.Count >= 5 ? LoggedInUsers[4].Nickname : String.Empty; 
-            this.Player6_Name = this.LoggedInUsers.Count >= 6 ? LoggedInUsers[5].Nickname : String.Empty; 
+            this.Player1_Avatar = this.LoggedInUsers.Count >= 1 ? LoggedInUsers[0].ImageName : Driver.DefaultDriver.ImageName;
+            this.Player2_Avatar = this.LoggedInUsers.Count >= 2 ? LoggedInUsers[1].ImageName : Driver.DefaultDriver.ImageName; 
+            this.Player3_Avatar = this.LoggedInUsers.Count >= 3 ? LoggedInUsers[2].ImageName : Driver.DefaultDriver.ImageName; 
+            this.Player4_Avatar = this.LoggedInUsers.Count >= 4 ? LoggedInUsers[3].ImageName : Driver.DefaultDriver.ImageName; 
+            this.Player5_Avatar = this.LoggedInUsers.Count >= 5 ? LoggedInUsers[4].ImageName : Driver.DefaultDriver.ImageName; 
+            this.Player6_Avatar = this.LoggedInUsers.Count >= 6 ? LoggedInUsers[5].ImageName : Driver.DefaultDriver.ImageName; 
+            this.Player1_Name = this.LoggedInUsers.Count >= 1 ? LoggedInUsers[0].UserName : String.Empty; 
+            this.Player2_Name = this.LoggedInUsers.Count >= 2 ? LoggedInUsers[1].UserName : String.Empty; 
+            this.Player3_Name = this.LoggedInUsers.Count >= 3 ? LoggedInUsers[2].UserName : String.Empty; 
+            this.Player4_Name = this.LoggedInUsers.Count >= 4 ? LoggedInUsers[3].UserName : String.Empty; 
+            this.Player5_Name = this.LoggedInUsers.Count >= 5 ? LoggedInUsers[4].UserName : String.Empty; 
+            this.Player6_Name = this.LoggedInUsers.Count >= 6 ? LoggedInUsers[5].UserName : String.Empty; 
             this.Player1_Car = this.LoggedInUsers.Count >= 1 ? LoggedInUsers[0].SelectedCar.Name : String.Empty; 
             this.Player2_Car = this.LoggedInUsers.Count >= 2 ? LoggedInUsers[1].SelectedCar.Name : String.Empty; 
             this.Player3_Car = this.LoggedInUsers.Count >= 3 ? LoggedInUsers[2].SelectedCar.Name : String.Empty; 

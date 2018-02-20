@@ -9,15 +9,15 @@ namespace SlotCarsGo.Models.Racing
     {
         uint carID;
         string name;
-        string imagePath;
+        string imageName;
         TimeSpan trackRecord;
         string recordHolderFullName;
 
-        public Car(uint carID, string name, string imagePath, TimeSpan trackRecord, string recordHolderFullName)
+        public Car(uint carID, string name, string imageName, TimeSpan trackRecord, string recordHolderFullName)
         {
             this.carID = carID;
             this.name = name;
-            this.imagePath = imagePath;
+            this.imageName = imageName;
             this.trackRecord = trackRecord;
             this.recordHolderFullName = recordHolderFullName;
         }
@@ -26,7 +26,7 @@ namespace SlotCarsGo.Models.Racing
         public string Name { get => name; set => name = value; }
         public TimeSpan TrackRecord { get => trackRecord; set => this.trackRecord = value; }
         public String RecordHolder { get => this.recordHolderFullName; set => recordHolderFullName = value; }
-        public string ImagePath { get => imagePath; set => imagePath = value; }
+        public string ImageName { get => imageName; set => imageName = value; }
 
         private static Car defaultCar = new Car(0, "Not set", "/Assets/CarImages/0.png", new TimeSpan(0,5,0), "Default");
         public static Car DefaultCar { get => defaultCar; }

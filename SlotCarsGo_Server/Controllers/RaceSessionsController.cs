@@ -9,31 +9,35 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using AutoMapper.QueryableExtensions;
+using SlotCarsGo_Server.Repository;
 using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.DTO;
+using AutoMapper;
 
-namespace SlotCarsGo_Server.Controllers
+namespace SlotRaceSessionsGo_Server.Controllers
 {
     public class RaceSessionsController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private IRepositoryAsync<RaceSession> repo = new RaceSessionsRepository<RaceSession>();
 
         // GET: api/RaceSessions
-        public IQueryable<RaceSession> GetRaceSessions()
+        public IQueryable<RaceSessionDTO> GetRaceSessions()
         {
-            return db.RaceSessions;
+            return repo.GetAll().ProjectTo<RaceSessionDTO>();
         }
 
         // GET: api/RaceSessions/5
-        [ResponseType(typeof(RaceSession))]
+        [ResponseType(typeof(RaceSessionDTO))]
         public async Task<IHttpActionResult> GetRaceSession(int id)
         {
-            RaceSession raceSession = await db.RaceSessions.FindAsync(id);
+            RaceSession raceSession = await repo.GetById(id);
             if (raceSession == null)
             {
                 return NotFound();
             }
 
-            return Ok(raceSession);
+            return Ok(Mapper.Map<RaceSessionDTO>(raceSession));
         }
 
         // PUT: api/RaceSessions/5
@@ -50,29 +54,16 @@ namespace SlotCarsGo_Server.Controllers
                 return BadRequest();
             }
 
-            db.Entry(raceSession).State = EntityState.Modified;
-
-            try
+            if (await repo.Update(id, raceSession) != EntityState.Modified)
             {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RaceSessionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/RaceSessions
-        [ResponseType(typeof(RaceSession))]
+        [ResponseType(typeof(RaceSessionDTO))]
         public async Task<IHttpActionResult> PostRaceSession(RaceSession raceSession)
         {
             if (!ModelState.IsValid)
@@ -80,40 +71,27 @@ namespace SlotCarsGo_Server.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.RaceSessions.Add(raceSession);
-            await db.SaveChangesAsync();
+            raceSession = await repo.Insert(raceSession);
 
-            return CreatedAtRoute("DefaultApi", new { id = raceSession.Id }, raceSession);
+            return CreatedAtRoute("DefaultApi", new { id = raceSession.Id }, Mapper.Map<RaceSessionDTO>(raceSession));
         }
 
         // DELETE: api/RaceSessions/5
-        [ResponseType(typeof(RaceSession))]
+        [ResponseType(typeof(RaceSessionDTO))]
         public async Task<IHttpActionResult> DeleteRaceSession(int id)
         {
-            RaceSession raceSession = await db.RaceSessions.FindAsync(id);
+            RaceSession raceSession = await repo.Delete(id);
             if (raceSession == null)
             {
                 return NotFound();
             }
 
-            db.RaceSessions.Remove(raceSession);
-            await db.SaveChangesAsync();
-
-            return Ok(raceSession);
+            return Ok(Mapper.Map<RaceSessionDTO>(raceSession));
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
-        }
-
-        private bool RaceSessionExists(int id)
-        {
-            return db.RaceSessions.Count(e => e.Id == id) > 0;
         }
     }
 }

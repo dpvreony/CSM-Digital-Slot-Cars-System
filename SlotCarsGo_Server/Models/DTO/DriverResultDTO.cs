@@ -9,7 +9,7 @@ namespace SlotCarsGo_Server.Models.DTO
     /// </summary>
     public class DriverResultDTO
     {
-        public DriverDTO Driver { get; set; }
+        public int DriverId { get; set; }
         public int Position { get; set; }
         public int RaceSessionId { get; set; }
         public int ControllerNumber { get; set; }

@@ -9,6 +9,8 @@ namespace SlotCarsGo_Server.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
+        public string ImageName { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -39,5 +41,9 @@ namespace SlotCarsGo_Server.Models
         public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.DriverResult> DriverResults { get; set; }
 
         public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.Track> Tracks { get; set; }
+
+        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.RaceType> RaceTypes { get; set; }
+
+        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.LapTime> LapTimes { get; set; }
     }
 }

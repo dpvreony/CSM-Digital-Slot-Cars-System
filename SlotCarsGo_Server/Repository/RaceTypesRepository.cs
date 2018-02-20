@@ -9,65 +9,66 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class TracksRepository<T> : IRepositoryAsync<Track> where T : Track
+    public class RaceTypesRepository<T> : IRepositoryAsync<RaceType> where T : RaceType
     {
-        public async Task<Track> Delete(int id)
+        public async Task<RaceType> Delete(int id)
         {
-            Track track;
+            RaceType raceType;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = await db.Tracks.FindAsync(id);
-                if (track != null)
+                raceType = await db.RaceTypes.FindAsync(id);
+
+                if (raceType != null)
                 {
-                    db.Tracks.Remove(track);
+                    db.RaceTypes.Remove(raceType);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return track;
+            return raceType;
         }
 
         public bool Exists(int id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks.Count(e => e.Id == id) > 0;
+                return db.RaceTypes.Count(e => e.Id == id) > 0;
             }
         }
 
-        public IQueryable<Track> GetAll()
+        public IQueryable<RaceType> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks;
+                return db.RaceTypes;
             }
         }
 
-        public async Task<Track> GetById(int id)
+        public async Task<RaceType> GetById(int id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.Tracks.FindAsync(id);
+                return await db.RaceTypes.FindAsync(id);
             }
         }
 
-        public async Task<Track> Insert(Track track)
+        public async Task<RaceType> Insert(RaceType raceType)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = db.Tracks.Add(track);
+                raceType = db.RaceTypes.Add(raceType);
                 await db.SaveChangesAsync();
             }
 
-            return track;
+            return raceType;
         }
 
-        public async Task<EntityState> Update(int id, Track track)
+        public async Task<EntityState> Update(int id, RaceType raceType)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(track).State = EntityState.Modified;
+                db.Entry(raceType).State = EntityState.Modified;
 
                 try
                 {
@@ -75,7 +76,7 @@ namespace SlotCarsGo_Server.Repository
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (db.Tracks.Count(e => e.Id == id) == 0)
+                    if (db.RaceTypes.Count(e => e.Id == id) == 0)
                     {
                         return EntityState.Unchanged;
                     }
@@ -85,7 +86,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(track).State;
+                return db.Entry(raceType).State;
             }
         }
     }

@@ -21,7 +21,8 @@ namespace SlotCarsGo_Server
                 cfg.CreateMap<RaceSession, RaceSessionDTO>();
                 cfg.CreateMap<DriverResult, DriverResultDTO>();
                 cfg.CreateMap<Track, TrackDTO>();
-                cfg.CreateMap<Car, CarDTO>();
+                cfg.CreateMap<Car, CarDTO>()
+                    .ForMember(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.ApplicationUser.UserName));
                 cfg.CreateMap<RaceType, RaceTypeDTO>();
             });
         }

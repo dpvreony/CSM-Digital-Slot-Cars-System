@@ -1,4 +1,5 @@
 ﻿using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,65 +10,65 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class TracksRepository<T> : IRepositoryAsync<Track> where T : Track
+    public class LapTimesRepository<T> : IRepositoryAsync<LapTime> where T : LapTime
     {
-        public async Task<Track> Delete(int id)
+        public async Task<LapTime> Delete(int id)
         {
-            Track track;
+            LapTime lapTime;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = await db.Tracks.FindAsync(id);
-                if (track != null)
+                lapTime = await db.LapTimes.FindAsync(id);
+                if (lapTime != null)
                 {
-                    db.Tracks.Remove(track);
+                    db.LapTimes.Remove(lapTime);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return track;
+            return lapTime;
         }
 
         public bool Exists(int id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks.Count(e => e.Id == id) > 0;
+                return db.LapTimes.Count(e => e.Id == id) > 0;
             }
         }
 
-        public IQueryable<Track> GetAll()
+        public IQueryable<LapTime> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks;
+                return db.LapTimes;
             }
         }
 
-        public async Task<Track> GetById(int id)
+        public async Task<LapTime> GetById(int id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.Tracks.FindAsync(id);
+                return await db.LapTimes.FindAsync(id);
             }
         }
 
-        public async Task<Track> Insert(Track track)
+        public async Task<LapTime> Insert(LapTime lapTime)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = db.Tracks.Add(track);
+                lapTime = db.LapTimes.Add(lapTime);
                 await db.SaveChangesAsync();
             }
 
-            return track;
+            return lapTime;
         }
 
-        public async Task<EntityState> Update(int id, Track track)
+        public async Task<EntityState> Update(int id, LapTime lapTime)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(track).State = EntityState.Modified;
+                db.Entry(lapTime).State = EntityState.Modified;
 
                 try
                 {
@@ -75,7 +76,7 @@ namespace SlotCarsGo_Server.Repository
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (db.Tracks.Count(e => e.Id == id) == 0)
+                    if (db.LapTimes.Count(e => e.Id == id) == 0)
                     {
                         return EntityState.Unchanged;
                     }
@@ -85,7 +86,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(track).State;
+                return db.Entry(lapTime).State;
             }
         }
     }

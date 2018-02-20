@@ -9,42 +9,35 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using SlotCarsGo_Server.Models;
-using SlotCarsGo_Server.Models.DTO;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Repository;
+using SlotCarsGo_Server.Models.DTO;
 
-namespace SlotCarsGo_Server.Controllers
+namespace SlotTracksGo_Server.Controllers
 {
     public class TracksController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private IRepositoryAsync<Track> repo = new TracksRepository<Track>();
 
         // GET: api/Tracks
         public IQueryable<TrackDTO> GetTracks()
         {
-            var tracks = from t in db.Tracks
-                         select new TrackDTO()
-                         {
-                             Id = t.Id,
-                             Name = t.Name,
-                             Length = t.Length
-                         };
-
-            return db.Tracks.ProjectTo<TrackDTO>();
+            return repo.GetAll().ProjectTo<TrackDTO>();
         }
 
         // GET: api/Tracks/5
-        [ResponseType(typeof(Track))]
+        [ResponseType(typeof(TrackDTO))]
         public async Task<IHttpActionResult> GetTrack(int id)
         {
-            Track track = await db.Tracks.FindAsync(id);
+            Track track = await repo.GetById(id);
             if (track == null)
             {
                 return NotFound();
             }
 
-            return Ok(track);
+            return Ok(Mapper.Map<TrackDTO>(track));
         }
 
         // PUT: api/Tracks/5
@@ -61,29 +54,16 @@ namespace SlotCarsGo_Server.Controllers
                 return BadRequest();
             }
 
-            db.Entry(track).State = EntityState.Modified;
-
-            try
+            if (await repo.Update(id, track) != EntityState.Modified)
             {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TrackExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Tracks
-        [ResponseType(typeof(Track))]
+        [ResponseType(typeof(TrackDTO))]
         public async Task<IHttpActionResult> PostTrack(Track track)
         {
             if (!ModelState.IsValid)
@@ -91,40 +71,27 @@ namespace SlotCarsGo_Server.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Tracks.Add(track);
-            await db.SaveChangesAsync();
+            track = await repo.Insert(track);
 
-            return CreatedAtRoute("DefaultApi", new { id = track.Id }, track);
+            return CreatedAtRoute("DefaultApi", new { id = track.Id }, Mapper.Map<TrackDTO>(track));
         }
 
         // DELETE: api/Tracks/5
-        [ResponseType(typeof(Track))]
+        [ResponseType(typeof(TrackDTO))]
         public async Task<IHttpActionResult> DeleteTrack(int id)
         {
-            Track track = await db.Tracks.FindAsync(id);
+            Track track = await repo.Delete(id);
             if (track == null)
             {
                 return NotFound();
             }
 
-            db.Tracks.Remove(track);
-            await db.SaveChangesAsync();
-
-            return Ok(track);
+            return Ok(Mapper.Map<TrackDTO>(track));
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
-        }
-
-        private bool TrackExists(int id)
-        {
-            return db.Tracks.Count(e => e.Id == id) > 0;
         }
     }
 }

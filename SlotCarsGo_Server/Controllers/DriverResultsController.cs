@@ -9,111 +9,92 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using AutoMapper.QueryableExtensions;
+using AutoMapper;
+using SlotCarsGo_Server.Models.DTO;
 using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Repository;
 
-namespace SlotCarsGo_Server.Controllers
+namespace SlotDriverResultsGo_Server.Controllers
 {
-    public class DriverResultsController : ApiController
+    public class DriverResultResultsController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
-        // GET: api/DriverResults
-        public IQueryable<DriverResult> GetDriverResults()
+        public class DriverResultsController : ApiController
         {
-            return db.DriverResults;
-        }
+            private IRepositoryAsync<DriverResult> repo = new DriverResultsRepository<DriverResult>();
 
-        // GET: api/DriverResults/5
-        [ResponseType(typeof(DriverResult))]
-        public async Task<IHttpActionResult> GetDriverResult(int id)
-        {
-            DriverResult driverResult = await db.DriverResults.FindAsync(id);
-            if (driverResult == null)
+            // GET: api/DriverResults
+            public IQueryable<DriverResultDTO> GetDriverResults()
             {
-                return NotFound();
+                return repo.GetAll().ProjectTo<DriverResultDTO>();
             }
 
-            return Ok(driverResult);
-        }
-
-        // PUT: api/DriverResults/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutDriverResult(int id, DriverResult driverResult)
-        {
-            if (!ModelState.IsValid)
+            // GET: api/DriverResults/5
+            [ResponseType(typeof(DriverResultDTO))]
+            public async Task<IHttpActionResult> GetDriverResult(int id)
             {
-                return BadRequest(ModelState);
-            }
-
-            if (id != driverResult.Id)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(driverResult).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DriverResultExists(id))
+                DriverResult driverResult = await repo.GetById(id);
+                if (driverResult == null)
                 {
                     return NotFound();
                 }
-                else
+
+                return Ok(Mapper.Map<DriverResultDTO>(driverResult));
+            }
+
+            // PUT: api/DriverResults/5
+            [ResponseType(typeof(void))]
+            public async Task<IHttpActionResult> PutDriverResult(int id, DriverResult driverResult)
+            {
+                if (!ModelState.IsValid)
                 {
-                    throw;
+                    return BadRequest(ModelState);
                 }
+
+                if (id != driverResult.Id)
+                {
+                    return BadRequest();
+                }
+
+                if (await repo.Update(id, driverResult) != EntityState.Modified)
+                {
+                    return NotFound();
+                }
+
+                return StatusCode(HttpStatusCode.NoContent);
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        // POST: api/DriverResults
-        [ResponseType(typeof(DriverResult))]
-        public async Task<IHttpActionResult> PostDriverResult(DriverResult driverResult)
-        {
-            if (!ModelState.IsValid)
+            // POST: api/DriverResults
+            [ResponseType(typeof(DriverResultDTO))]
+            public async Task<IHttpActionResult> PostDriverResult(DriverResult driverResult)
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                driverResult = await repo.Insert(driverResult);
+
+                return CreatedAtRoute("DefaultApi", new { id = driverResult.Id }, Mapper.Map<DriverResultDTO>(driverResult));
             }
 
-            db.DriverResults.Add(driverResult);
-            await db.SaveChangesAsync();
-
-            return CreatedAtRoute("DefaultApi", new { id = driverResult.Id }, driverResult);
-        }
-
-        // DELETE: api/DriverResults/5
-        [ResponseType(typeof(DriverResult))]
-        public async Task<IHttpActionResult> DeleteDriverResult(int id)
-        {
-            DriverResult driverResult = await db.DriverResults.FindAsync(id);
-            if (driverResult == null)
+            // DELETE: api/DriverResults/5
+            [ResponseType(typeof(DriverResultDTO))]
+            public async Task<IHttpActionResult> DeleteDriverResult(int id)
             {
-                return NotFound();
+                DriverResult driverResult = await repo.Delete(id);
+                if (driverResult == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(Mapper.Map<DriverResultDTO>(driverResult));
             }
 
-            db.DriverResults.Remove(driverResult);
-            await db.SaveChangesAsync();
-
-            return Ok(driverResult);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+            protected override void Dispose(bool disposing)
             {
-                db.Dispose();
+                base.Dispose(disposing);
             }
-            base.Dispose(disposing);
-        }
-
-        private bool DriverResultExists(int id)
-        {
-            return db.DriverResults.Count(e => e.Id == id) > 0;
         }
     }
 }

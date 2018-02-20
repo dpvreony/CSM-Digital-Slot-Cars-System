@@ -54,7 +54,7 @@
 
             <!-- Bottom Half - Car Details -->
             <Border BorderThickness="10" >
-                <Image Source="{x:Bind MasterMenuItem.Car.ImagePath, Mode=OneWay}" />
+                <Image Source="{x:Bind MasterMenuItem.Car.ImageName, Mode=OneWay}" />
             </Border>
             <TextBlock
                 Grid.Column="1" Grid.Row="2"

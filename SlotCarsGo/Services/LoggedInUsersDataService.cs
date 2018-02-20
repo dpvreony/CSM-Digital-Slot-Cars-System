@@ -19,12 +19,12 @@ namespace SlotCarsGo.Services
             // TODO: Query logins from server
             var data = new ObservableCollection<Driver>
             {
-                new Driver(1, "Tyler", "Tim", "Tyler", "/Assets/UserImages/1.png", 1, 1)
-                ,new Driver(2, "Cake", "Dave", "Armshaw", "/Assets/UserImages/2.png", 2, 2)
-                ,new Driver(3, "Bowes", "Adam", "Bowes", "/Assets/UserImages/3.png", 3, 3)
-                ,new Driver(4, "Susie", "Susie", "Tyler", "/Assets/UserImages/4.png", 4, 4)
-                ,new Driver(5, "Lauz", "Laura", "Atkins", "/Assets/UserImages/5.png", 5, 5)
-                ,new Driver(6, "Botts", "Robin", "Botten", "/Assets/UserImages/6.png", 6, 6)
+                new Driver(1, "Tyler", "/Assets/UserImages/1.png", 1, 1)
+                ,new Driver(2,"Armshaw", "/Assets/UserImages/2.png", 2, 2)
+                ,new Driver(3,"Bowes", "/Assets/UserImages/3.png", 3, 3)
+                ,new Driver(4,"Tyler", "/Assets/UserImages/4.png", 4, 4)
+                ,new Driver(5,"Atkins", "/Assets/UserImages/5.png", 5, 5)
+                ,new Driver(6,"Botten", "/Assets/UserImages/6.png", 6, 6)
             };
             
             users = new ObservableCollection<Driver>(data.OrderBy(u => u.ControllerId));

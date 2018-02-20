@@ -237,9 +237,10 @@
     <Compile Include="Controllers\DriverResultsController.cs" />
     <Compile Include="Controllers\DriversController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LapTimesController.cs" />
     <Compile Include="Controllers\RaceSessionsController.cs" />
+    <Compile Include="Controllers\RaceTypesController.cs" />
     <Compile Include="Controllers\TracksController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -252,6 +253,7 @@
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\DTO\RaceTypeDTO.cs" />
     <Compile Include="Models\Car.cs" />
+    <Compile Include="Models\LapTime.cs" />
     <Compile Include="Models\RaceType.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\DTO\RaceSessionDTO.cs" />
@@ -266,6 +268,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
+    <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\RaceTypesRepository.cs" />
+    <Compile Include="Repository\RaceSessionsRepository.cs" />
+    <Compile Include="Repository\DriverResultsRepository.cs" />
+    <Compile Include="Repository\DriversRepository.cs" />
+    <Compile Include="Repository\CarsRepository.cs" />
+    <Compile Include="Repository\TracksRepository.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -325,7 +334,9 @@
     </Content>
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\Site.css" />
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />

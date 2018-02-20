@@ -12,7 +12,7 @@ namespace SlotCarsGo.Models.Racing
     /// </summary>
     public class DriverResult
     {
-        int sessionId;
+        int raceSessionId;
         Driver driver;
         int controllerNumber;
         int position;
@@ -51,7 +51,7 @@ namespace SlotCarsGo.Models.Racing
 
         public Driver Driver { get => driver; private set => driver = value; }
         public int Position { get => position; set => this.position = value; }
-        public int SessionId { get => sessionId; set => sessionId = value; }
+        public int RaceSessionId { get => raceSessionId; set => raceSessionId = value; }
         public int ControllerNumber { get => controllerNumber; set => controllerNumber = value; }
         public int CarId { get => carId; set => carId = value; }
         public Car Car { get => car; private set => car = value; }
@@ -70,7 +70,7 @@ namespace SlotCarsGo.Models.Racing
 
         public override string ToString()
         {
-            return $"{Driver.ControllerId} {Driver.Nickname}";
+            return $"{Driver.ControllerId} {Driver.UserName}";
         }
     }
 }

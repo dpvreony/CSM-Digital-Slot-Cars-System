@@ -9,31 +9,35 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using AutoMapper.QueryableExtensions;
+using AutoMapper;
+using SlotCarsGo_Server.Repository;
 using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.DTO;
 
-namespace SlotCarsGo_Server.Controllers
+namespace SlotDriversGo_Server.Controllers
 {
     public class DriversController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private IRepositoryAsync<Driver> repo = new DriversRepository<Driver>();
 
         // GET: api/Drivers
-        public IQueryable<Driver> GetDrivers()
+        public IQueryable<DriverDTO> GetDrivers()
         {
-            return db.Drivers;
+            return repo.GetAll().ProjectTo<DriverDTO>();
         }
 
         // GET: api/Drivers/5
-        [ResponseType(typeof(Driver))]
+        [ResponseType(typeof(DriverDTO))]
         public async Task<IHttpActionResult> GetDriver(int id)
         {
-            Driver driver = await db.Drivers.FindAsync(id);
+            Driver driver = await repo.GetById(id);
             if (driver == null)
             {
                 return NotFound();
             }
 
-            return Ok(driver);
+            return Ok(Mapper.Map<DriverDTO>(driver));
         }
 
         // PUT: api/Drivers/5
@@ -50,29 +54,16 @@ namespace SlotCarsGo_Server.Controllers
                 return BadRequest();
             }
 
-            db.Entry(driver).State = EntityState.Modified;
-
-            try
+            if (await repo.Update(id, driver) != EntityState.Modified)
             {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DriverExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Drivers
-        [ResponseType(typeof(Driver))]
+        [ResponseType(typeof(DriverDTO))]
         public async Task<IHttpActionResult> PostDriver(Driver driver)
         {
             if (!ModelState.IsValid)
@@ -80,40 +71,27 @@ namespace SlotCarsGo_Server.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Drivers.Add(driver);
-            await db.SaveChangesAsync();
+            driver = await repo.Insert(driver);
 
-            return CreatedAtRoute("DefaultApi", new { id = driver.Id }, driver);
+            return CreatedAtRoute("DefaultApi", new { id = driver.Id }, Mapper.Map<DriverDTO>(driver));
         }
 
         // DELETE: api/Drivers/5
-        [ResponseType(typeof(Driver))]
+        [ResponseType(typeof(DriverDTO))]
         public async Task<IHttpActionResult> DeleteDriver(int id)
         {
-            Driver driver = await db.Drivers.FindAsync(id);
+            Driver driver = await repo.Delete(id);
             if (driver == null)
             {
                 return NotFound();
             }
 
-            db.Drivers.Remove(driver);
-            await db.SaveChangesAsync();
-
-            return Ok(driver);
+            return Ok(Mapper.Map<DriverDTO>(driver));
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
             base.Dispose(disposing);
-        }
-
-        private bool DriverExists(int id)
-        {
-            return db.Drivers.Count(e => e.Id == id) > 0;
         }
     }
 }
