@@ -15,6 +15,7 @@ namespace SlotCarsGo_Server.Tests
         Car car;
         Driver driver;
         DriverResult driverResult;
+        LapTime laptime;
         RaceSession raceSession;
         RaceType raceType;
         Track track;
@@ -46,6 +47,7 @@ namespace SlotCarsGo_Server.Tests
         string raceTypeName = "Test Race Type";
         string raceTypeRules = "Test rules";
         string raceTypeSymbol = "E234";
+        int lapNumber = 24;
 
 
         [TestInitialize()]
@@ -54,18 +56,26 @@ namespace SlotCarsGo_Server.Tests
             if (!automapperIntialised)
             {
                 Mapper.Initialize(cfg => {
-                    cfg.CreateMap<RaceSession, RaceSessionDTO>()
-                        .ForMember(dest => dest.RaceType, opt => opt.MapFrom(src => src.RaceType));
+                    cfg.CreateMap<RaceSession, RaceSessionDTO>();
                     cfg.CreateMap<DriverResult, DriverResultDTO>()
-                        .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src.ApplicationUserId));
+                        .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src.ApplicationUserId))
+                        .ReverseMap()
+                            .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.DriverId));
                     cfg.CreateMap<Track, TrackDTO>();
                     cfg.CreateMap<Car, CarDTO>()
-                        .ForMember(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.ApplicationUser.UserName));
+                        .ForMember(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
+                        .ReverseMap()
+                            .ForMember(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.RecordHolder));
                     cfg.CreateMap<RaceType, RaceTypeDTO>();
                     cfg.CreateMap<Driver, DriverDTO>()
                         .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.ApplicationUser.Id))
                         .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
-                        .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.Car));
+                        .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.Car))
+                        .ReverseMap()
+                            .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.UserId))
+                            .ForMember(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.UserName))
+                            .ForMember(dest => dest.Car, opt => opt.MapFrom(src => src.SelectedCar));
+                    cfg.CreateMap<LapTime, LapTimeDTO>();
                 });
 
                 automapperIntialised = true;
@@ -133,6 +143,15 @@ namespace SlotCarsGo_Server.Tests
             raceSession.StartTime = startTime;
             raceSession.Track = track;
             raceSession.TrackID = trackId;
+
+            laptime = new LapTime();
+            laptime.Id = 1;
+            laptime.Driver = driver;
+            laptime.DriverId = driverId;
+            laptime.LapNumber = lapNumber;
+            laptime.RaceSession = raceSession;
+            laptime.RaceSessionId = raceSessionId;
+            laptime.Time = trackRecord;
         }
         
         [TestMethod]
@@ -190,6 +209,18 @@ namespace SlotCarsGo_Server.Tests
         }
 
         [TestMethod]
+        public void LapTimeDTO_Test()
+        {
+            LapTimeDTO laptimeDTO = Mapper.Map<LapTimeDTO>(laptime);
+
+            Assert.AreEqual(laptime.DriverId, laptimeDTO.DriverId);
+            Assert.AreEqual(laptime.Id, laptimeDTO.Id);
+            Assert.AreEqual(laptime.LapNumber, laptimeDTO.LapNumber);
+            Assert.AreEqual(laptime.RaceSessionId, laptimeDTO.RaceSessionId);
+            Assert.AreEqual(laptime.Time, laptimeDTO.Time);
+        }
+
+        [TestMethod]
         public void RaceSessionDTO_Test()
         {
             // Act 
@@ -200,6 +231,7 @@ namespace SlotCarsGo_Server.Tests
             Assert.AreEqual(raceSession.Id, raceSessionDTO.Id);
             Assert.AreEqual(raceSession.NumberOfDrivers, raceSessionDTO.NumberOfDrivers);
             Assert.AreEqual(raceSession.RaceTypeId, raceSessionDTO.RaceType.Id);
+            Assert.AreEqual(raceSession.RaceType.Name, raceSessionDTO.RaceType.Name);
             Assert.AreEqual(raceSession.StartTime, raceSessionDTO.StartTime);
             Assert.AreEqual(raceSession.TrackID, raceSessionDTO.TrackId);
         }

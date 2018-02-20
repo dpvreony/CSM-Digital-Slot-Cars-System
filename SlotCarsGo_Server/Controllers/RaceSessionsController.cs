@@ -64,8 +64,9 @@ namespace SlotRaceSessionsGo_Server.Controllers
 
         // POST: api/RaceSessions
         [ResponseType(typeof(RaceSessionDTO))]
-        public async Task<IHttpActionResult> PostRaceSession(RaceSession raceSession)
+        public async Task<IHttpActionResult> PostRaceSession(RaceSessionDTO raceSessionDTO)
         {
+            RaceSession raceSession = Mapper.Map<RaceSession>(raceSessionDTO);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

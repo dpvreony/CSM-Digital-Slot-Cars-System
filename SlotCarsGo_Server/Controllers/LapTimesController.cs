@@ -63,8 +63,9 @@ namespace SlotCarsGo_Server.Controllers
 
         // POST: api/LapTimes
         [ResponseType(typeof(LapTimeDTO))]
-        public async Task<IHttpActionResult> PostLapTime(LapTime lapTime)
+        public async Task<IHttpActionResult> PostLapTime(LapTimeDTO lapTimeDTO)
         {
+            LapTime lapTime = Mapper.Map<LapTime>(lapTimeDTO);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

@@ -64,8 +64,10 @@ namespace SlotTracksGo_Server.Controllers
 
         // POST: api/Tracks
         [ResponseType(typeof(TrackDTO))]
-        public async Task<IHttpActionResult> PostTrack(Track track)
+        public async Task<IHttpActionResult> PostTrack(TrackDTO trackDTO)
         {
+            Track track = Mapper.Map<Track>(trackDTO);
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

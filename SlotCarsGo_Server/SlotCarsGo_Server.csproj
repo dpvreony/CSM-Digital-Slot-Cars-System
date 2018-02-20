@@ -250,6 +250,7 @@
     <Compile Include="Models\Driver.cs" />
     <Compile Include="Models\DTO\DriverDTO.cs" />
     <Compile Include="Models\DTO\DriverResultDTO.cs" />
+    <Compile Include="Models\DTO\LapTimeDTO.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\DTO\RaceTypeDTO.cs" />
     <Compile Include="Models\Car.cs" />
@@ -269,6 +270,7 @@
     </Compile>
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\LapTimesRepository.cs" />
     <Compile Include="Repository\RaceTypesRepository.cs" />
     <Compile Include="Repository\RaceSessionsRepository.cs" />
     <Compile Include="Repository\DriverResultsRepository.cs" />

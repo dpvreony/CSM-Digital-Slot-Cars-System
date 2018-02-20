@@ -66,8 +66,9 @@ namespace SlotDriverResultsGo_Server.Controllers
 
             // POST: api/DriverResults
             [ResponseType(typeof(DriverResultDTO))]
-            public async Task<IHttpActionResult> PostDriverResult(DriverResult driverResult)
+            public async Task<IHttpActionResult> PostDriverResult(DriverResultDTO driverResultDTO)
             {
+                DriverResult driverResult = Mapper.Map<DriverResult>(driverResultDTO);
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
