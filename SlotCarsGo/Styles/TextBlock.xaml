@@ -33,7 +33,6 @@
     <Style x:Key="GridPositionVerticalTextStyle" TargetType="TextBlock" BasedOn="{StaticResource GridPositionTextStyle}">
         <Setter Property="FontSize" Value="{StaticResource LargeFontSize}"/>
         <Setter Property="Margin" Value="0,0,5,0"/>
-        <Setter Property="Foreground" Value="DeepSkyBlue"/>        
     </Style>
     <Style x:Key="GridItemHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource GridItemTextStyle}">
         <Setter Property="HorizontalAlignment" Value="Left"/>

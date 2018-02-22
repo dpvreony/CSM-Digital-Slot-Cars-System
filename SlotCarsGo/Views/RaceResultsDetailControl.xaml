@@ -53,7 +53,7 @@
             </StackPanel>            
 
             <!-- Bottom Half - Car Details -->
-            <Border BorderThickness="10" >
+            <Border Grid.Column="0" Grid.Row="2" Grid.RowSpan="3" BorderThickness="10" >
                 <Image Source="{x:Bind MasterMenuItem.Car.ImageName, Mode=OneWay}" />
             </Border>
             <TextBlock

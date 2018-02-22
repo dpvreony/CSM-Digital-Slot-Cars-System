@@ -9,7 +9,7 @@ namespace SlotCarsGo.Helpers
         {
             ZeroByte = 0,
             NotRecognisedByte = 127,
-            MaxThrottleTimeout = 13, // No power = 63, was 204 before BitVector sectioning
+            MaxThrottleTimeout = 12, // No power = 63, was 204 before BitVector sectioning
             FinishedDriverThrottle = 40, // Was 220
             NoThrottle = 0x7F, // 0x7F, // was 127 (should be 63?)
             GameTimerStarted = 128,

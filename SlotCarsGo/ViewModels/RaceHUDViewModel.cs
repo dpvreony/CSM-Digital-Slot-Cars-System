@@ -378,7 +378,7 @@ namespace SlotCarsGo.ViewModels
             }
         }
 
-    public override Task OnNavigatedToAsync(object parameter, NavigationMode mode)
+        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode)
         {
             if (parameter == null)
             {
@@ -413,6 +413,9 @@ namespace SlotCarsGo.ViewModels
                         break;
                 }
 
+                this.RaceButtonBrush = this.greenBrush;
+                this.RaceTimeDisplay = "00:00:00.0";
+                this.RaceButtonText = "START";
                 this.UpdateRemainingDisplay();
             }
 

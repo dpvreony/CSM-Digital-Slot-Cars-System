@@ -5,6 +5,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Specialized;
+    using System.Diagnostics;
     using System.IO;
     using System.Runtime.InteropServices;
     using System.Threading;
@@ -81,8 +82,6 @@
                     this.ErrorReceivedEventHandler = new TypedEventHandler<SerialDevice, ErrorReceivedEventArgs>(this.ErrorReceivedEvent);
                     serialDevice.ErrorReceived += this.ErrorReceivedEventHandler;
 
-                    System.Diagnostics.Debug.WriteLine($"{DateTime.Now.ToString()}: Powerbase intialised OK.");
-
                     return serialDevice;
 
                 }
@@ -110,8 +109,8 @@
                     System.Diagnostics.Debug.WriteLine($"{DateTime.Now.ToString()}: Powerbase connected.");
 
                     // Instantiate new action blocks for buffering new packets
-                    this.incomingPacketActionBlock = new ActionBlock<byte[]>(async input => await this.ProcessIncomingPacket(input));
-                    this.updateRaceSessionActionBlock = new ActionBlock<byte[]>(input => this.UpdateRaceSessionData(input));
+//                    this.incomingPacketActionBlock = new ActionBlock<byte[]>(async input => await this.ProcessIncomingPacket(input));
+//                    this.updateRaceSessionActionBlock = new ActionBlock<byte[]>(input => this.UpdateRaceSessionData(input));
 
                     this.reader = new DataReader(serialDevice.InputStream);
                     this.reader.InputStreamOptions = InputStreamOptions.Partial;
@@ -131,6 +130,8 @@
         /// </summary>
         public void StopListening()
         {
+            // Pause to allow reset command to be sent
+            Task.Delay(500); 
             this.CancelListening();
         }
 
@@ -160,63 +161,148 @@
         public async void Listen(RaceSession session)
         {
             this.raceSession = session;
+            this.updateRaceSessionActionBlock = new ActionBlock<byte[]>(input => this.UpdateRaceSessionData(input));
 
-            if (!this.IsPowerbaseConnected)
+            this.powerbaseListenerCancellationTokenSource = new CancellationTokenSource();
+            CancellationToken token = this.powerbaseListenerCancellationTokenSource.Token;
+
+            CancellationTokenSource readCancellationTokenSource = new CancellationTokenSource();
+            readCancellationTokenSource.CancelAfter(1000);
+
+            // Calculate LED lights for number of players
+            this.ledStatusLightByte = (byte)this.CalculateLEDStatusLights(true, this.raceSession.NumberOfDrivers);
+
+            // Assign LED light status to standard response type packets
+            this.resetGameTimerPacket.LEDStatus = this.ledStatusLightByte;
+            this.SuccessOutgoingPacket.LEDStatus = this.ledStatusLightByte;
+            this.NotRecognisedOutgoingPacket.LEDStatus = this.ledStatusLightByte;
+
+            // Calculate new CRC for standard response type packets
+            this.resetGameTimerPacket.Checksum = this.CalculateCrcChecksum(this.resetGameTimerPacket.Data, PacketType.Outgoing);
+            this.SuccessOutgoingPacket.Checksum = this.CalculateCrcChecksum(this.SuccessOutgoingPacket.Data, PacketType.Outgoing);
+            this.NotRecognisedOutgoingPacket.Checksum = this.CalculateCrcChecksum(this.NotRecognisedOutgoingPacket.Data, PacketType.Outgoing);
+
+            // Setup first outgoing message packet
+            byte[] nextOutgoingPacket = new byte[(int)PacketType.Outgoing];
+            nextOutgoingPacket = this.SuccessOutgoingPacket.Data;
+            int byteIndex = 0; // For listening
+            bool msgReceived = true;
+
+            Stopwatch stopwatch = new Stopwatch();
+
+            using (this.serialDevice = await this.InitialiseDevice())
             {
-                await this.Connect();
-            }
-
-            if (serialDevice != null)
-            {
-                this.powerbaseListenerCancellationTokenSource = new CancellationTokenSource();
-                CancellationToken token = this.powerbaseListenerCancellationTokenSource.Token;
-
-                this.resetGameTimerPacket.LEDStatus = (byte)this.CalculateLEDStatusLights(false, this.raceSession.NumberOfDrivers);
-                this.ledStatusLightByte = (byte)this.CalculateLEDStatusLights(true, this.raceSession.NumberOfDrivers);
-                this.SuccessOutgoingPacket.LEDStatus = this.ledStatusLightByte;
-
-                await this.SendPacketToPowerbase(this.SuccessOutgoingPacket.Data);
-                System.Diagnostics.Debug.WriteLine($"{DateTime.Now.ToString()}: Powerbase started listening.");
-
-                int byteIndex = 0;
 
                 // Race session listening loop
                 while (!token.IsCancellationRequested)
-                {
-                    byte[] packet = new byte[(int)PacketType.Incoming];
-                    await reader.LoadAsync((int)PacketType.Incoming);
-                    while (reader.UnconsumedBufferLength > 0)
-                    {
-                        packet[byteIndex++] = reader.ReadByte();
-                    }
+            {
+                stopwatch.Start();
 
-                    byteIndex = 0;
-
-                    // CRC check, send notunderstood if fails
-                    if (packet[(int)PacketType.Incoming - 1] == this.CalculateCrcChecksum(packet, PacketType.Incoming))
+                    if (this.serialDevice != null)
                     {
-                        await this.incomingPacketActionBlock.SendAsync(packet);
-                        System.Diagnostics.Debug.WriteLine($"Packet received.");
+                        // Connect read/writers to streams
+                        this.reader = new DataReader(serialDevice.InputStream);
+                        this.reader.InputStreamOptions = InputStreamOptions.None;
+                        this.writer = new DataWriter(serialDevice.OutputStream);
+
+                        if (msgReceived)
+                        {
+                            if (this.RaceSession.Finished)
+                            {
+                                nextOutgoingPacket = resetGameTimerPacket.Data;
+                            }
+
+                            // Send to the Powerbase
+                            this.writer.WriteBytes(nextOutgoingPacket);
+                            await this.writer.StoreAsync();
+
+                            System.Diagnostics.Debug.WriteLine($"Sent {++this.msgOutCnt}");
+                        }
+
+                        // Listen to device
+                        msgReceived = false;
+                        byte[] incomingPacket = new byte[(int)PacketType.Incoming];
+                        await reader.LoadAsync((int)PacketType.Incoming);
+
+                        while (reader.UnconsumedBufferLength > 0)
+                        {
+                            incomingPacket[byteIndex++] = reader.ReadByte();
+                        }
+
+                        if (byteIndex > 0)
+                        {
+                            msgReceived = true;
+                            byteIndex = 0;
+                        }
+
+                        // CRC check, send notunderstood if fails
+                        if (incomingPacket[(int)PacketType.Incoming - 1] == this.CalculateCrcChecksum(incomingPacket, PacketType.Incoming))
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Packet received.");
+
+                            // Send packet to session
+                            await this.updateRaceSessionActionBlock.SendAsync(incomingPacket);
+
+
+
+                            // Construct the outgoing packet
+                            if (this.RaceSession.Started)
+                            {
+                                nextOutgoingPacket = new byte[]
+                                {
+                                    (byte)MessageBytes.SuccessByte,
+                                    (byte)MessageBytes.NoThrottle,
+                                    (byte)MessageBytes.NoThrottle,
+                                    (byte)MessageBytes.NoThrottle,
+                                    (byte)MessageBytes.NoThrottle,
+                                    (byte)MessageBytes.NoThrottle,
+                                    (byte)MessageBytes.NoThrottle,
+                                    this.ledStatusLightByte,
+                                    (byte)MessageBytes.ZeroByte
+                                };
+
+                                foreach (KeyValuePair<int, DriverResult> driver in this.RaceSession.DriverResults)
+                                {
+                                    BitVector32 bits = new BitVector32(incomingPacket[driver.Key]);
+                                    byte power = (byte)bits[this.powerSection]; // No power = 63
+                                    bits[this.powerSection] = power > (byte)MessageBytes.MaxThrottleTimeout ? power : (byte)MessageBytes.MaxThrottleTimeout;
+                                    nextOutgoingPacket[driver.Key] = (byte)bits.Data;
+                                    // TODO: Fuel management                                       outgoingPacket[i] = this.CalculateThrottle(incomingPacket[i], this.RaceSession.PlayerResults[i-1].Finished, this.RaceSession.PlayerResults[i-1].Fuel);
+                                }
+
+                                // Calculate CRC for new outgoing packet
+                                nextOutgoingPacket[8] = this.CalculateCrcChecksum(nextOutgoingPacket, PacketType.Outgoing);
+                            }
+                            else
+                            {
+                                // Session not started yet
+                                nextOutgoingPacket = resetGameTimerPacket.Data;
+                                System.Diagnostics.Debug.WriteLine("Sent Reset.");
+                            }
+                        }
+                        else
+                        {
+                            // CRC failed, request re-send
+                            nextOutgoingPacket = NotRecognisedOutgoingPacket.Data;
+                            System.Diagnostics.Debug.WriteLine($"Sent Unrecognised #{msgOutCnt}");
+                        }
+
+                        this.reader.DetachStream();
+                        this.writer.DetachStream();
+                        System.Diagnostics.Debug.WriteLine($"Stopwatch {stopwatch.ElapsedMilliseconds}ms");
+                        stopwatch.Reset();
+
                     }
                     else
                     {
-                        await this.incomingPacketActionBlock.SendAsync(NotRecognisedOutgoingPacket.Data);
-                        System.Diagnostics.Debug.WriteLine($"Sent Unrecognised #{msgOutCnt}");
+                        System.Diagnostics.Debug.WriteLine("Failed to connect to the serial device.");
+
                     }
+
                 }
-
-                // Stop listening routine
-                while (this.incomingPacketActionBlock.InputCount > 0)
-                {
-                    // Do nothing, wait.
-                }
-
-                System.Diagnostics.Debug.WriteLine("Listening loop exited.");
-                this.reader.DetachStream();
-                this.writer.DetachStream();
-
                 this.serialDevice.Dispose();
                 this.serialDevice = null;
+
             }
         }
 
@@ -315,7 +401,17 @@
                 this.ledStatusLightByte,
                 (byte)MessageBytes.ZeroByte
             };
-            
+
+            foreach (KeyValuePair<int, DriverResult> driver in this.RaceSession.DriverResults)
+            {
+                BitVector32 bits = new BitVector32(incomingPacket[driver.Key]);
+                byte power = (byte)bits[this.powerSection]; // No power = 63
+//                bits[this.powerSection] = power > (byte)MessageBytes.MaxThrottleTimeout ? power : (byte)MessageBytes.MaxThrottleTimeout;
+                outgoingPacket[driver.Key] = (byte)bits.Data;
+                // TODO: Fuel management                                       outgoingPacket[i] = this.CalculateThrottle(incomingPacket[i], this.RaceSession.PlayerResults[i-1].Finished, this.RaceSession.PlayerResults[i-1].Fuel);
+            }
+
+
             // Calculate throttle for each active driver
             for (var i = 1; i <= this.RaceSession.NumberOfDrivers; i++)
             {
@@ -325,7 +421,7 @@
                     byte power = (byte)bits[this.powerSection]; // No power = 63
                     bits[this.powerSection] = power > (byte)MessageBytes.MaxThrottleTimeout ? power : (byte)MessageBytes.MaxThrottleTimeout;
                     outgoingPacket[i] = (byte)bits.Data;
-// TODO: Fuel management                                       outgoingPacket[i] = this.CalculateThrottle(incomingPacket[i], this.RaceSession.PlayerResults[i-1].Finished, this.RaceSession.PlayerResults[i-1].Fuel);
+
                 }
             }
 
@@ -396,23 +492,18 @@
                         ledStatus += 1;
                         break;
                     case 2:
-//                        ledStatus += 2 + 1;
                         ledStatus += 2;
                         break;
                     case 3:
-//                        ledStatus += 4 + 2 + 1;
                         ledStatus += 4;
                         break;
                     case 4:
-//                        ledStatus += 8 + 4 + 2 + 1;
                         ledStatus += 8;
                         break;
                     case 5:
-//                        ledStatus += 16 + 8 + 4 + 2 + 1;
                         ledStatus += 16;
                         break;
                     case 6:
-//                        ledStatus += 32 + 16 + 8 + 4 + 2 + 1;
                         ledStatus += 32;
                         break;
                 }
@@ -447,8 +538,8 @@
                 outgoingPacket[8] = this.CalculateCrcChecksum(outgoingPacket, PacketType.Outgoing);
 
                 // Send to the Powerbase
-                writer.WriteBytes(outgoingPacket);
-                await writer.StoreAsync();
+                this.writer.WriteBytes(outgoingPacket);
+                await this.writer.StoreAsync();
                 System.Diagnostics.Debug.WriteLine($"Sent Success {++this.msgOutCnt}");
             }
             catch (COMException e)

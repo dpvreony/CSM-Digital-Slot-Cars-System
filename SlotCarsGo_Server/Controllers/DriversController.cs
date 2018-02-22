@@ -28,7 +28,7 @@ namespace SlotDriversGo_Server.Controllers
         }
 
         // GET: api/Drivers/Track/5
-        [Route("Drivers/Track/{trackId}")]
+        [Route("api/Drivers/Track/{trackId}")]
         public IQueryable<DriverDTO> GetDriversForTrack(int trackId)
         {
             return repo.GetAll().Where(d => d.TrackId == trackId).ProjectTo<DriverDTO>();
