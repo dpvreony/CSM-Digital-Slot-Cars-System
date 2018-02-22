@@ -188,16 +188,11 @@
             int byteIndex = 0; // For listening
             bool msgReceived = true;
 
-            Stopwatch stopwatch = new Stopwatch();
-
             using (this.serialDevice = await this.InitialiseDevice())
             {
-
                 // Race session listening loop
                 while (!token.IsCancellationRequested)
-            {
-                stopwatch.Start();
-
+                {
                     if (this.serialDevice != null)
                     {
                         // Connect read/writers to streams
@@ -217,6 +212,10 @@
                             await this.writer.StoreAsync();
 
                             System.Diagnostics.Debug.WriteLine($"Sent {++this.msgOutCnt}");
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"message not received, skipping send...");
                         }
 
                         // Listen to device
@@ -242,8 +241,6 @@
 
                             // Send packet to session
                             await this.updateRaceSessionActionBlock.SendAsync(incomingPacket);
-
-
 
                             // Construct the outgoing packet
                             if (this.RaceSession.Started)
@@ -289,20 +286,15 @@
 
                         this.reader.DetachStream();
                         this.writer.DetachStream();
-                        System.Diagnostics.Debug.WriteLine($"Stopwatch {stopwatch.ElapsedMilliseconds}ms");
-                        stopwatch.Reset();
-
                     }
                     else
                     {
                         System.Diagnostics.Debug.WriteLine("Failed to connect to the serial device.");
-
                     }
-
                 }
+
                 this.serialDevice.Dispose();
                 this.serialDevice = null;
-
             }
         }
 
