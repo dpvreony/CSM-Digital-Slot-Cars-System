@@ -25,17 +25,17 @@ namespace SlotCarsGo_Server
                         .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.DriverId));
                 cfg.CreateMap<Track, TrackDTO>();
                 cfg.CreateMap<Car, CarDTO>()
-                    .ForMember(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
+                    .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
                     .ReverseMap()
-                        .ForMember(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.RecordHolder));
+                        .ForPath(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.RecordHolder));
                 cfg.CreateMap<RaceType, RaceTypeDTO>();
                 cfg.CreateMap<Driver, DriverDTO>()
-                    .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.ApplicationUser.Id))
-                    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
+                    .ForPath(dest => dest.UserId, opt => opt.MapFrom(src => src.ApplicationUser.Id))
+                    .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
                     .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.Car))
                     .ReverseMap()
                         .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.UserId))
-                        .ForMember(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.UserName))
+                        .ForPath(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.UserName))
                         .ForMember(dest => dest.Car, opt => opt.MapFrom(src => src.SelectedCar));
                 cfg.CreateMap<LapTime, LapTimeDTO>();
             });

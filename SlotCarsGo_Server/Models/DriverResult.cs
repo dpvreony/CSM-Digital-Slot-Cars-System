@@ -25,8 +25,7 @@ namespace SlotCarsGo_Server.Models
         public int ControllerNumber { get; set; }
 
         // Foreign Key
-        [Required]
-        public int ApplicationUserId { get; set; }
+        public int? ApplicationUserId { get; set; }
         // Navigation property
         public ApplicationUser ApplicationUser { get; set; }
 
@@ -37,8 +36,7 @@ namespace SlotCarsGo_Server.Models
         public RaceSession Session { get; set; }
 
         // Foreign key
-        [Required]
-        public int CarId { get; set; }
+        public int? CarId { get; set; }
         // Navigation property
         public Car Car { get; set; }
     }

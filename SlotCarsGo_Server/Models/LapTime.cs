@@ -13,12 +13,12 @@ namespace SlotCarsGo_Server.Models
         public TimeSpan Time { get; set; }
 
         // Foreign Key
-        public int DriverId { get; set; }
+        public int? DriverId { get; set; }
         // Navigation property
         public Driver Driver { get; set; }
 
         // Foreign Key
-        public int RaceSessionId { get; set; }
+        public int? RaceSessionId { get; set; }
         // Navigation property
         public RaceSession RaceSession { get; set; }
     }

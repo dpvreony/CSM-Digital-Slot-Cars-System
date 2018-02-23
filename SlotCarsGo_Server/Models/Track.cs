@@ -10,7 +10,6 @@ namespace SlotCarsGo_Server.Models
     {
         public int Id { get; set; }
 
-        [Required]
         public int ApplicationUserId { get; set; }
 
         [Required]
