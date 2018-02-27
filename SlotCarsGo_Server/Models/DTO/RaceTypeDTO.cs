@@ -4,7 +4,7 @@ namespace SlotCarsGo_Server.Models.DTO
 {
     public class RaceTypeDTO
     {
-        public int Id { get; set;}
+        public string Id { get; set;}
         public string Name { get; set; }
         public string Rules { get; set; }
         public int RaceLimitValue { get; set; }

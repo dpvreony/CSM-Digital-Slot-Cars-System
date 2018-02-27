@@ -19,12 +19,12 @@ namespace SlotCarsGo.Services
             // TODO: Query logins 
             var data = new ObservableCollection<Car>
             {
-                new Car(1, "Ferrari F50", "/Assets/CarImages/1.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car(2, "Bentley Continental GT3", "/Assets/CarImages/2.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car(3, "Ford Escort 1980 MKII", "/Assets/CarImages/3.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car(4, "Lancia Delta S4", "/Assets/CarImages/4.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car(5, "Volkswagon Polo WRC 2013", "/Assets/CarImages/5.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car(6, "Mini Countryman WRC 2012", "/Assets/CarImages/6.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
+                new Car("1", "Ferrari F50", "1.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
+                ,new Car("2", "Bentley Continental GT3", "2.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
+                ,new Car("3", "Ford Escort 1980 MKII", "3.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
+                ,new Car("4", "Lancia Delta S4", "4.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
+                ,new Car("5", "Volkswagon Polo WRC 2013", "5.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
+                ,new Car("6", "Mini Countryman WRC 2012", "6.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
             };
 
             garage = data;
@@ -45,7 +45,7 @@ namespace SlotCarsGo.Services
         /// </summary>
         /// <param name="carId"></param>
         /// <returns></returns>
-        public static Car GetCar(int carId)
+        public static Car GetCar(string carId)
         {
             if (garage == null)
             {

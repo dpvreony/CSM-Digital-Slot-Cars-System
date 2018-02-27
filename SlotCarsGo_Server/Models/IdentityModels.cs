@@ -11,6 +11,11 @@ namespace SlotCarsGo_Server.Models
     {
         public string ImageName { get; set; }
 
+
+
+        //object id = Membership.GetUser().ProviderUserKey
+
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

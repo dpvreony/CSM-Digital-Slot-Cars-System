@@ -9,29 +9,25 @@ namespace SlotCarsGo.Models.Manager
 {
     public class Driver
     {
-        int id;
+        string id;
         string username;
         string imageName;
         int controllerId;
         Car selectedCar;
 
-        public Driver(int id, string username, string imageName, int controllerId, int carId)
+        public Driver(string id, string username, string imageName, int controllerId, Car car)
         {
             this.Id = id;
             this.UserName = username;
-            this.ImageName = imageName;
+            this.ImageName = "/Assets/UserImages/" + imageName;
             this.ControllerId = controllerId;
-            // TODO: remove constructor from client version as server will return objects.
-            this.SelectedCar = CarsInGarageDataService.GetCar(carId);
+            this.SelectedCar = car;
         }
 
-        public int Id { get => id; set => id = value; }
+        public string Id { get => id; set => id = value; }
         public string UserName { get => username; set => username = value; }
         public string ImageName { get => imageName; set => imageName = value; }
         public int ControllerId { get => controllerId; set => controllerId = value; }
         internal Car SelectedCar { get => selectedCar; set => selectedCar = value; }
-
-        private static Driver defaultDriver = new Driver(0, String.Empty, "0.png", 1, 1);
-        public static Driver DefaultDriver { get => defaultDriver; }
     }
 }

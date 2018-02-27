@@ -23,7 +23,7 @@ namespace SlotCarsGo.Models.Manager
         private static ToastNotificationsService toastService;
         private static ApplicationDataContainer localSettings;
         private static StorageFolder localFolder;
-        private static Track track = new Track("Tim's Raceway", 1, 3.6f, "00:34:A9:DE:29"); // TODO: replace with real data
+        private static Track track = new Track("Tim's Raceway", String.Empty, 3.6f, "00:34:A9:DE:29"); // TODO: replace with real data
 
         /// <summary>
         /// Static constructor for AppManager class.
@@ -39,7 +39,7 @@ namespace SlotCarsGo.Models.Manager
             {
                 AppManager.track = new Track(
                     (string)trackCompositeValue["TrackName"],
-                    (int)trackCompositeValue["TrackId"],
+                    (string)trackCompositeValue["TrackId"],
                     (float)trackCompositeValue["Length"],
                     (string)trackCompositeValue["MacAddress"]);
             }
@@ -71,7 +71,7 @@ namespace SlotCarsGo.Models.Manager
         /// <param name="trackName"></param>
         public async static void RegisterTrackOnStartup(string trackName)
         {
-            int trackId = 1; // TODO: contact server for trackId
+            string trackId = String.Empty; // TODO: contact server for trackId
             float length = 0.0f;
             string macAddress = String.Empty; // TODO: get Mac https://stackoverflow.com/questions/34097870/c-sharp-get-mac-address-in-universal-apps
             AppManager.track = new Track(trackName, trackId, length, macAddress);

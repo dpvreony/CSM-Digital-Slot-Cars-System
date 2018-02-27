@@ -2,7 +2,7 @@
 {
     public class DriverDTO
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public string UserName { get; set; }
         public string ImageName { get; set; }
         public int ControllerId { get; set; }

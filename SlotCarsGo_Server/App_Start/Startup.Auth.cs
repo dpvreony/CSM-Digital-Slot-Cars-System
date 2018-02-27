@@ -11,6 +11,13 @@ namespace SlotCarsGo_Server
 {
     public partial class Startup
     {
+        internal static string GoogleClientId = "221235001304-lbvlqfhp3ksdv7u490a8kgsnc0vlg9uc.apps.googleusercontent.com";
+        internal static string GoogleClientSecret = "EhTzMdw0Vcl--1tUjhgwq0fH";
+//        internal static string FacebookAppId = "129524867748122"; // TEST APP
+//        internal static string FacebookAppSecret = "9fd36836de1c7c564e950d338d27495b"; // TEST APP
+        internal static string FacebookAppId = "1302442066523694"; // PROD APP
+        internal static string FacebookAppSecret = "89b6e154e01e1b3610aefb4daf104151"; // PROD APP
+
         // For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
@@ -55,15 +62,13 @@ namespace SlotCarsGo_Server
             //   consumerSecret: "");
 
             app.UseFacebookAuthentication(
-               appId: "1302442066523694",
-               appSecret: "89b6e154e01e1b3610aefb4daf104151");
-//                appId: "129524867748122",
-//                appSecret: "9fd36836de1c7c564e950d338d27495b");
+                appId: Startup.FacebookAppId, 
+                appSecret: Startup.FacebookAppSecret);
 
             app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             {
-                ClientId = "221235001304-lbvlqfhp3ksdv7u490a8kgsnc0vlg9uc.apps.googleusercontent.com",
-                ClientSecret = "EhTzMdw0Vcl--1tUjhgwq0fH"
+                ClientId = Startup.GoogleClientId,
+                ClientSecret = Startup.GoogleClientSecret
             });
         }
     }

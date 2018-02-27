@@ -9,11 +9,11 @@ namespace SlotCarsGo.Models.Manager
     class Track
     {
         string name;
-        int id;
+        string id;
         float length;
         string macAddress;
 
-        public Track(string name, int id, float length, string macAddress)
+        public Track(string name, string id, float length, string macAddress)
         {
             this.Name = name;
             this.Id = id;
@@ -22,7 +22,7 @@ namespace SlotCarsGo.Models.Manager
         }
 
         public string Name { get => name; set => name = value; }
-        public int Id { get => id; set => id = value; }
+        public string Id { get => id; set => id = value; }
         public float Length { get => length; set => length = value; }
         public string MacAddress { get => macAddress; set => macAddress = value; }
     }

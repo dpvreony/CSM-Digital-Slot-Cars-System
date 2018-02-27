@@ -12,11 +12,11 @@ namespace SlotCarsGo.Models.Racing
     /// </summary>
     public class DriverResult
     {
-        int raceSessionId;
+        string raceSessionId;
         Driver driver;
         int controllerNumber;
         int position;
-        int carId;
+        string carId;
         Car car;
         int laps;
         private bool finished;
@@ -51,9 +51,9 @@ namespace SlotCarsGo.Models.Racing
 
         public Driver Driver { get => driver; private set => driver = value; }
         public int Position { get => position; set => this.position = value; }
-        public int RaceSessionId { get => raceSessionId; set => raceSessionId = value; }
+        public string RaceSessionId { get => raceSessionId; set => raceSessionId = value; }
         public int ControllerNumber { get => controllerNumber; set => controllerNumber = value; }
-        public int CarId { get => carId; set => carId = value; }
+        public string CarId { get => carId; set => carId = value; }
         public Car Car { get => car; private set => car = value; }
         public int Laps { get => laps; set => laps = value; }
         public bool Finished { get => finished; set => finished = value; }

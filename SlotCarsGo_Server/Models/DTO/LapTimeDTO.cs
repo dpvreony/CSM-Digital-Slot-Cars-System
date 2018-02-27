@@ -7,10 +7,10 @@ namespace SlotCarsGo_Server.Models.DTO
 {
     public class LapTimeDTO
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public int LapNumber { get; set; }
         public TimeSpan Time { get; set; }
-        public int DriverId { get; set; }
-        public int RaceSessionId { get; set; }
+        public string DriverId { get; set; }
+        public string RaceSessionId { get; set; }
     }
 }

@@ -9,14 +9,20 @@
 {
     @Html.AntiForgeryToken()
 
-    <h4>Association Form</h4>
+<!--    <h4>Association Form</h4>-->
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <p class="text-info">
         You've successfully authenticated with <strong>@ViewBag.LoginProvider</strong>.
-        Please enter a user name for this site below and click the Register button to finish
-        logging in.
+        Please set a user name and click Register to finish.
     </p>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Username, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+        </div>
+    </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -26,7 +32,14 @@
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Register" />
+            @if (ViewBag.LoginProvider == "Google")
+            {
+                <input type="submit" class="btn btn-default" value="Register" style="background-color:#DD4B39; color:white;"/>
+            }
+            else if (ViewBag.LoginProvider == "Facebook")
+            {
+                <input type="submit" class="btn btn-default" value="Register" style="background-color:#3B5998; color:white;" />
+            }
         </div>
     </div>
 }

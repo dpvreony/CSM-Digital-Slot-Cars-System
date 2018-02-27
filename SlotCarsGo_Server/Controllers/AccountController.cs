@@ -9,6 +9,10 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using SlotCarsGo_Server.Models;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using System.Net;
+using System.Net.Http;
 
 namespace SlotCarsGo_Server.Controllers
 {
@@ -343,7 +347,7 @@ namespace SlotCarsGo_Server.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email, Username = loginInfo.ExternalIdentity.Name });
             }
         }
 
@@ -367,15 +371,62 @@ namespace SlotCarsGo_Server.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+
+                // Add user to DB
+                var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    try
+                    {
+                        // Retrieve new users profile image from chosen social media
+                        string imageUrl = String.Empty;
+                        if (info.Login.LoginProvider == "Facebook")
+                        {
+                            var fbClient = new Facebook.FacebookClient();
+                            dynamic fbToken = fbClient.Get("oauth/access_token", new
+                            {
+                                client_id = Startup.FacebookAppId,
+                                client_secret = Startup.FacebookAppSecret,
+                                grant_type = "client_credentials"
+                            });
+                            fbClient = new Facebook.FacebookClient(fbToken["access_token"]);
+                            dynamic fbImageResult = fbClient.Get($"{info.Login.ProviderKey}?fields=picture.width(200).height(200)");
+                            imageUrl = fbImageResult["picture"]["data"]["url"];
+                        }
+                        else if (info.Login.LoginProvider == "Google")
+                        {
+                            // Save users profile image and update user model in DB.
+                            using (HttpClient httpClient = new HttpClient())
+                            {
+                                string uri = $"https://www.people.googleapis.com/v1/people/{info.Login.ProviderKey}?fields=coverPhotos&key={Startup.GoogleClientId}";
+                                string googleImageResult = await httpClient.GetStringAsync(uri);
+                                dynamic json = JsonConvert.DeserializeObject(googleImageResult);
+                                imageUrl = json["url"];
+                            }
+                        }
+
+                        // Save users profile image
+                        using (WebClient webClient = new WebClient())
+                        {
+                            webClient.DownloadFile(imageUrl, $"{Server.MapPath(Url.Content("~/Content/Images/Users"))}/{user.Id}.jpg");
+                        }
+
+                        user.ImageName = $"{user.Id}.jpg";
+                    }
+                    catch (Exception)
+                    {
+                        user.ImageName = "0.jpg";
+                    }
+
+                    // Update user model in DB.
+                    UserManager.Update(user);
+
+                    // Login
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
                     if (result.Succeeded)
                     {
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        return RedirectToLocal(returnUrl);
+                        await SignInManager.SignInAsync(user, isPersistent: true, rememberBrowser: true);
                     }
                 }
                 AddErrors(result);

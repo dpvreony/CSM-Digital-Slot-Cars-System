@@ -7,8 +7,8 @@ namespace SlotCarsGo_Server.Models.DTO
 {
     public class RaceSessionDTO
     {
-        public int Id { get; set; }
-        public int TrackId { get; set; }
+        public string Id { get; set; }
+        public string TrackId { get; set; }
         public RaceTypeDTO RaceType;
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
