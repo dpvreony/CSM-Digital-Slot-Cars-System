@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http;
+using System.Configuration;
 
 namespace SlotCarsGo_Server.Controllers
 {
@@ -386,8 +387,8 @@ namespace SlotCarsGo_Server.Controllers
                             var fbClient = new Facebook.FacebookClient();
                             dynamic fbToken = fbClient.Get("oauth/access_token", new
                             {
-                                client_id = Startup.FacebookAppId,
-                                client_secret = Startup.FacebookAppSecret,
+                                client_id = ConfigurationManager.AppSettings["FacebookAppId"].ToString(),
+                                client_secret = ConfigurationManager.AppSettings["FacebookAppSecret"].ToString(),
                                 grant_type = "client_credentials"
                             });
                             fbClient = new Facebook.FacebookClient(fbToken["access_token"]);
@@ -399,7 +400,7 @@ namespace SlotCarsGo_Server.Controllers
                             // Save users profile image and update user model in DB.
                             using (HttpClient httpClient = new HttpClient())
                             {
-                                string uri = $"https://www.people.googleapis.com/v1/people/{info.Login.ProviderKey}?fields=coverPhotos&key={Startup.GoogleClientId}";
+                                string uri = $"https://www.people.googleapis.com/v1/people/{info.Login.ProviderKey}?fields=coverPhotos&key={ConfigurationManager.AppSettings["GoogleClientId"].ToString()}";
                                 string googleImageResult = await httpClient.GetStringAsync(uri);
                                 dynamic json = JsonConvert.DeserializeObject(googleImageResult);
                                 imageUrl = json["url"];

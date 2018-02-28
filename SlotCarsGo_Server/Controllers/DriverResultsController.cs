@@ -21,12 +21,12 @@ namespace SlotDriverResultsGo_Server.Controllers
     {
         public class DriverResultsController : ApiController
         {
-            private IRepositoryAsync<DriverResult> repo = new DriverResultsRepository<DriverResult>();
+            private IRepositoryAsync<DriverResult, DriverResultDTO> repo = new DriverResultsRepository<DriverResult, DriverResultDTO>();
 
             // GET: api/DriverResults
-            public IQueryable<DriverResultDTO> GetDriverResults()
+            public IEnumerable<DriverResultDTO> GetDriverResults()
             {
-                return repo.GetAll().ProjectTo<DriverResultDTO>();
+                return repo.GetAll();
             }
 
             // GET: api/DriverResults/5

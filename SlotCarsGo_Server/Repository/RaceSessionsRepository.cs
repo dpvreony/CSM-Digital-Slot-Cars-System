@@ -1,4 +1,7 @@
-﻿using SlotCarsGo_Server.Models;
+﻿using AutoMapper.QueryableExtensions;
+using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.DTO;
+using SlotCarsGo_Server.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,23 +12,25 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class RaceSessionsRepository<T> : IRepositoryAsync<RaceSession> where T : RaceSession
+    public class RaceSessionsRepository<T, DTO> : IRepositoryAsync<RaceSession, RaceSessionDTO>
+        where T : RaceSession
+        where DTO : RaceSessionDTO
     {
         public async Task<RaceSession> Delete(int id)
         {
-            RaceSession raceSession;
+            RaceSession car;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                raceSession = await db.RaceSessions.FindAsync(id);
-                if (raceSession != null)
+                car = await db.RaceSessions.FindAsync(id);
+                if (car != null)
                 {
-                    db.RaceSessions.Remove(raceSession);
+                    db.RaceSessions.Remove(car);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return raceSession;
+            return car;
         }
 
         public bool Exists(int id)
@@ -36,11 +41,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<RaceSession> GetAll()
+        public IEnumerable<RaceSessionDTO> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.RaceSessions;
+                return db.RaceSessions.ProjectTo<RaceSessionDTO>();
             }
         }
 
@@ -52,22 +57,30 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<RaceSession> Insert(RaceSession raceSession)
+        public IEnumerable<RaceSessionDTO> GetForId(int trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                raceSession = db.RaceSessions.Add(raceSession);
+                return db.RaceSessions.Where(s => s.TrackId == trackId).ProjectTo<RaceSessionDTO>();
+            }
+        }
+
+        public async Task<RaceSession> Insert(RaceSession car)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                car = db.RaceSessions.Add(car);
                 await db.SaveChangesAsync();
             }
 
-            return raceSession;
+            return car;
         }
 
-        public async Task<EntityState> Update(int id, RaceSession raceSession)
+        public async Task<EntityState> Update(int id, RaceSession car)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(raceSession).State = EntityState.Modified;
+                db.Entry(car).State = EntityState.Modified;
 
                 try
                 {
@@ -85,7 +98,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(raceSession).State;
+                return db.Entry(car).State;
             }
         }
     }

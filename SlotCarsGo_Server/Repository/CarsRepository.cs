@@ -1,4 +1,6 @@
-﻿using SlotCarsGo_Server.Models;
+﻿using AutoMapper.QueryableExtensions;
+using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,7 +11,9 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class CarsRepository<T> : IRepositoryAsync<Car> where T : Car
+    public class CarsRepository<T, DTO> : IRepositoryAsync<Car, CarDTO> 
+        where T : Car 
+        where DTO : CarDTO
     {
         public async Task<Car> Delete(int id)
         {
@@ -36,11 +40,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<Car> GetAll()
+        public IEnumerable<CarDTO> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Cars;
+                return db.Cars.ProjectTo<CarDTO>();
             }
         }
 
@@ -49,6 +53,14 @@ namespace SlotCarsGo_Server.Repository
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 return await db.Cars.FindAsync(id);
+            }
+        }
+
+        public IEnumerable<CarDTO> GetForId(int trackId)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                return db.Cars.Where(c => c.TrackId == trackId).ProjectTo<CarDTO>();
             }
         }
 

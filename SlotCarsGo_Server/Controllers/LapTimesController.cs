@@ -18,12 +18,12 @@ namespace SlotCarsGo_Server.Controllers
 {
     public class LapTimesController : ApiController
     {
-        private IRepositoryAsync<LapTime> repo = new LapTimesRepository<LapTime>();
+        private IRepositoryAsync<LapTime, LapTimeDTO> repo = new LapTimesRepository<LapTime, LapTimeDTO>();
 
         // GET: api/LapTimes
-        public IQueryable<LapTimeDTO> GetLapTimes()
+        public IEnumerable<LapTimeDTO> GetLapTimes()
         {
-            return repo.GetAll().ProjectTo<LapTimeDTO>();
+            return repo.GetAll();
         }
 
         // GET: api/LapTimes/5

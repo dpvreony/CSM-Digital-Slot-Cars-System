@@ -19,12 +19,12 @@ namespace SlotRaceSessionsGo_Server.Controllers
 {
     public class RaceSessionsController : ApiController
     {
-        private IRepositoryAsync<RaceSession> repo = new RaceSessionsRepository<RaceSession>();
+        private IRepositoryAsync<RaceSession, RaceSessionDTO> repo = new RaceSessionsRepository<RaceSession, RaceSessionDTO>();
 
         // GET: api/RaceSessions
-        public IQueryable<RaceSessionDTO> GetRaceSessions()
+        public IEnumerable<RaceSessionDTO> GetRaceSessions()
         {
-            return repo.GetAll().ProjectTo<RaceSessionDTO>();
+            return repo.GetAll();
         }
 
         // GET: api/RaceSessions/5

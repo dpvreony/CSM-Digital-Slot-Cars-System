@@ -6,21 +6,27 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using SlotCarsGo_Server.Models;
+using System.Configuration;
+using System.Xml;
+using System.Text;
+using System.Data.Entity.Infrastructure;
 
 namespace SlotCarsGo_Server
 {
     public partial class Startup
     {
-        internal static string GoogleClientId = "221235001304-lbvlqfhp3ksdv7u490a8kgsnc0vlg9uc.apps.googleusercontent.com";
-        internal static string GoogleClientSecret = "EhTzMdw0Vcl--1tUjhgwq0fH";
-//        internal static string FacebookAppId = "129524867748122"; // TEST APP
-//        internal static string FacebookAppSecret = "9fd36836de1c7c564e950d338d27495b"; // TEST APP
-        internal static string FacebookAppId = "1302442066523694"; // PROD APP
-        internal static string FacebookAppSecret = "89b6e154e01e1b3610aefb4daf104151"; // PROD APP
-
         // For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
+/*
+            using (var ctx = new ApplicationDbContext())
+            {
+                using (var writer = new XmlTextWriter(@"C:\users\tango\source\repos\CSM-Digital-Slot-Cars-System\SlotCarsGo_Server\Model.edmx", Encoding.Default))
+                {
+                    EdmxWriter.WriteEdmx(ctx, writer);
+                }
+            }
+*/
             // Configure the db context, user manager and signin manager to use a single instance per request
             app.CreatePerOwinContext(ApplicationDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
@@ -62,13 +68,13 @@ namespace SlotCarsGo_Server
             //   consumerSecret: "");
 
             app.UseFacebookAuthentication(
-                appId: Startup.FacebookAppId, 
-                appSecret: Startup.FacebookAppSecret);
+                appId: ConfigurationManager.AppSettings["FacebookAppId"].ToString(), 
+                appSecret: ConfigurationManager.AppSettings["FacebookAppSecret"].ToString());
 
             app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             {
-                ClientId = Startup.GoogleClientId,
-                ClientSecret = Startup.GoogleClientSecret
+                ClientId = ConfigurationManager.AppSettings["GoogleClientId"].ToString(),
+                ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"].ToString()
             });
         }
     }

@@ -1,4 +1,6 @@
-﻿using SlotCarsGo_Server.Models;
+﻿using AutoMapper.QueryableExtensions;
+using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.DTO;
 using SlotCarsGo_Server.Repository;
 using System;
 using System.Collections.Generic;
@@ -10,23 +12,25 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class LapTimesRepository<T> : IRepositoryAsync<LapTime> where T : LapTime
+    public class LapTimesRepository<T, DTO> : IRepositoryAsync<LapTime, LapTimeDTO>
+        where T : LapTime
+        where DTO : LapTimeDTO
     {
         public async Task<LapTime> Delete(int id)
         {
-            LapTime lapTime;
+            LapTime car;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                lapTime = await db.LapTimes.FindAsync(id);
-                if (lapTime != null)
+                car = await db.LapTimes.FindAsync(id);
+                if (car != null)
                 {
-                    db.LapTimes.Remove(lapTime);
+                    db.LapTimes.Remove(car);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return lapTime;
+            return car;
         }
 
         public bool Exists(int id)
@@ -37,11 +41,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<LapTime> GetAll()
+        public IEnumerable<LapTimeDTO> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.LapTimes;
+                return db.LapTimes.ProjectTo<LapTimeDTO>();
             }
         }
 
@@ -53,22 +57,32 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<LapTime> Insert(LapTime lapTime)
+        public IEnumerable<LapTimeDTO> GetForId(int driverResultId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                lapTime = db.LapTimes.Add(lapTime);
+                DriverResult dr = db.DriverResults.Find(driverResultId);
+
+                return db.LapTimes.Where(lt => lt.RaceSessionId == dr.SessionId && lt.DriverId == dr.ApplicationUserId).ProjectTo<LapTimeDTO>();
+            }
+        }
+
+        public async Task<LapTime> Insert(LapTime car)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                car = db.LapTimes.Add(car);
                 await db.SaveChangesAsync();
             }
 
-            return lapTime;
+            return car;
         }
 
-        public async Task<EntityState> Update(int id, LapTime lapTime)
+        public async Task<EntityState> Update(int id, LapTime car)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(lapTime).State = EntityState.Modified;
+                db.Entry(car).State = EntityState.Modified;
 
                 try
                 {
@@ -86,7 +100,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(lapTime).State;
+                return db.Entry(car).State;
             }
         }
     }

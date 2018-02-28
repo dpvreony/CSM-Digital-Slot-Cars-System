@@ -19,12 +19,12 @@ namespace SlotCarsGo_Server.Controllers
 {
     public class CarsController : ApiController
     {
-        private IRepositoryAsync<Car> repo = new CarsRepository<Car>();
+        private IRepositoryAsync<Car, CarDTO> repo = new CarsRepository<Car, CarDTO>();
 
         // GET: api/Cars
-        public IQueryable<CarDTO> GetCars()
+        public IEnumerable<CarDTO> GetCars()
         {
-            return repo.GetAll().ProjectTo<CarDTO>();
+            return repo.GetAll();
         }
 
         // GET: api/Cars/5

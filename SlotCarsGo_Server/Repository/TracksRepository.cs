@@ -1,4 +1,7 @@
-﻿using SlotCarsGo_Server.Models;
+﻿using AutoMapper.QueryableExtensions;
+using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.DTO;
+using SlotCarsGo_Server.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,23 +12,25 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class TracksRepository<T> : IRepositoryAsync<Track> where T : Track
+    public class TracksRepository<T, DTO> : IRepositoryAsync<Track, TrackDTO>
+        where T : Track
+        where DTO : TrackDTO
     {
         public async Task<Track> Delete(int id)
         {
-            Track track;
+            Track car;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = await db.Tracks.FindAsync(id);
-                if (track != null)
+                car = await db.Tracks.FindAsync(id);
+                if (car != null)
                 {
-                    db.Tracks.Remove(track);
+                    db.Tracks.Remove(car);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return track;
+            return car;
         }
 
         public bool Exists(int id)
@@ -36,11 +41,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<Track> GetAll()
+        public IEnumerable<TrackDTO> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks;
+                return db.Tracks.ProjectTo<TrackDTO>();
             }
         }
 
@@ -52,22 +57,30 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<Track> Insert(Track track)
+        public IEnumerable<TrackDTO> GetForId(int trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = db.Tracks.Add(track);
+                return db.Tracks.Where(t => t.Id == trackId).ProjectTo<TrackDTO>();
+            }
+        }
+
+        public async Task<Track> Insert(Track car)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                car = db.Tracks.Add(car);
                 await db.SaveChangesAsync();
             }
 
-            return track;
+            return car;
         }
 
-        public async Task<EntityState> Update(int id, Track track)
+        public async Task<EntityState> Update(int id, Track car)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(track).State = EntityState.Modified;
+                db.Entry(car).State = EntityState.Modified;
 
                 try
                 {
@@ -85,7 +98,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(track).State;
+                return db.Entry(car).State;
             }
         }
     }

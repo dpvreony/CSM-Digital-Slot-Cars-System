@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using SlotCarsGo_Server.App_Start;
 
 namespace SlotCarsGo_Server.Models
 {
@@ -27,9 +28,19 @@ namespace SlotCarsGo_Server.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+//        private static string BuiltConnectionString = "";
+
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+//            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("ApplicationDbContext", throwIfV1Schema: false)
         {
+/*
+            if (BuiltConnectionString == "DefaultConnection")
+            {
+ 
+                BuiltConnectionString = EFConnectionStringBuilder.BuildEFConnectionString();
+            }
+*/
         }
 
         public static ApplicationDbContext Create()
@@ -37,19 +48,19 @@ namespace SlotCarsGo_Server.Models
             return new ApplicationDbContext();
         }
 
-        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.RaceSession> RaceSessions { get; set; }
+        public DbSet<RaceSession> RaceSessions { get; set; }
 
-        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.Car> Cars { get; set; }
+        public DbSet<Car> Cars { get; set; }
 
-        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.Driver> Drivers { get; set; }
+        public DbSet<Driver> Drivers { get; set; }
 
-        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.DriverResult> DriverResults { get; set; }
+        public DbSet<DriverResult> DriverResults { get; set; }
 
-        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.Track> Tracks { get; set; }
+        public DbSet<Track> Tracks { get; set; }
 
-        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.RaceType> RaceTypes { get; set; }
+        public DbSet<RaceType> RaceTypes { get; set; }
 
-        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.LapTime> LapTimes { get; set; }
+        public DbSet<LapTime> LapTimes { get; set; }
 
 // Already exists as Users        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.ApplicationUser> ApplicationUsers { get; set; }
     }

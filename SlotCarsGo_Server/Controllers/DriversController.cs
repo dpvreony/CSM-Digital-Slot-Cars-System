@@ -19,19 +19,19 @@ namespace SlotDriversGo_Server.Controllers
 {
     public class DriversController : ApiController
     {
-        private IRepositoryAsync<Driver> repo = new DriversRepository<Driver>();
+        private IRepositoryAsync<Driver, DriverDTO> repo = new DriversRepository<Driver, DriverDTO>();
 
         // GET: api/Drivers
-        public IQueryable<DriverDTO> GetDrivers()
+        public IEnumerable<DriverDTO> GetDrivers()
         {
-            return repo.GetAll().ProjectTo<DriverDTO>();
+            return repo.GetAll();
         }
 
         // GET: api/Drivers/Track/5
         [Route("api/Drivers/Track/{trackId}")]
-        public IQueryable<DriverDTO> GetDriversForTrack(int trackId)
+        public IEnumerable<DriverDTO> GetForTrack(int trackId)
         {
-            return repo.GetAll().Where(d => d.TrackId == trackId).ProjectTo<DriverDTO>();
+            return repo.GetForId(trackId);
         }
 
         // GET: api/Drivers/5
