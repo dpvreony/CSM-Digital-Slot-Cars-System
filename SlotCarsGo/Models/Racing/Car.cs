@@ -28,5 +28,7 @@ namespace SlotCarsGo.Models.Racing
         public TimeSpan TrackRecord { get => trackRecord; set => this.trackRecord = value; }
         public String RecordHolder { get => this.recordHolderFullName; set => recordHolderFullName = value; }
         public string ImageName { get => imageName; set => imageName = value; }
+
+        public static readonly Car DefaultCar = new Car("1", "Default Car", "0.png", new TimeSpan(0,0,5), "Default User");
     }
 }

@@ -15,6 +15,18 @@ using System.Net;
 using System.Net.Http;
 using System.Configuration;
 
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.PeopleService.v1;
+using Google.Apis.Util.Store;
+using System.IO;
+using System.Threading;
+using Google.Apis.Auth.OAuth2.Flows;
+using System.Reflection;
+using Google.Apis.Auth.OAuth2.Web;
+using Google.Apis.Auth.OAuth2.Responses;
+using Google.Apis.Auth.OAuth2.Mvc;
+
 namespace SlotCarsGo_Server.Controllers
 {
     [Authorize]
@@ -348,9 +360,11 @@ namespace SlotCarsGo_Server.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
+
                     return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email, Username = loginInfo.ExternalIdentity.Name });
             }
         }
+
 
         //
         // POST: /Account/ExternalLoginConfirmation
@@ -375,7 +389,8 @@ namespace SlotCarsGo_Server.Controllers
 
                 // Add user to DB
                 var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
-                var result = await UserManager.CreateAsync(user);
+                //var result = await UserManager.CreateAsync(user);
+                var result = IdentityResult.Success;
                 if (result.Succeeded)
                 {
                     try
@@ -397,14 +412,181 @@ namespace SlotCarsGo_Server.Controllers
                         }
                         else if (info.Login.LoginProvider == "Google")
                         {
-                            // Save users profile image and update user model in DB.
-                            using (HttpClient httpClient = new HttpClient())
+                            string userId = info.Login.ProviderKey;
+                            this.Session["user"] = info.Login.ProviderKey;
+                            var resultToken = await new AuthorizationCodeMvcApp(this, new AppFlowMetadata()).
+                AuthorizeAsync(CancellationToken.None);
+                            UserCredential credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                                new ClientSecrets
+                                {
+                                    ClientId = ConfigurationManager.AppSettings["GoogleClientId"].ToString(),
+                                    ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"].ToString()
+                                },
+                                new[] { "coverPhotos"},
+                                 userId,
+                                CancellationToken.None,
+                                new FileDataStore(@"C:\users\tango\GoogleAuth", true)).Result;
+
+                            // Create the service.
+                            PeopleServiceService peopleService = new PeopleServiceService(new BaseClientService.Initializer()
                             {
-                                string uri = $"https://www.people.googleapis.com/v1/people/{info.Login.ProviderKey}?fields=coverPhotos&key={ConfigurationManager.AppSettings["GoogleClientId"].ToString()}";
-                                string googleImageResult = await httpClient.GetStringAsync(uri);
-                                dynamic json = JsonConvert.DeserializeObject(googleImageResult);
-                                imageUrl = json["url"];
+                                HttpClientInitializer = credential,
+                                ApplicationName = "APP_NAME",
+                            });
+                            PeopleResource.GetRequest peopleRequest = peopleService.People.Get("me");
+                            peopleRequest.PersonFields = "coverPhotos";
+                            var profile = peopleRequest.Execute();
+                            // Save users profile image and update user model in DB.
+                            // Create OAuth credential.
+                            /*
+                                                                                string credPath = ConfigurationManager.AppSettings["BuildType"].ToString().Equals("DEBUG")
+                                                                                    ? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                                                                                    : Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                                                                                credPath = Path.Combine("/Credentials/", Assembly.GetExecutingAssembly().GetName().Name);
+                                                                                credPath = "~/AppData/Credentials/SlotCarsGo";
+                            */
+
+                            /*
+                                                                                UserCredential credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                                                                                    new ClientSecrets
+                                                                                    {
+                                                                                        ClientId = ConfigurationManager.AppSettings["GoogleClientId"].ToString(),
+                                                                                        ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"].ToString()
+                                                                                    },
+                                                                                    new[] { "profile", "https://www.googleapis.com/auth/contacts.readonly" },
+                                                                                    "me",
+                                                                                    CancellationToken.None
+                            //                                                        ,new FileDataStore(credPath, true)
+                                                                                );
+
+
+                                                                                ClientSecrets secrets = new ClientSecrets()
+                                                                                {
+                                                                                    ClientId = ConfigurationManager.AppSettings["GoogleClientId"].ToString(),
+                                                                                    ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"].ToString()
+                                                                                };
+
+                                                                                var token = new TokenResponse { RefreshToken = "3600" };
+                                                                                var credential = new UserCredential(new GoogleAuthorizationCodeFlow(
+                                                                                    new GoogleAuthorizationCodeFlow.Initializer
+                                                                                    {
+                                                                                        ClientSecrets = secrets
+                                                                                    }),
+                                                                                    "me",
+                                                                                    token);
+
+                                                                                // Create the service.
+                                                                                var service = new PeopleService(new BaseClientService.Initializer()
+                                                                                {
+                                                                                    HttpClientInitializer = credential,
+                                                                                    ApplicationName = "SlotCarsGo",
+                                                                                });
+                            */
+                            // Create OAuth credential.
+                            /*
+                                                            UserCredential credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                                                                new ClientSecrets
+                                                                {
+                                                                    ClientId = "CLIENT_ID",
+                                                                    ClientSecret = "CLIENT_SECRET"
+                                                                },
+                                                                new[] { "profile",
+                                "https://www.googleapis.com/auth/contacts.readonly" },
+                                                                 "me",
+                                                                CancellationToken.None).Result;
+
+                                                            // Create the service.
+                                                            PeopleService peopleService = new PeopleService(new BaseClientService.Initializer()
+                                                            {
+                                                                HttpClientInitializer = credential,
+                                                                ApplicationName = "APP_NAME",
+                                                            });
+
+                                                            Google.Apis.PeopleService.v1.PeopleResource.ConnectionsResource.ListRequest peopleRequest =
+                                                                peopleService.People.Connections.List("people/me");
+                                                            peopleRequest.PersonFields = "names,emailAddresses";
+                                                            ListConnectionsResponse connectionsResponse = peopleRequest.Execute();
+                            */
+                            /*
+                            this.Session["user"] = info.Login.ProviderKey;
+                                                                var token = await new AuthorizationCodeMvcApp(this, new AppFlowMetadata()).AuthorizeAsync(CancellationToken.None);
+
+                                                                if (token.Credential != null)
+                                                                {
+                                                                    var service = new PeopleService(new BaseClientService.Initializer
+                                                                    {
+                                                                        HttpClientInitializer = token.Credential,
+                                                                        ApplicationName = "SlotCarsGo"
+                                                                    });
+
+                                                                    // YOUR CODE SHOULD BE HERE..
+                                                                    // SAMPLE CODE:
+
+                                                                    //                                    PeopleResource.GetRequest peopleRequest = service.People.Get("people/me");
+                                                                    //                                                    peopleRequest.RequestMaskIncludeField = "person.names,person.emailAddresses,person.coverPhotos";
+                                                                    Person profile = service.People.Get("people/me").Execute();
+                                                                    imageUrl = profile.CoverPhotos.ToString();
+                                
                             }
+                                                                */
+                            /*
+                                                            var token = ConfigurationManager.AppSettings["GoogleClientId"];
+                                                            string UserId = info.Login.ProviderKey;
+                                                            string uri = $@"https://people.googleapis.com/v1/people/{UserId}?personFields=coverPhotos&fields=coverPhotos&key={token}";
+
+                                                            string googleImageResult = await httpClient.GetStringAsync(uri);
+                                                            dynamic json = JsonConvert.DeserializeObject(googleImageResult);
+                                                            imageUrl = json["url"];
+
+                                                            /*
+                                                            // Call auth service to get a token
+                                                            // string token = call
+                                                            // embed token in http call spomehow, API object?
+
+                                                            GoogleRedirectAuthorizationBroker.RedirectUri = returnUrl;
+                                                            UserCredential credential = await GoogleRedirectAuthorizationBroker.AuthorizeAsync(
+                                                                new ClientSecrets
+                                                                {
+                                                                    ClientId = ConfigurationManager.AppSettings["GoogleClientId"].ToString(),
+                                                                    ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"].ToString()
+                                                                },
+                                                                new[] { PeopleService.Scope.UserinfoProfile },
+                                                                UserId,
+                                                                CancellationToken.None);
+
+                                                            // Create the service.
+                                                            var service = new PeopleService(new BaseClientService.Initializer()
+                                                            {
+                                                                HttpClientInitializer = credential,
+                                                                ApplicationName = "GetCoverPhotoService",
+                                                            });
+                                                                                            var userProfile = await service.HttpClient.GetStringAsync(uri2);
+
+                                                        /////
+                                                                                            People.Mylibrary.Bookshelves.List().ExecuteAsync();
+
+                                                                                            GoogleAuthorizationCodeFlow flow;
+                                                                                            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                                                                                                new ClientSecrets
+                                                                                                {
+                                                                                                    ClientId = "PUT_CLIENT_ID_HERE",
+                                                                                                    ClientSecret = "PUT_CLIENT_SECRETS_HERE"
+                                                                                                },
+                                                                                                new[] { PeopleService.Scope.UserinfoProfile },
+                                                                                                UserId,
+                                                                                                CancellationToken.None);
+                                                                                            var uri = Request.Url.ToString();
+                                                                                            var code = Request["code"];
+                                                                                            if (code != null)
+                                                                                            {
+                                                                                                var token = flow.ExchangeCodeForTokenAsync(UserId, code,
+                                                                                                    uri.Substring(0, uri.IndexOf("?")), CancellationToken.None).Result;
+
+                                                                                                // Extract the right state.
+                                                                                                var oauthState = AuthWebUtility.ExtracRedirectFromState(
+                                                                                                    flow.DataStore, UserId, Request["state"]).Result;
+                                                                                                Response.Redirect(oauthState);
+                                                            */
                         }
 
                         // Save users profile image
@@ -422,7 +604,7 @@ namespace SlotCarsGo_Server.Controllers
 
                     // Update user model in DB.
                     UserManager.Update(user);
-
+                    
                     // Login
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
                     if (result.Succeeded)

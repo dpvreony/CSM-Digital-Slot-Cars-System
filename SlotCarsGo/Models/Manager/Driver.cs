@@ -29,5 +29,7 @@ namespace SlotCarsGo.Models.Manager
         public string ImageName { get => imageName; set => imageName = value; }
         public int ControllerId { get => controllerId; set => controllerId = value; }
         internal Car SelectedCar { get => selectedCar; set => selectedCar = value; }
+
+        public static readonly Driver DefaultDriver = new Driver("id", "Default User", "0.png", 1, Car.DefaultCar);
     }
 }

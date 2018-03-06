@@ -300,7 +300,7 @@ namespace SlotCarsGo.ViewModels
 
             // TODO: check that data is saved before ending
             // TODO: int sessionId = getSessionIdFromServer (post to server)
-            int sessionId = 1;
+            string sessionId = "1";
             foreach (KeyValuePair<int, DriverResult> driver in this.Session.DriverResults)
             {
                 driver.Value.RaceSessionId = sessionId;
