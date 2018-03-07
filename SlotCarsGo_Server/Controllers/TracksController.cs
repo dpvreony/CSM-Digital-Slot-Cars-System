@@ -29,7 +29,7 @@ namespace SlotTracksGo_Server.Controllers
 
         // GET: api/Tracks/5
         [ResponseType(typeof(TrackDTO))]
-        public async Task<IHttpActionResult> GetTrack(int id)
+        public async Task<IHttpActionResult> GetTrack(string id)
         {
             Track track = await repo.GetById(id);
             if (track == null)
@@ -42,7 +42,7 @@ namespace SlotTracksGo_Server.Controllers
 
         // PUT: api/Tracks/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutTrack(int id, Track track)
+        public async Task<IHttpActionResult> PutTrack(string id, Track track)
         {
             if (!ModelState.IsValid)
             {
@@ -80,7 +80,7 @@ namespace SlotTracksGo_Server.Controllers
 
         // DELETE: api/Tracks/5
         [ResponseType(typeof(TrackDTO))]
-        public async Task<IHttpActionResult> DeleteTrack(int id)
+        public async Task<IHttpActionResult> DeleteTrack(string id)
         {
             Track track = await repo.Delete(id);
             if (track == null)

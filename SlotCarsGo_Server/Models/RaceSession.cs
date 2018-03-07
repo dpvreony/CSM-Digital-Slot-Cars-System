@@ -12,15 +12,15 @@ namespace SlotCarsGo_Server.Models
     /// </summary>
     public class RaceSession
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         // Foreign key
-        public int? TrackId { get; set; }
+        public string TrackId { get; set; }
         // Navigation property
         public Track Track { get; set; }
 
         // Foreign key
-        public int? RaceTypeId { get; set; }
+        public string RaceTypeId { get; set; }
         // Navigation property
         public RaceType RaceType;
 

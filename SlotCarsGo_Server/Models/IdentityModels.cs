@@ -10,12 +10,7 @@ namespace SlotCarsGo_Server.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
-        public string ImageName { get; set; }
-
-
-
-        //object id = Membership.GetUser().ProviderUserKey
-
+        public string ImageName { get; set; } = "0.jpg";
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -28,19 +23,9 @@ namespace SlotCarsGo_Server.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-//        private static string BuiltConnectionString = "";
-
         public ApplicationDbContext()
-//            : base("DefaultConnection", throwIfV1Schema: false)
             : base("DefaultConnection", throwIfV1Schema: false)
         {
-/*
-            if (BuiltConnectionString == "DefaultConnection")
-            {
- 
-                BuiltConnectionString = EFConnectionStringBuilder.BuildEFConnectionString();
-            }
-*/
         }
 
         public static ApplicationDbContext Create()
@@ -61,7 +46,5 @@ namespace SlotCarsGo_Server.Models
         public DbSet<RaceType> RaceTypes { get; set; }
 
         public DbSet<LapTime> LapTimes { get; set; }
-
-// Already exists as Users        public System.Data.Entity.DbSet<SlotCarsGo_Server.Models.ApplicationUser> ApplicationUsers { get; set; }
     }
 }

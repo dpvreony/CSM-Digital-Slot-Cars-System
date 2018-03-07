@@ -16,24 +16,24 @@ namespace SlotCarsGo_Server.Repository
         where T : LapTime
         where DTO : LapTimeDTO
     {
-        public async Task<LapTime> Delete(int id)
+        public async Task<LapTime> Delete(string id)
         {
-            LapTime car;
+            LapTime lapTime;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                car = await db.LapTimes.FindAsync(id);
-                if (car != null)
+                lapTime = await db.LapTimes.FindAsync(id);
+                if (lapTime != null)
                 {
-                    db.LapTimes.Remove(car);
+                    db.LapTimes.Remove(lapTime);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return car;
+            return lapTime;
         }
 
-        public bool Exists(int id)
+        public bool Exists(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -49,7 +49,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<LapTime> GetById(int id)
+        public async Task<LapTime> GetById(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -57,7 +57,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<LapTimeDTO> GetForId(int driverResultId)
+        public IEnumerable<LapTimeDTO> GetForId(string driverResultId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -67,22 +67,22 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<LapTime> Insert(LapTime car)
+        public async Task<LapTime> Insert(LapTime lapTime)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                car = db.LapTimes.Add(car);
+                lapTime = db.LapTimes.Add(lapTime);
                 await db.SaveChangesAsync();
             }
 
-            return car;
+            return lapTime;
         }
 
-        public async Task<EntityState> Update(int id, LapTime car)
+        public async Task<EntityState> Update(string id, LapTime lapTime)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(car).State = EntityState.Modified;
+                db.Entry(lapTime).State = EntityState.Modified;
 
                 try
                 {
@@ -100,7 +100,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(car).State;
+                return db.Entry(lapTime).State;
             }
         }
     }

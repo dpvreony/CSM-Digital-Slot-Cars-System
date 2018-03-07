@@ -8,13 +8,15 @@ namespace SlotCarsGo_Server.Models
 {
     public class Track
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
-        public int ApplicationUserId { get; set; }
+        public string ApplicationUserId { get; set; }
 
         [Required]
         public string Name { get; set; }
 
         public float Length { get; set; }
+
+        public string Secret { get; set; }
     }
 }

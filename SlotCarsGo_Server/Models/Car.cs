@@ -8,7 +8,7 @@ namespace SlotCarsGo_Server.Models
 {
     public class Car
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -17,12 +17,12 @@ namespace SlotCarsGo_Server.Models
         public string ImageName { get; set; } = "0.png";
 
         // Foreign key
-        public int? ApplicationUserId { get; set; }
+        public string ApplicationUserId { get; set; }
         // Navigation property
         public ApplicationUser ApplicationUser { get; set; }
 
         // Foreign key
-        public int? TrackId { get; set; }
+        public string TrackId { get; set; }
         // Navigation property
         public Track Track { get; set; }
     }

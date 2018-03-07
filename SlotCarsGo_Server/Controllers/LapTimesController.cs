@@ -28,7 +28,7 @@ namespace SlotCarsGo_Server.Controllers
 
         // GET: api/LapTimes/5
         [ResponseType(typeof(LapTimeDTO))]
-        public async Task<IHttpActionResult> GetLapTime(int id)
+        public async Task<IHttpActionResult> GetLapTime(string id)
         {
             LapTime lapTime = await repo.GetById(id);
             if (lapTime == null)
@@ -41,7 +41,7 @@ namespace SlotCarsGo_Server.Controllers
 
         // PUT: api/LapTimes/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutLapTime(int id, LapTime lapTime)
+        public async Task<IHttpActionResult> PutLapTime(string id, LapTime lapTime)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +78,7 @@ namespace SlotCarsGo_Server.Controllers
 
         // DELETE: api/LapTimes/5
         [ResponseType(typeof(LapTimeDTO))]
-        public async Task<IHttpActionResult> DeleteLapTime(int id)
+        public async Task<IHttpActionResult> DeleteLapTime(string id)
         {
             LapTime lapTime = await repo.Delete(id);
             if (lapTime == null)

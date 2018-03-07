@@ -29,7 +29,7 @@ namespace SlotCarsGo_Server.Controllers
 
         // GET: api/Cars/5
         [ResponseType(typeof(CarDTO))]
-        public async Task<IHttpActionResult> GetCar(int id)
+        public async Task<IHttpActionResult> GetCar(string id)
         {
             Car car = await repo.GetById(id);
             if (car == null)
@@ -42,7 +42,7 @@ namespace SlotCarsGo_Server.Controllers
 
         // PUT: api/Cars/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutCar(int id, Car car)
+        public async Task<IHttpActionResult> PutCar(string id, Car car)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +78,7 @@ namespace SlotCarsGo_Server.Controllers
 
         // DELETE: api/Cars/5
         [ResponseType(typeof(CarDTO))]
-        public async Task<IHttpActionResult> DeleteCar(int id)
+        public async Task<IHttpActionResult> DeleteCar(string id)
         {
             Car car = await repo.Delete(id);
             if (car == null)

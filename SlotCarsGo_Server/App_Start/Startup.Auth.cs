@@ -67,23 +67,10 @@ namespace SlotCarsGo_Server
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            string FBID = ConfigurationManager.AppSettings["FacebookAppId"].ToString();
-            string FBSecret = ConfigurationManager.AppSettings["FacebookAppSecret"].ToString();
-
             app.UseFacebookAuthentication(
-                appId: FBID, 
-                appSecret: FBSecret);
+                appId: ConfigurationManager.AppSettings["FacebookAppId"].ToString(), 
+                appSecret: ConfigurationManager.AppSettings["FacebookAppSecret"].ToString());
 
-            var googleOptions = new GoogleOAuth2AuthenticationOptions
-            {
-                ClientId = ConfigurationManager.AppSettings["GoogleClientId"].ToString(),
-                ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"].ToString()
-            };
-            googleOptions.Scope.Add("https://www.googleapis.com/auth/userinfo.profile");
-            googleOptions.Scope.Add("https://www.googleapis.com/auth/userinfo.email");
-            googleOptions.AccessType = "offline";
-
-            app.UseGoogleAuthentication(googleOptions);
         }
     }
 }

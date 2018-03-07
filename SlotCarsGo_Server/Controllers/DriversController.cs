@@ -29,14 +29,14 @@ namespace SlotDriversGo_Server.Controllers
 
         // GET: api/Drivers/Track/5
         [Route("api/Drivers/Track/{trackId}")]
-        public IEnumerable<DriverDTO> GetForTrack(int trackId)
+        public IEnumerable<DriverDTO> GetForTrack(string trackId)
         {
             return repo.GetForId(trackId);
         }
 
         // GET: api/Drivers/5
         [ResponseType(typeof(DriverDTO))]
-        public async Task<IHttpActionResult> GetDriver(int id)
+        public async Task<IHttpActionResult> GetDriver(string id)
         {
             Driver driver = await repo.GetById(id);
             if (driver == null)
@@ -49,7 +49,7 @@ namespace SlotDriversGo_Server.Controllers
 
         // PUT: api/Drivers/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutDriver(int id, Driver driver)
+        public async Task<IHttpActionResult> PutDriver(string id, Driver driver)
         {
             if (!ModelState.IsValid)
             {
@@ -85,7 +85,7 @@ namespace SlotDriversGo_Server.Controllers
 
         // DELETE: api/Drivers/5
         [ResponseType(typeof(DriverDTO))]
-        public async Task<IHttpActionResult> DeleteDriver(int id)
+        public async Task<IHttpActionResult> DeleteDriver(string id)
         {
             Driver driver = await repo.Delete(id);
             if (driver == null)

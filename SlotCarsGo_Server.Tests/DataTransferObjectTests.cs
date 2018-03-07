@@ -20,12 +20,12 @@ namespace SlotCarsGo_Server.Tests
         RaceType raceType;
         Track track;
 
-        int carId = 5;
-        int driverId = 7;
-        int driverResultId = 124632;
-        int trackId = 45;
-        int raceSessionId = 23564;
-        int raceTypeId = 3;
+        string carId = "5";
+        string driverId = "7";
+        string driverResultId = "124632";
+        string trackId = "45";
+        string raceSessionId = "23564";
+        string raceTypeId = "3";
 
         string name = "Test Car Name";
         TimeSpan trackRecord = new TimeSpan(0, 0, 0, 5, 450);
@@ -93,7 +93,7 @@ namespace SlotCarsGo_Server.Tests
             user.UserName = recordHolderName;
 
             track = new Track();
-            track.ApplicationUserId = Convert.ToInt32(user.Id);
+            track.ApplicationUserId = user.Id;
             track.Length = trackLength;
             track.Name = trackName;
             track.Id = trackId;
@@ -111,7 +111,7 @@ namespace SlotCarsGo_Server.Tests
             driver = new Driver();
             driver.Id = driverId;
             driver.ApplicationUser = user;
-            driver.ApplicationUserId = Convert.ToInt32(user.Id);
+            driver.ApplicationUserId = user.Id;
             driver.Car = car;
             driver.CarId = car.Id;
             driver.ControllerId = controllerId;
@@ -121,7 +121,7 @@ namespace SlotCarsGo_Server.Tests
             driverResult = new DriverResult();
             driverResult.Id = driverResultId;
             driverResult.ApplicationUser = user;
-            driverResult.ApplicationUserId = Convert.ToInt32(user.Id);
+            driverResult.ApplicationUserId = user.Id;
             driverResult.BestLapTime = trackRecord;
             driverResult.Car = car;
             driverResult.CarId = car.Id;
@@ -145,7 +145,7 @@ namespace SlotCarsGo_Server.Tests
             raceSession.TrackId = trackId;
 
             laptime = new LapTime();
-            laptime.Id = 1;
+            laptime.Id = "1";
             laptime.Driver = driver;
             laptime.DriverId = driverId;
             laptime.LapNumber = lapNumber;

@@ -11,22 +11,22 @@ namespace SlotCarsGo_Server.Models
     /// </summary>
     public class Driver
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         // Foreign Key
-        public int? TrackId { get; set; }
+        public string TrackId { get; set; }
         // Navigation property
         public Track Track { get; set; }
 
         public int ControllerId { get; set; }
 
         // Foreign Key
-        public int? ApplicationUserId { get; set; }
+        public string ApplicationUserId { get; set; }
         // Navigation property
         public ApplicationUser ApplicationUser { get; set; }
 
         // Foreign key
-        public int? CarId { get; set; }
+        public string CarId { get; set; }
         // Navigation property
         public Car Car { get; set; }
     }

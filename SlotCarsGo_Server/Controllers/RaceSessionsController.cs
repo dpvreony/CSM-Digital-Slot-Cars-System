@@ -29,7 +29,7 @@ namespace SlotRaceSessionsGo_Server.Controllers
 
         // GET: api/RaceSessions/5
         [ResponseType(typeof(RaceSessionDTO))]
-        public async Task<IHttpActionResult> GetRaceSession(int id)
+        public async Task<IHttpActionResult> GetRaceSession(string id)
         {
             RaceSession raceSession = await repo.GetById(id);
             if (raceSession == null)
@@ -42,7 +42,7 @@ namespace SlotRaceSessionsGo_Server.Controllers
 
         // PUT: api/RaceSessions/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutRaceSession(int id, RaceSession raceSession)
+        public async Task<IHttpActionResult> PutRaceSession(string id, RaceSession raceSession)
         {
             if (!ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace SlotRaceSessionsGo_Server.Controllers
 
         // DELETE: api/RaceSessions/5
         [ResponseType(typeof(RaceSessionDTO))]
-        public async Task<IHttpActionResult> DeleteRaceSession(int id)
+        public async Task<IHttpActionResult> DeleteRaceSession(string id)
         {
             RaceSession raceSession = await repo.Delete(id);
             if (raceSession == null)

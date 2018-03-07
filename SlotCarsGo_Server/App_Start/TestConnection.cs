@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Security;
@@ -17,7 +18,31 @@ namespace SlotCarsGo_Server.App_Start
 //        private static string databaseName = "slotcarsgo_dev";
         private static string contextClass = "SlotCarsGo_Server.Models.ApplicationDbContext";
 
-        public static string ConnectToDB()
+        public static string ConnectToDBFromWebConfig()
+        {
+            string message = "Running...";
+
+            string connStr = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString; ;
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    message = "Connection opened.";
+                    conn.Close();
+                }
+                catch (Exception e)
+                {
+                    message = $"FAILED: { e.Message}\n{e.StackTrace}\n{e.Source}, Connection String: {connStr}";
+                }
+
+            }
+
+            return message;
+        }
+
+
+        public static string ConnectToDBStaticCreds()
         {
             string message = "Running...";
 
@@ -42,6 +67,7 @@ namespace SlotCarsGo_Server.App_Start
                 }
 
                 SqlCredential sqlCredential = new SqlCredential(userId, s_password);
+
 
                 using (SqlConnection conn = new SqlConnection(connectionString, sqlCredential))
                 {

@@ -15,7 +15,7 @@ namespace SlotCarsGo_Server.Repository
         where T : DriverResult 
         where DTO: DriverResultDTO
     {
-        public async Task<DriverResult> Delete(int id)
+        public async Task<DriverResult> Delete(string id)
         {
             DriverResult driverResult;
 
@@ -32,7 +32,7 @@ namespace SlotCarsGo_Server.Repository
             return driverResult;
         }
 
-        public bool Exists(int id)
+        public bool Exists(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -48,7 +48,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<DriverResult> GetById(int id)
+        public async Task<DriverResult> GetById(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -56,7 +56,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<DriverResultDTO> GetForId(int sessionId)
+        public IEnumerable<DriverResultDTO> GetForId(string sessionId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -75,7 +75,7 @@ namespace SlotCarsGo_Server.Repository
             return driverResult;
         }
 
-        public async Task<EntityState> Update(int id, DriverResult driverResult)
+        public async Task<EntityState> Update(string id, DriverResult driverResult)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {

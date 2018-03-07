@@ -29,7 +29,7 @@ namespace SlotRaceTypesGo_Server.Controllers
 
         // GET: api/RaceTypes/5
         [ResponseType(typeof(RaceTypeDTO))]
-        public async Task<IHttpActionResult> GetRaceType(int id)
+        public async Task<IHttpActionResult> GetRaceType(string id)
         {
             RaceType raceType = await repo.GetById(id);
             if (raceType == null)
@@ -42,7 +42,7 @@ namespace SlotRaceTypesGo_Server.Controllers
 
         // PUT: api/RaceTypes/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutRaceType(int id, RaceType raceType)
+        public async Task<IHttpActionResult> PutRaceType(string id, RaceType raceType)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +78,7 @@ namespace SlotRaceTypesGo_Server.Controllers
 
         // DELETE: api/RaceTypes/5
         [ResponseType(typeof(RaceTypeDTO))]
-        public async Task<IHttpActionResult> DeleteRaceType(int id)
+        public async Task<IHttpActionResult> DeleteRaceType(string id)
         {
             RaceType raceType = await repo.Delete(id);
             if (raceType == null)

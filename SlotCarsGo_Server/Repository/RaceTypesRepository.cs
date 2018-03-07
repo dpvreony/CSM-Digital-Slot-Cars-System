@@ -15,24 +15,24 @@ namespace SlotCarsGo_Server.Repository
         where T : RaceType
         where DTO : RaceTypeDTO
     {
-        public async Task<RaceType> Delete(int id)
+        public async Task<RaceType> Delete(string id)
         {
-            RaceType car;
+            RaceType raceType;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                car = await db.RaceTypes.FindAsync(id);
-                if (car != null)
+                raceType = await db.RaceTypes.FindAsync(id);
+                if (raceType != null)
                 {
-                    db.RaceTypes.Remove(car);
+                    db.RaceTypes.Remove(raceType);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return car;
+            return raceType;
         }
 
-        public bool Exists(int id)
+        public bool Exists(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -48,7 +48,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<RaceType> GetById(int id)
+        public async Task<RaceType> GetById(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -56,7 +56,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<RaceTypeDTO> GetForId(int trackId)
+        public IEnumerable<RaceTypeDTO> GetForId(string trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -64,22 +64,22 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<RaceType> Insert(RaceType car)
+        public async Task<RaceType> Insert(RaceType raceType)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                car = db.RaceTypes.Add(car);
+                raceType = db.RaceTypes.Add(raceType);
                 await db.SaveChangesAsync();
             }
 
-            return car;
+            return raceType;
         }
 
-        public async Task<EntityState> Update(int id, RaceType car)
+        public async Task<EntityState> Update(string id, RaceType raceType)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(car).State = EntityState.Modified;
+                db.Entry(raceType).State = EntityState.Modified;
 
                 try
                 {
@@ -97,7 +97,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(car).State;
+                return db.Entry(raceType).State;
             }
         }
     }

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotCarsGo_Server", "SlotCa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotCarsGo_Server.Tests", "SlotCarsGo_Server.Tests\SlotCarsGo_Server.Tests.csproj", "{A57990AE-8146-4B19-8C14-9CE8AD385781}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "BlankDB", "BlankDB\BlankDB.sqlproj", "{36242808-DD30-4D66-ACBD-F68CA34E2FEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +117,30 @@ Global
 		{A57990AE-8146-4B19-8C14-9CE8AD385781}.Release|x64.Build.0 = Release|Any CPU
 		{A57990AE-8146-4B19-8C14-9CE8AD385781}.Release|x86.ActiveCfg = Release|Any CPU
 		{A57990AE-8146-4B19-8C14-9CE8AD385781}.Release|x86.Build.0 = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|ARM.Build.0 = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|ARM.Deploy.0 = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|x64.Build.0 = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|x64.Deploy.0 = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|x86.Build.0 = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Debug|x86.Deploy.0 = Debug|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|ARM.ActiveCfg = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|ARM.Build.0 = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|ARM.Deploy.0 = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|x64.ActiveCfg = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|x64.Build.0 = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|x64.Deploy.0 = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|x86.ActiveCfg = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|x86.Build.0 = Release|Any CPU
+		{36242808-DD30-4D66-ACBD-F68CA34E2FEE}.Release|x86.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

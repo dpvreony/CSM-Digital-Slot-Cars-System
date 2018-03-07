@@ -16,7 +16,7 @@ namespace SlotCarsGo_Server.Repository
         where T : Track
         where DTO : TrackDTO
     {
-        public async Task<Track> Delete(int id)
+        public async Task<Track> Delete(string id)
         {
             Track car;
 
@@ -33,7 +33,7 @@ namespace SlotCarsGo_Server.Repository
             return car;
         }
 
-        public bool Exists(int id)
+        public bool Exists(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -49,7 +49,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<Track> GetById(int id)
+        public async Task<Track> GetById(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -57,30 +57,32 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<TrackDTO> GetForId(int trackId)
+        public IEnumerable<TrackDTO> GetForId(string userId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks.Where(t => t.Id == trackId).ProjectTo<TrackDTO>();
+                return db.Tracks.Where(t => t.ApplicationUserId == userId).ProjectTo<TrackDTO>();
             }
         }
 
-        public async Task<Track> Insert(Track car)
+        public async Task<Track> Insert(Track track)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                car = db.Tracks.Add(car);
+                track = db.Tracks.Add(track);
+                await db.SaveChangesAsync();
+                track.Secret = track.Id.Substring(0, 5);
                 await db.SaveChangesAsync();
             }
 
-            return car;
+            return track;
         }
 
-        public async Task<EntityState> Update(int id, Track car)
+        public async Task<EntityState> Update(string id, Track track)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(car).State = EntityState.Modified;
+                db.Entry(track).State = EntityState.Modified;
 
                 try
                 {
@@ -98,7 +100,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(car).State;
+                return db.Entry(track).State;
             }
         }
     }

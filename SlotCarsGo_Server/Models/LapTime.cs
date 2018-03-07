@@ -7,18 +7,18 @@ namespace SlotCarsGo_Server.Models
 {
     public class LapTime
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public int LapNumber { get; set; }
         public TimeSpan Time { get; set; }
 
         // Foreign Key
-        public int? DriverId { get; set; }
+        public string DriverId { get; set; }
         // Navigation property
         public Driver Driver { get; set; }
 
         // Foreign Key
-        public int? RaceSessionId { get; set; }
+        public string RaceSessionId { get; set; }
         // Navigation property
         public RaceSession RaceSession { get; set; }
     }

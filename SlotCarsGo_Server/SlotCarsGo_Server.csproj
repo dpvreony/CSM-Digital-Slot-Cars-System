@@ -252,10 +252,8 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\EFConnectionStringBuilder.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\%28API%29IdentityConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="App_Start\%28API%29Startup.Auth.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\TestConnection.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -287,9 +285,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\%28API%29AccountController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\AuthCallbackController.cs" />
     <Compile Include="Controllers\CarsController.cs" />
     <Compile Include="Controllers\DriverResultsController.cs" />
     <Compile Include="Controllers\DriversController.cs" />
@@ -298,6 +294,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RaceSessionsController.cs" />
     <Compile Include="Controllers\RaceTypesController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\TracksController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -310,8 +307,6 @@
     <Compile Include="Models\API_Archive\AccountBindingModels.cs" />
     <Compile Include="Models\API_Archive\%28API%29AccountViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\AppFlowMetaData.cs" />
-    <Compile Include="Models\DaimToGoogleOAuth.cs" />
     <Compile Include="Models\DTO\CarDTO.cs" />
     <Compile Include="Models\Driver.cs" />
     <Compile Include="Models\DTO\DriverDTO.cs" />
@@ -320,8 +315,6 @@
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\DTO\RaceTypeDTO.cs" />
     <Compile Include="Models\Car.cs" />
-    <Compile Include="Models\ForceOfflineGoogleAuthorizationCodeFlow.cs" />
-    <Compile Include="Models\GoogleRedirectAuthorizationBroker.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LapTime.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -338,7 +331,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Providers\%28API%29ApplicationOAuthProvider.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Repository\LapTimesRepository.cs" />
     <Compile Include="Repository\RaceTypesRepository.cs" />
@@ -441,11 +433,15 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Test\StaticDb.cshtml" />
+    <Content Include="Views\Test\TestConnection.cshtml" />
+    <Content Include="Views\Test\WebConfigDb.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\Credentials\SlotCarsGo\" />
+    <Folder Include="App_Data\" />
     <Folder Include="Content\Images\Cars\" />
     <Folder Include="Content\Images\Users\" />
+    <Folder Include="Providers\" />
     <Folder Include="Views\AuthCallback\" />
   </ItemGroup>
   <ItemGroup>

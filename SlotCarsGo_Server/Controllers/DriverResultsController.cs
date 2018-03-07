@@ -31,7 +31,7 @@ namespace SlotDriverResultsGo_Server.Controllers
 
             // GET: api/DriverResults/5
             [ResponseType(typeof(DriverResultDTO))]
-            public async Task<IHttpActionResult> GetDriverResult(int id)
+            public async Task<IHttpActionResult> GetDriverResult(string id)
             {
                 DriverResult driverResult = await repo.GetById(id);
                 if (driverResult == null)
@@ -44,7 +44,7 @@ namespace SlotDriverResultsGo_Server.Controllers
 
             // PUT: api/DriverResults/5
             [ResponseType(typeof(void))]
-            public async Task<IHttpActionResult> PutDriverResult(int id, DriverResult driverResult)
+            public async Task<IHttpActionResult> PutDriverResult(string id, DriverResult driverResult)
             {
                 if (!ModelState.IsValid)
                 {
@@ -81,7 +81,7 @@ namespace SlotDriverResultsGo_Server.Controllers
 
             // DELETE: api/DriverResults/5
             [ResponseType(typeof(DriverResultDTO))]
-            public async Task<IHttpActionResult> DeleteDriverResult(int id)
+            public async Task<IHttpActionResult> DeleteDriverResult(string id)
             {
                 DriverResult driverResult = await repo.Delete(id);
                 if (driverResult == null)

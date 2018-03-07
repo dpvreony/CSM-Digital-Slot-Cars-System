@@ -22,7 +22,7 @@ namespace SlotCarsGo_Server.Tests.Controllers
         public void Initialize()
         {
             car = new Car();
-            car.Id = 1;
+            car.Id = "1";
 
         }
 /*
