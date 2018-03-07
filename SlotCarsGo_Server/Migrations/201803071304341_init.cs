@@ -3,7 +3,7 @@ namespace SlotCarsGo_Server.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Init : DbMigration
+    public partial class init : DbMigration
     {
         public override void Up()
         {
@@ -11,19 +11,18 @@ namespace SlotCarsGo_Server.Migrations
                 "dbo.Cars",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Name = c.String(nullable: false),
                         TrackRecord = c.Time(nullable: false, precision: 7),
                         ImageName = c.String(),
-                        ApplicationUserId = c.Int(),
-                        TrackId = c.Int(),
-                        ApplicationUser_Id = c.String(maxLength: 128),
+                        ApplicationUserId = c.String(maxLength: 128),
+                        TrackId = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUserId)
                 .ForeignKey("dbo.Tracks", t => t.TrackId)
-                .Index(t => t.TrackId)
-                .Index(t => t.ApplicationUser_Id);
+                .Index(t => t.ApplicationUserId)
+                .Index(t => t.TrackId);
             
             CreateTable(
                 "dbo.AspNetUsers",
@@ -88,10 +87,11 @@ namespace SlotCarsGo_Server.Migrations
                 "dbo.Tracks",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
-                        ApplicationUserId = c.Int(nullable: false),
+                        Id = c.String(nullable: false, maxLength: 128),
+                        ApplicationUserId = c.String(),
                         Name = c.String(nullable: false),
                         Length = c.Single(nullable: false),
+                        Secret = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -99,7 +99,7 @@ namespace SlotCarsGo_Server.Migrations
                 "dbo.DriverResults",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Position = c.Int(nullable: false),
                         Laps = c.Int(nullable: false),
                         Finished = c.Boolean(nullable: false),
@@ -108,26 +108,25 @@ namespace SlotCarsGo_Server.Migrations
                         TimeOffPace = c.Time(nullable: false, precision: 7),
                         BestLapTime = c.Time(nullable: false, precision: 7),
                         ControllerNumber = c.Int(nullable: false),
-                        ApplicationUserId = c.Int(),
-                        SessionId = c.Int(nullable: false),
-                        CarId = c.Int(),
-                        ApplicationUser_Id = c.String(maxLength: 128),
+                        ApplicationUserId = c.String(maxLength: 128),
+                        SessionId = c.String(nullable: false, maxLength: 128),
+                        CarId = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUserId)
                 .ForeignKey("dbo.Cars", t => t.CarId)
                 .ForeignKey("dbo.RaceSessions", t => t.SessionId, cascadeDelete: true)
+                .Index(t => t.ApplicationUserId)
                 .Index(t => t.SessionId)
-                .Index(t => t.CarId)
-                .Index(t => t.ApplicationUser_Id);
+                .Index(t => t.CarId);
             
             CreateTable(
                 "dbo.RaceSessions",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
-                        TrackId = c.Int(),
-                        RaceTypeId = c.Int(),
+                        Id = c.String(nullable: false, maxLength: 128),
+                        TrackId = c.String(maxLength: 128),
+                        RaceTypeId = c.String(),
                         StartTime = c.DateTime(nullable: false),
                         EndTime = c.DateTime(nullable: false),
                         FuelEnabled = c.Boolean(nullable: false),
@@ -145,30 +144,29 @@ namespace SlotCarsGo_Server.Migrations
                 "dbo.Drivers",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
-                        TrackId = c.Int(),
+                        Id = c.String(nullable: false, maxLength: 128),
+                        TrackId = c.String(maxLength: 128),
                         ControllerId = c.Int(nullable: false),
-                        ApplicationUserId = c.Int(),
-                        CarId = c.Int(),
-                        ApplicationUser_Id = c.String(maxLength: 128),
+                        ApplicationUserId = c.String(maxLength: 128),
+                        CarId = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUserId)
                 .ForeignKey("dbo.Cars", t => t.CarId)
                 .ForeignKey("dbo.Tracks", t => t.TrackId)
                 .Index(t => t.TrackId)
-                .Index(t => t.CarId)
-                .Index(t => t.ApplicationUser_Id);
+                .Index(t => t.ApplicationUserId)
+                .Index(t => t.CarId);
             
             CreateTable(
                 "dbo.LapTimes",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.String(nullable: false, maxLength: 128),
                         LapNumber = c.Int(nullable: false),
                         Time = c.Time(nullable: false, precision: 7),
-                        DriverId = c.Int(),
-                        RaceSessionId = c.Int(),
+                        DriverId = c.String(maxLength: 128),
+                        RaceSessionId = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Drivers", t => t.DriverId)
@@ -180,7 +178,7 @@ namespace SlotCarsGo_Server.Migrations
                 "dbo.RaceTypes",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Name = c.String(nullable: false),
                         Rules = c.String(nullable: false),
                         Symbol = c.String(nullable: false),
@@ -206,33 +204,33 @@ namespace SlotCarsGo_Server.Migrations
             DropForeignKey("dbo.LapTimes", "DriverId", "dbo.Drivers");
             DropForeignKey("dbo.Drivers", "TrackId", "dbo.Tracks");
             DropForeignKey("dbo.Drivers", "CarId", "dbo.Cars");
-            DropForeignKey("dbo.Drivers", "ApplicationUser_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Drivers", "ApplicationUserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.DriverResults", "SessionId", "dbo.RaceSessions");
             DropForeignKey("dbo.RaceSessions", "TrackId", "dbo.Tracks");
             DropForeignKey("dbo.DriverResults", "CarId", "dbo.Cars");
-            DropForeignKey("dbo.DriverResults", "ApplicationUser_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.DriverResults", "ApplicationUserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.Cars", "TrackId", "dbo.Tracks");
-            DropForeignKey("dbo.Cars", "ApplicationUser_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Cars", "ApplicationUserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
             DropIndex("dbo.LapTimes", new[] { "RaceSessionId" });
             DropIndex("dbo.LapTimes", new[] { "DriverId" });
-            DropIndex("dbo.Drivers", new[] { "ApplicationUser_Id" });
             DropIndex("dbo.Drivers", new[] { "CarId" });
+            DropIndex("dbo.Drivers", new[] { "ApplicationUserId" });
             DropIndex("dbo.Drivers", new[] { "TrackId" });
             DropIndex("dbo.RaceSessions", new[] { "TrackId" });
-            DropIndex("dbo.DriverResults", new[] { "ApplicationUser_Id" });
             DropIndex("dbo.DriverResults", new[] { "CarId" });
             DropIndex("dbo.DriverResults", new[] { "SessionId" });
+            DropIndex("dbo.DriverResults", new[] { "ApplicationUserId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
-            DropIndex("dbo.Cars", new[] { "ApplicationUser_Id" });
             DropIndex("dbo.Cars", new[] { "TrackId" });
+            DropIndex("dbo.Cars", new[] { "ApplicationUserId" });
             DropTable("dbo.AspNetRoles");
             DropTable("dbo.RaceTypes");
             DropTable("dbo.LapTimes");

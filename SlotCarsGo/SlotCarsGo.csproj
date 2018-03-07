@@ -362,6 +362,7 @@
     <Content Include="Assets\CarImages\4.jpg" />
     <Content Include="Assets\CarImages\5.jpg" />
     <Content Include="Assets\CarImages\6.jpg" />
+    <Content Include="Assets\UserImages\0.jpg" />
     <Content Include="Assets\UserImages\0.png" />
     <Content Include="Assets\UserImages\1.png" />
     <Content Include="Assets\UserImages\2.png" />

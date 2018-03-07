@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlotCarsGo_Server.Models;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -22,20 +23,48 @@ namespace SlotCarsGo_Server.App_Start
         {
             string message = "Running...";
 
-            string connStr = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString; ;
+            string connStr = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 try
                 {
                     conn.Open();
                     message = "Connection opened.";
-                    conn.Close();
+                    conn.Dispose();
+
                 }
                 catch (Exception e)
                 {
                     message = $"FAILED: { e.Message}\n{e.StackTrace}\n{e.Source}, Connection String: {connStr}";
                 }
 
+            }
+
+
+
+            return message;
+        }
+
+        public static string EntityDB()
+        {
+            ApplicationDbContext db;
+            string message = "running";
+            try
+            {
+                using (db = new ApplicationDbContext())
+                {
+                    message += $"DbContext: { db.Database.ToString()} ";
+                    Driver driver = db.Drivers.FindAsync("11").Result;
+                    message += "Called EF and not crashed.";
+                    if (driver != null)
+                    {
+                        message += "Found!";
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                message = $"FAILED: { e.Message}\n{e.StackTrace}\n{e.Source}";
             }
 
             return message;
@@ -75,7 +104,7 @@ namespace SlotCarsGo_Server.App_Start
                     {
                         conn.Open();
                         message = "Connection opened.";
-                        conn.Close();
+                        conn.Dispose();
                     }
                     catch (Exception e)
                     {

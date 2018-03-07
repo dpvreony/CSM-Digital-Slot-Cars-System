@@ -36,7 +36,20 @@ namespace SlotCarsGo_Server.Controllers
             }
             return View();
         }
-        
 
+        // GET: TestConnection
+        public ActionResult EntityDb()
+        {
+            try
+            {
+                ViewBag.Message = TestConnection.EntityDB();
+            }
+            catch (Exception e)
+            {
+                ViewBag.Message = $"Failed in controller: {e.Message} {e.StackTrace.ToString()}";
+            }
+            return View();
+        }
+        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SlotCarsGo_Server.Models;
 using SlotCarsGo_Server.Models.DTO;
+using System.Data.Entity;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -12,6 +13,7 @@ namespace SlotCarsGo_Server
     {
         protected void Application_Start()
         {
+            Database.SetInitializer<ApplicationDbContext>(null);
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
