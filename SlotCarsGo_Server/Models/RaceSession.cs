@@ -12,6 +12,11 @@ namespace SlotCarsGo_Server.Models
     /// </summary>
     public class RaceSession
     {
+        public RaceSession()
+        {
+            this.DriverResults = new HashSet<DriverResult>();
+        }
+
         public string Id { get; set; }
 
         // Foreign key
@@ -40,5 +45,7 @@ namespace SlotCarsGo_Server.Models
         public bool LapsNotDuration { get; set; }
         [Required]
         public int CrashPenalty { get; set; }
+
+        public virtual ICollection<DriverResult> DriverResults { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 
-namespace SlotCarsGo_Server.Models
+namespace SlotCarsGo_Server.Models.ViewModels
 {
     public class IndexViewModel
     {

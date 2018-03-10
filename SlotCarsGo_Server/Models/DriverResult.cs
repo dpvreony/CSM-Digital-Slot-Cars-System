@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SlotCarsGo_Server.Models
 {
     public class DriverResult
     {
+        public DriverResult()
+        {
+            this.LapTimes = new HashSet<LapTime>();
+        }
+
         public string Id { get; set; }
 
         [Required]
@@ -39,5 +45,7 @@ namespace SlotCarsGo_Server.Models
         public string CarId { get; set; }
         // Navigation property
         public Car Car { get; set; }
+
+        public virtual ICollection<LapTime> LapTimes { get; set; }
     }
 }

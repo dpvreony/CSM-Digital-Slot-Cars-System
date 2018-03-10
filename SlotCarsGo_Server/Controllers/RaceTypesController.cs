@@ -19,12 +19,12 @@ namespace SlotRaceTypesGo_Server.Controllers
 {
     public class RaceTypesController : ApiController
     {
-        private IRepositoryAsync<RaceType, RaceTypeDTO> repo = new RaceTypesRepository<RaceType, RaceTypeDTO>();
+        private IRepositoryAsync<RaceType> repo = new RaceTypesRepository<RaceType>();
 
         // GET: api/RaceTypes
         public IEnumerable<RaceTypeDTO> GetRaceTypes()
         {
-            return repo.GetAll();
+            return repo.GetAll().ProjectTo<RaceTypeDTO>();
         }
 
         // GET: api/RaceTypes/5

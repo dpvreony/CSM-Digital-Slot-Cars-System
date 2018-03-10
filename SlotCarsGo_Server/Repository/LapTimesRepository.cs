@@ -12,9 +12,7 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class LapTimesRepository<T, DTO> : IRepositoryAsync<LapTime, LapTimeDTO>
-        where T : LapTime
-        where DTO : LapTimeDTO
+    public class LapTimesRepository<T> : IRepositoryAsync<LapTime> where T : LapTime
     {
         public async Task<LapTime> Delete(string id)
         {
@@ -41,11 +39,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<LapTimeDTO> GetAll()
+        public IQueryable<LapTime> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.LapTimes.ProjectTo<LapTimeDTO>();
+                return db.LapTimes;
             }
         }
 
@@ -57,13 +55,13 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<LapTimeDTO> GetForId(string driverResultId)
+        public IQueryable<LapTime> GetForId(string driverResultId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 DriverResult dr = db.DriverResults.Find(driverResultId);
 
-                return db.LapTimes.Where(lt => lt.RaceSessionId == dr.SessionId && lt.DriverId == dr.ApplicationUserId).ProjectTo<LapTimeDTO>();
+                return db.LapTimes.Where(lt => lt.DriverResultId == driverResultId);
             }
         }
 
@@ -71,6 +69,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
+                lapTime.Id = lapTime.Id == null | lapTime.Id == string.Empty ? Guid.NewGuid().ToString() : lapTime.Id;
                 lapTime = db.LapTimes.Add(lapTime);
                 await db.SaveChangesAsync();
             }

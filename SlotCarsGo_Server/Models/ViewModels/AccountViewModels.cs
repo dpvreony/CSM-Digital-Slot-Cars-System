@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 
-namespace SlotCarsGo_Server.Models
+namespace SlotCarsGo_Server.Models.ViewModels
 {
     public class ExternalLoginConfirmationViewModel
     {
@@ -70,6 +70,10 @@ namespace SlotCarsGo_Server.Models
 
     public class RegisterViewModel
     {
+        [Required]
+        [Display(Name = "Username")]
+        public string Username { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]

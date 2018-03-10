@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public interface IRepositoryAsync <T, DTO> where T:class where DTO:class
+    public interface IRepositoryAsync <T> where T:class
     {
         Task<T> Delete(string id);
         bool Exists(string id);
-        IEnumerable<DTO> GetAll();
+        IEnumerable<T> GetAll();
         Task<T> GetById(string id);
-        IEnumerable<DTO> GetForId(string id);
+        IEnumerable<T> GetFor(string id);
         Task<T> Insert(T obj);
         Task<EntityState> Update(string id, T obj);
     }

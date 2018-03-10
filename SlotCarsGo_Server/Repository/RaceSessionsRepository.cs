@@ -12,9 +12,7 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class RaceSessionsRepository<T, DTO> : IRepositoryAsync<RaceSession, RaceSessionDTO>
-        where T : RaceSession
-        where DTO : RaceSessionDTO
+    public class RaceSessionsRepository<T, DTO> : IRepositoryAsync<RaceSession>, IRepositoryDTOAsync<RaceSessionDTO>
     {
         public async Task<RaceSession> Delete(string id)
         {
@@ -41,7 +39,15 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<RaceSessionDTO> GetAll()
+        public IEnumerable<RaceSession> GetAll()
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                return db.RaceSessions;
+            }
+        }
+
+        public IEnumerable<RaceSessionDTO> GetAllAsDTO()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -57,11 +63,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<RaceSessionDTO> GetForId(string trackId)
+        public IEnumerable<RaceSession> GetFor(string trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.RaceSessions.Where(s => s.TrackId == trackId).ProjectTo<RaceSessionDTO>();
+                return db.RaceSessions.Where(s => s.TrackId == trackId);
             }
         }
 
@@ -69,6 +75,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
+                raceSession.Id = raceSession.Id == null | raceSession.Id == string.Empty ? Guid.NewGuid().ToString() : raceSession.Id;
                 raceSession = db.RaceSessions.Add(raceSession);
                 await db.SaveChangesAsync();
             }

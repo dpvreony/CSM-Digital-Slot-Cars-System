@@ -12,9 +12,7 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class DriversRepository<T, DTO> : IRepositoryAsync<Driver, DriverDTO>
-        where T : Driver
-        where DTO : DriverDTO
+    public class DriversRepository<T> : IRepositoryAsync<Driver> where T : Driver
     {
         public async Task<Driver> Delete(string id)
         {
@@ -41,11 +39,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<DriverDTO> GetAll()
+        public IQueryable<Driver> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Drivers.ProjectTo<DriverDTO>();
+                return db.Drivers;
             }
         }
 
@@ -57,11 +55,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<DriverDTO> GetForId(string trackId)
+        public IQueryable<Driver> GetForId(string trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Drivers.Where(d => d.Track.Id == trackId).ProjectTo<DriverDTO>();
+                return db.Drivers.Where(d => d.Track.Id == trackId);
             }
         }
 
@@ -69,6 +67,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
+                driver.Id = driver.Id == null | driver.Id == string.Empty ? Guid.NewGuid().ToString() : driver.Id;
                 driver = db.Drivers.Add(driver);
                 await db.SaveChangesAsync();
             }

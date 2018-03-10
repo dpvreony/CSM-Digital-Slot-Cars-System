@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.ViewModels;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Net;
@@ -168,25 +169,54 @@ namespace SlotCarsGo_Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                ApplicationUser user = new ApplicationUser { UserName = model.Username, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    string userImagesPath = HttpContext.Server.MapPath("~/Content/Images/Users");
+                    string extension = ".jpg";
+                    string usersFileName;
+                    string saveToPath;
+                    
+                    // Add image if selected
                     if (Request.Files.Count > 0)
                     {
-                        var file = Request.Files[0];
-
-                        if (file != null && file.ContentLength > 0)
+                        var postedFile = Request.Files[0];
+                        if (postedFile != null && postedFile.ContentLength > 0)
                         {
-                            var extension = Path.GetExtension(file.FileName);
-                            var fileName = $"{user.Id}{extension}";
-                            var path = Path.Combine(Server.MapPath("~/Content/Images/Users"), fileName);
-                            file.SaveAs(path);
+                            extension = Path.GetExtension(postedFile.FileName);
+                        }
 
-                            user.ImageName = fileName;
-                            UserManager.Update(user);
+                        usersFileName = $"{user.Id}{extension}";
+                        saveToPath = Path.Combine(userImagesPath, usersFileName);
+
+                        postedFile.SaveAs(saveToPath);
+                    }
+                    // Use a default avatar image
+                    else
+                    {
+                        usersFileName = $"{user.Id}{extension}";
+                        saveToPath = Path.Combine(userImagesPath, usersFileName);
+
+                        // Select a default avatar image
+                        int avatarNumber = new Random().Next(1, 7);
+                        string avatarImageName = $"{avatarNumber}{extension}";
+                        var avatarFilePath = Path.Combine(userImagesPath, avatarImageName);
+                        if (System.IO.File.Exists(avatarFilePath))
+                        {
+                            // Save a default avatar as users avatar
+                            using (StreamReader reader = new StreamReader(avatarFilePath))
+                            {
+                                using (StreamWriter writer = new StreamWriter(saveToPath))
+                                {
+                                    writer.Write(reader.ReadToEnd());
+                                }
+                            }
                         }
                     }
+
+                    user.ImageName = usersFileName;
+                    UserManager.Update(user);
 
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     

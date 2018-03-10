@@ -304,6 +304,8 @@ namespace SlotCarsGo.ViewModels
             foreach (KeyValuePair<int, DriverResult> driver in this.Session.DriverResults)
             {
                 driver.Value.RaceSessionId = sessionId;
+                // post DRIVER SESSIONS TO THE SERVER.
+                // POST laptimes? TBC?
             }
 
             DispatcherHelper.CheckBeginInvokeOnUI(() =>

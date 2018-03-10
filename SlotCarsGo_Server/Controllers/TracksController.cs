@@ -19,12 +19,12 @@ namespace SlotTracksGo_Server.Controllers
 {
     public class TracksController : ApiController
     {
-        private IRepositoryAsync<Track, TrackDTO> repo = new TracksRepository<Track, TrackDTO>();
+        private IRepositoryAsync<Track> repo = new TracksRepository<Track>();
 
         // GET: api/Tracks
         public IEnumerable<TrackDTO> GetTracks()
         {
-            return repo.GetAll();
+            return repo.GetAll().ProjectTo<TrackDTO>();
         }
 
         // GET: api/Tracks/5

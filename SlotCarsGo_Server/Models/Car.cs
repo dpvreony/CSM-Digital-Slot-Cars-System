@@ -14,7 +14,7 @@ namespace SlotCarsGo_Server.Models
         public string Name { get; set; }
 
         public TimeSpan TrackRecord { get; set; }
-        public string ImageName { get; set; } = "0.png";
+        public string ImageName { get; set; } = "0.jpg";
 
         // Foreign key
         public string ApplicationUserId { get; set; }

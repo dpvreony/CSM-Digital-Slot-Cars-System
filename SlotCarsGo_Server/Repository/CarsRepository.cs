@@ -11,9 +11,7 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class CarsRepository<T, DTO> : IRepositoryAsync<Car, CarDTO> 
-        where T : Car 
-        where DTO : CarDTO
+    public class CarsRepository<T> : IRepositoryAsync<Car> where T : Car 
     {
         public async Task<Car> Delete(string id)
         {
@@ -40,11 +38,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<CarDTO> GetAll()
+        public IQueryable<Car> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Cars.ProjectTo<CarDTO>();
+                return db.Cars;
             }
         }
 
@@ -56,11 +54,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<CarDTO> GetForId(string trackId)
+        public IQueryable<Car> GetForId(string trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Cars.Where(c => c.TrackId == trackId).ProjectTo<CarDTO>();
+                return db.Cars.Where(c => c.TrackId == trackId);
             }
         }
 
@@ -68,6 +66,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
+                car.Id = car.Id == null | car.Id == string.Empty ? Guid.NewGuid().ToString() : car.Id;
                 car = db.Cars.Add(car);
                 await db.SaveChangesAsync();
             }

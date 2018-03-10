@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using SlotCarsGo_Server.Models;
+using SlotCarsGo_Server.Models.ViewModels;
 
 namespace SlotCarsGo_Server.Controllers
 {

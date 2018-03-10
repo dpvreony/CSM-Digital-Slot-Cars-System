@@ -56,12 +56,20 @@ namespace SlotCarsGo_Server.Tests
             if (!automapperIntialised)
             {
                 Mapper.Initialize(cfg => {
-                    cfg.CreateMap<RaceSession, RaceSessionDTO>();
+                    cfg.CreateMap<RaceSession, RaceSessionDTO>()
+                        .ReverseMap()
+                            .ForMember(dest => dest.DriverResults, opt => opt.Ignore())
+                            .ForMember(dest => dest.RaceType, opt => opt.Ignore())
+                            .ForMember(dest => dest.Track, opt => opt.Ignore());
                     cfg.CreateMap<DriverResult, DriverResultDTO>()
                         .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src.ApplicationUserId))
                         .ReverseMap()
                             .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.DriverId));
-                    cfg.CreateMap<Track, TrackDTO>();
+                    cfg.CreateMap<Track, TrackDTO>()
+                        .ReverseMap()
+                            .ForMember(dest => dest.ApplicationUserId, opt => opt.Ignore())
+                            .ForMember(dest => dest.ApplicationUsers, opt => opt.Ignore())
+                            .ForMember(dest => dest.Cars, opt => opt.Ignore());
                     cfg.CreateMap<Car, CarDTO>()
                         .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
                         .ReverseMap()
@@ -70,17 +78,20 @@ namespace SlotCarsGo_Server.Tests
                     cfg.CreateMap<Driver, DriverDTO>()
                         .ForPath(dest => dest.UserId, opt => opt.MapFrom(src => src.ApplicationUser.Id))
                         .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
+                        .ForPath(dest => dest.ImageName, opt => opt.MapFrom(src => src.ApplicationUser.ImageName))
                         .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.Car))
                         .ReverseMap()
                             .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.UserId))
                             .ForPath(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.UserName))
+                            .ForPath(dest => dest.ApplicationUser.ImageName, opt => opt.MapFrom(src => src.ImageName))
                             .ForMember(dest => dest.Car, opt => opt.MapFrom(src => src.SelectedCar));
-                    cfg.CreateMap<LapTime, LapTimeDTO>();
+                    cfg.CreateMap<LapTime, LapTimeDTO>()
+                        .ReverseMap()
+                            .ForMember(dest => dest.DriverResult, opt => opt.Ignore());
                 });
 
                 automapperIntialised = true;
             }
-
 
             raceType = new RaceType();
             raceType.Id = raceTypeId;
@@ -146,11 +157,8 @@ namespace SlotCarsGo_Server.Tests
 
             laptime = new LapTime();
             laptime.Id = "1";
-            laptime.Driver = driver;
-            laptime.DriverId = driverId;
+            laptime.DriverResultId = driverResultId;
             laptime.LapNumber = lapNumber;
-            laptime.RaceSession = raceSession;
-            laptime.RaceSessionId = raceSessionId;
             laptime.Time = trackRecord;
         }
         
@@ -160,32 +168,50 @@ namespace SlotCarsGo_Server.Tests
             // Setup
 
             // Act
-            CarDTO carDTOResult = Mapper.Map<CarDTO>(car);
+            CarDTO carDTO = Mapper.Map<CarDTO>(car);
+            Car testCar = Mapper.Map<Car>(carDTO);
 
             // Assert
-            Assert.AreEqual(car.Id, carDTOResult.Id);
-            Assert.AreEqual(car.ImageName, carDTOResult.ImageName);
-            Assert.AreEqual(car.Name, carDTOResult.Name);
-            Assert.AreEqual(car.ApplicationUser.UserName, carDTOResult.RecordHolder);
-            Assert.AreEqual(car.TrackRecord, carDTOResult.TrackRecord);
+            Assert.AreEqual(car.Id, carDTO.Id);
+            Assert.AreEqual(car.ImageName, carDTO.ImageName);
+            Assert.AreEqual(car.Name, carDTO.Name);
+            Assert.AreEqual(car.ApplicationUser.UserName, carDTO.RecordHolder);
+            Assert.AreEqual(car.TrackRecord, carDTO.TrackRecord);
+
+            Assert.AreEqual(car.Id, testCar.Id);
+            Assert.AreEqual(car.ImageName, testCar.ImageName);
+            Assert.AreEqual(car.Name, testCar.Name);
+            Assert.AreEqual(car.ApplicationUser.UserName, testCar.ApplicationUser.UserName);
+            Assert.AreEqual(car.TrackRecord, testCar.TrackRecord);
         }
 
         [TestMethod]
         public void DriverDTO_Test()
         {
             // Act
-            DriverDTO driverDTOResult = Mapper.Map<DriverDTO>(driver);
+            DriverDTO driverDTO = Mapper.Map<DriverDTO>(driver);
             CarDTO carDTO = Mapper.Map<CarDTO>(driver.Car);
 
+            Driver testDriver = Mapper.Map<Driver>(driverDTO);
+            Car testCar = Mapper.Map<Car>(driverDTO.SelectedCar);
+
             //Assert
-            Assert.AreEqual(driver.Id, driverDTOResult.UserId);
-            Assert.AreEqual(driver.ControllerId, driverDTOResult.ControllerId);
-            Assert.AreEqual(driver.ApplicationUser.ImageName, driverDTOResult.ImageName);
-            Assert.AreEqual(carDTO.Id, driverDTOResult.SelectedCar.Id);
-            Assert.AreEqual(carDTO.RecordHolder, driverDTOResult.SelectedCar.RecordHolder);
-            Assert.AreEqual(carDTO.ImageName, driverDTOResult.SelectedCar.ImageName);
-            Assert.AreEqual(carDTO.TrackRecord, driverDTOResult.SelectedCar.TrackRecord);
-            Assert.AreEqual(driver.ApplicationUser.UserName, driverDTOResult.UserName);
+            Assert.AreEqual(driver.Id, driverDTO.UserId);
+            Assert.AreEqual(driver.ControllerId, driverDTO.ControllerId);
+            Assert.AreEqual(driver.ApplicationUser.ImageName, driverDTO.ImageName);
+            Assert.AreEqual(carDTO.Id, driverDTO.SelectedCar.Id);
+            Assert.AreEqual(carDTO.RecordHolder, driverDTO.SelectedCar.RecordHolder);
+            Assert.AreEqual(carDTO.ImageName, driverDTO.SelectedCar.ImageName);
+            Assert.AreEqual(carDTO.TrackRecord, driverDTO.SelectedCar.TrackRecord);
+            Assert.AreEqual(driver.ApplicationUser.UserName, driverDTO.UserName);
+
+            Assert.AreEqual(driver.ControllerId, testDriver.ControllerId);
+            Assert.AreEqual(driver.ApplicationUser.ImageName, testDriver.ApplicationUser.ImageName);
+            Assert.AreEqual(carDTO.Id, testDriver.Car.Id);
+            Assert.AreEqual(carDTO.RecordHolder, testDriver.Car.ApplicationUser.UserName);
+            Assert.AreEqual(carDTO.ImageName, testDriver.Car.ImageName);
+            Assert.AreEqual(carDTO.TrackRecord, testDriver.Car.TrackRecord);
+            Assert.AreEqual(driver.ApplicationUser.UserName, testDriver.ApplicationUser.UserName);
         }
 
         [TestMethod]
@@ -193,8 +219,10 @@ namespace SlotCarsGo_Server.Tests
         {
             // Act
             DriverResultDTO driverResultDTO = Mapper.Map<DriverResultDTO>(driverResult);
+            DriverResult testDriverResult = Mapper.Map<DriverResult>(driverResultDTO);
 
             // Assert
+            Assert.AreEqual(driverResult.Id, driverResultDTO.Id);
             Assert.AreEqual(driverResult.BestLapTime, driverResultDTO.BestLapTime);
             Assert.AreEqual(driverResult.CarId, driverResultDTO.CarId);
             Assert.AreEqual(driverResult.ControllerNumber, driverResultDTO.ControllerNumber);
@@ -206,18 +234,34 @@ namespace SlotCarsGo_Server.Tests
             Assert.AreEqual(driverResult.SessionId, driverResultDTO.RaceSessionId);
             Assert.AreEqual(driverResult.TimeOffPace, driverResultDTO.TimeOffPace);
             Assert.AreEqual(driverResult.TotalTime, driverResultDTO.TotalTime);
+
+            Assert.AreEqual(driverResult.Id, testDriverResult.Id);
+            Assert.AreEqual(driverResult.BestLapTime, testDriverResult.BestLapTime);
+            Assert.AreEqual(driverResult.CarId, testDriverResult.CarId);
+            Assert.AreEqual(driverResult.ControllerNumber, testDriverResult.ControllerNumber);
+            Assert.AreEqual(driverResult.ApplicationUserId, testDriverResult.ApplicationUserId);
+            Assert.AreEqual(driverResult.Finished, testDriverResult.Finished);
+            Assert.AreEqual(driverResult.Fuel, testDriverResult.Fuel);
+            Assert.AreEqual(driverResult.Laps, testDriverResult.Laps);
+            Assert.AreEqual(driverResult.Position, testDriverResult.Position);
+            Assert.AreEqual(driverResult.SessionId, testDriverResult.SessionId);
+            Assert.AreEqual(driverResult.TimeOffPace, testDriverResult.TimeOffPace);
+            Assert.AreEqual(driverResult.TotalTime, testDriverResult.TotalTime);
         }
 
         [TestMethod]
         public void LapTimeDTO_Test()
         {
             LapTimeDTO laptimeDTO = Mapper.Map<LapTimeDTO>(laptime);
+            LapTime testLaptime = Mapper.Map<LapTime>(laptimeDTO);
 
-            Assert.AreEqual(laptime.DriverId, laptimeDTO.DriverId);
-            Assert.AreEqual(laptime.Id, laptimeDTO.Id);
+            Assert.AreEqual(laptime.DriverResultId, laptimeDTO.DriverResultId);
             Assert.AreEqual(laptime.LapNumber, laptimeDTO.LapNumber);
-            Assert.AreEqual(laptime.RaceSessionId, laptimeDTO.RaceSessionId);
             Assert.AreEqual(laptime.Time, laptimeDTO.Time);
+
+            Assert.AreEqual(laptime.DriverResultId, testLaptime.DriverResultId);
+            Assert.AreEqual(laptime.LapNumber, testLaptime.LapNumber);
+            Assert.AreEqual(laptime.Time, testLaptime.Time);
         }
 
         [TestMethod]
@@ -225,15 +269,22 @@ namespace SlotCarsGo_Server.Tests
         {
             // Act 
             RaceSessionDTO raceSessionDTO = Mapper.Map<RaceSessionDTO>(raceSession);
+            RaceSession testRaceSession = Mapper.Map<RaceSession>(raceSessionDTO);
 
             //Assert
             Assert.AreEqual(raceSession.EndTime, raceSessionDTO.EndTime);
             Assert.AreEqual(raceSession.Id, raceSessionDTO.Id);
             Assert.AreEqual(raceSession.NumberOfDrivers, raceSessionDTO.NumberOfDrivers);
-            Assert.AreEqual(raceSession.RaceTypeId, raceSessionDTO.RaceType.Id);
-            Assert.AreEqual(raceSession.RaceType.Name, raceSessionDTO.RaceType.Name);
+            Assert.AreEqual(raceSession.RaceTypeId, raceSessionDTO.RaceTypeId);
             Assert.AreEqual(raceSession.StartTime, raceSessionDTO.StartTime);
             Assert.AreEqual(raceSession.TrackId, raceSessionDTO.TrackId);
+
+            Assert.AreEqual(raceSession.EndTime, testRaceSession.EndTime);
+            Assert.AreEqual(raceSession.Id, testRaceSession.Id);
+            Assert.AreEqual(raceSession.NumberOfDrivers, testRaceSession.NumberOfDrivers);
+            Assert.AreEqual(raceSession.RaceTypeId, testRaceSession.RaceTypeId);
+            Assert.AreEqual(raceSession.StartTime, testRaceSession.StartTime);
+            Assert.AreEqual(raceSession.TrackId, testRaceSession.TrackId);
         }
 
         [TestMethod]
@@ -241,12 +292,18 @@ namespace SlotCarsGo_Server.Tests
         {
             // Act
             RaceTypeDTO raceTypeDTO = Mapper.Map<RaceTypeDTO>(raceType);
+            RaceType testRaceType = Mapper.Map<RaceType>(raceTypeDTO);
 
             // Assert
             Assert.AreEqual(raceType.Id, raceTypeDTO.Id);
             Assert.AreEqual(raceType.Name, raceTypeDTO.Name);
             Assert.AreEqual(raceType.Rules, raceTypeDTO.Rules);
             Assert.AreEqual(raceType.Symbol, raceTypeDTO.Symbol);
+
+            Assert.AreEqual(raceType.Id, testRaceType.Id);
+            Assert.AreEqual(raceType.Name, testRaceType.Name);
+            Assert.AreEqual(raceType.Rules, testRaceType.Rules);
+            Assert.AreEqual(raceType.Symbol, testRaceType.Symbol);
         }
 
         [TestMethod]
@@ -254,11 +311,14 @@ namespace SlotCarsGo_Server.Tests
         {
             // Act
             TrackDTO trackDTO = Mapper.Map<TrackDTO>(track);
+            Track testTrack = Mapper.Map<Track>(trackDTO);
 
             // Assert
-            Assert.AreEqual(track.Id, trackDTO.Id);
             Assert.AreEqual(track.Length, trackDTO.Length);
             Assert.AreEqual(track.Name, trackDTO.Name);
+
+            Assert.AreEqual(track.Length, testTrack.Length);
+            Assert.AreEqual(track.Name, testTrack.Name);
         }
     }
 }

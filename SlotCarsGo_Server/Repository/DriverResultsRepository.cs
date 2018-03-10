@@ -11,9 +11,7 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class DriverResultsRepository<T, DTO> : IRepositoryAsync<DriverResult, DriverResultDTO> 
-        where T : DriverResult 
-        where DTO: DriverResultDTO
+    public class DriverResultsRepository<T> : IRepositoryAsync<DriverResult> where T : DriverResult 
     {
         public async Task<DriverResult> Delete(string id)
         {
@@ -40,11 +38,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<DriverResultDTO> GetAll()
+        public IQueryable<DriverResult> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.DriverResults.ProjectTo<DriverResultDTO>();
+                return db.DriverResults;
             }
         }
 
@@ -56,11 +54,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<DriverResultDTO> GetForId(string sessionId)
+        public IQueryable<DriverResult> GetForId(string sessionId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.DriverResults.Where(dr => dr.SessionId == sessionId).ProjectTo<DriverResultDTO>();
+                return db.DriverResults.Where(dr => dr.SessionId == sessionId);
             }
         }
 
@@ -68,6 +66,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
+                driverResult.Id = driverResult.Id == null | driverResult.Id == string.Empty ? Guid.NewGuid().ToString() : driverResult.Id;
                 driverResult = db.DriverResults.Add(driverResult);
                 await db.SaveChangesAsync();
             }

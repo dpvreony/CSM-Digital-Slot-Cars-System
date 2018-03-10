@@ -1,24 +1,98 @@
-﻿<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+﻿@model SlotCarsGo_Server.Models.ViewModels.HomeViewModel
+<div class="jumbotron">
+    <h1>Join a Race</h1>
+    @if (Model.LastTrack == null)
+    {
+        <p>Register with a track to join a race, enter a track's 5-digit Secret below.</p>
+
+        using (Html.BeginForm("Register", "Home", FormMethod.Post, new { registerModel = Model, @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.Secret, new { @class = "col-md-2 control-label" })
+                <div class="col-md-6">
+                    @Html.TextBoxFor(m => m.Secret, new { @class = "form-control", maxLength=5})
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" class="btn btn-primary btn-lg" value="Register" />
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        using (Html.BeginForm("JoinRace", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.SelectedTrackId, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(m => m.SelectedTrackId, Model.MyTracksListItems, "-- Select Track --")
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.SelectedCarId, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(m => m.SelectedCarId, Model.AvailableCarsListItems, "-- Select Car --")
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.SelectedControllerId, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(m => m.SelectedControllerId, Model.AvailableControllersListItems, "-- Select Controller --")
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" class="btn btn-primary btn-lg" value="Join" />
+                </div>
+            </div>
+        }
+    }
 </div>
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>ASP.NET Web API is a framework that makes it easy to build HTTP services that reach
-        a broad range of clients, including browsers and mobile devices. ASP.NET Web API
-        is an ideal platform for building RESTful applications on the .NET Framework.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301870">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301871">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301872">Learn more &raquo;</a></p>
-    </div>
+    @if (Model.LastSession != null)
+    {
+        <div class="col-md-4">
+            <h2>Your Last Race</h2>
+            <h3>@Model.LastSession.RaceType.Name</h3>
+            <p>Finished: @Model.LastSession.EndTime</p>
+            <p>Car: @Model.LastDriverResult.Car.Name</p>
+            <p>Position: @Model.LastDriverResult.Position</p>
+            <p>Best Lap: @Model.LastDriverResult.BestLapTime</p>
+            <p>Total Time: @Model.LastDriverResult.TotalTime</p>
+            <p>Off Pace: @Model.LastDriverResult.TimeOffPace</p>
+            <br/>
+            <p>
+                <a class="btn btn-default" href="@Url.Action("Index", "Session", new { DriverResultId = Model.LastSession.Id }, Request.Url.Scheme)">
+                    <span>View Last Session</span>
+                </a>
+            </p>
+        </div>
+    }
+    @if (Model.LastTrack != null)
+    {
+        <div class="col-md-4">
+            <h2>Session History</h2>
+            <p>View all previous race sessions for any of your tracks.</p>
+            <p>
+                <a class="btn btn-default" href="@Url.Action("Index", "Session", new { DriverResultId = Model.LastSession.Id }, Request.Url.Scheme)">
+                    <span>View All Sessions</span>
+                </a>
+            </p>
+        </div>
+        <div class="col-md-4">
+            <h2>Car Garage</h2>
+            <p>View all cars and best lap times in your track's garage.</p>
+            <p>
+                <a class="btn btn-default" href="@Url.Action("Index", "Garage", new { TrackId = Model.LastTrack.Id}, Request.Url.Scheme)">
+                    <span>View Garage</span>
+                </a>
+            </p>
+        </div>
+    }
 </div>

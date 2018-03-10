@@ -303,8 +303,16 @@
     <Compile Include="Migrations\201803071304341_init.Designer.cs">
       <DependentUpon>201803071304341_init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803080944461_Add_Tracks_Users_Link.cs" />
+    <Compile Include="Migrations\201803080944461_Add_Tracks_Users_Link.Designer.cs">
+      <DependentUpon>201803080944461_Add_Tracks_Users_Link.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803081509052_Many2Many_laptimes_driverresults_session_track_cars.cs" />
+    <Compile Include="Migrations\201803081509052_Many2Many_laptimes_driverresults_session_track_cars.Designer.cs">
+      <DependentUpon>201803081509052_Many2Many_laptimes_driverresults_session_track_cars.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\DTO\CarDTO.cs" />
     <Compile Include="Models\Driver.cs" />
     <Compile Include="Models\DTO\DriverDTO.cs" />
@@ -315,13 +323,14 @@
     <Compile Include="Models\Car.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LapTime.cs" />
-    <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\ManageViewModels.cs" />
     <Compile Include="Models\RaceType.cs" />
     <Compile Include="Models\DTO\RaceSessionDTO.cs" />
     <Compile Include="Models\DriverResult.cs" />
     <Compile Include="Models\RaceSession.cs" />
     <Compile Include="Models\DTO\TrackDTO.cs" />
     <Compile Include="Models\Track.cs" />
+    <Compile Include="Models\ViewModels\HomeViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -344,8 +353,15 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Images\AbstractScalextricTrack_1024.png" />
+    <Content Include="Content\Images\Cars\0.jpg" />
     <Content Include="Content\Images\facebook_login.png" />
     <Content Include="Content\Images\google_login.png" />
+    <Content Include="Content\Images\Users\1.jpg" />
+    <Content Include="Content\Images\Users\2.jpg" />
+    <Content Include="Content\Images\Users\3.jpg" />
+    <Content Include="Content\Images\Users\4.jpg" />
+    <Content Include="Content\Images\Users\5.jpg" />
+    <Content Include="Content\Images\Users\6.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -437,8 +453,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\Images\Cars\" />
-    <Folder Include="Content\Images\Users\" />
     <Folder Include="Providers\" />
     <Folder Include="Views\AuthCallback\" />
   </ItemGroup>
@@ -458,6 +472,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201803071304341_init.resx">
       <DependentUpon>201803071304341_init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803080944461_Add_Tracks_Users_Link.resx">
+      <DependentUpon>201803080944461_Add_Tracks_Users_Link.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803081509052_Many2Many_laptimes_driverresults_session_track_cars.resx">
+      <DependentUpon>201803081509052_Many2Many_laptimes_driverresults_session_track_cars.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

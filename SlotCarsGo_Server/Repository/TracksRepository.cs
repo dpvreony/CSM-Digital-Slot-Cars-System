@@ -12,9 +12,7 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class TracksRepository<T, DTO> : IRepositoryAsync<Track, TrackDTO>
-        where T : Track
-        where DTO : TrackDTO
+    public class TracksRepository<T> : IRepositoryAsync<Track> where T : Track
     {
         public async Task<Track> Delete(string id)
         {
@@ -41,11 +39,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<TrackDTO> GetAll()
+        public IQueryable<Track> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks.ProjectTo<TrackDTO>();
+                return db.Tracks;
             }
         }
 
@@ -57,11 +55,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<TrackDTO> GetForId(string userId)
+        public IQueryable<Track> GetForId(string secret)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks.Where(t => t.ApplicationUserId == userId).ProjectTo<TrackDTO>();
+                return db.Tracks.Where(t => t.Secret == secret);
             }
         }
 
@@ -69,9 +67,9 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                track = db.Tracks.Add(track);
-                await db.SaveChangesAsync();
+                track.Id = track.Id == null | track.Id == string.Empty ? Guid.NewGuid().ToString() : track.Id;
                 track.Secret = track.Id.Substring(0, 5);
+                track = db.Tracks.Add(track);
                 await db.SaveChangesAsync();
             }
 
