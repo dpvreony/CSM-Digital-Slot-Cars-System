@@ -13,6 +13,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
                 <RowDefinition/>                
             </Grid.RowDefinitions>
             <TextBlock
@@ -29,17 +31,41 @@
                     Margin="0,0,10,0"/>
                 <TextBox
                     x:Name="RegisterTrackName_TextBox"
-                    PlaceholderText="You can change it later..."
+                    PlaceholderText="You can change it later."
                     Width="200"/>
             </StackPanel>
-            <Button
+            <StackPanel
+                x:Name="PostRegistrationPanel"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
                 Grid.Row="2"
+                Visibility="Collapsed"                
+                Margin="0,30,0,0">
+                <TextBlock
+                    Text="Track Secret"
+                    VerticalAlignment="Center"
+                    Margin="0,0,10,0"
+                 />
+                <TextBox
+                    x:Name="TrackSecret_TextBox"
+                    Width="100"/>
+            </StackPanel>
+            <TextBlock
+                x:Name="RegisterMessageText"
+                Grid.Row="3"
+                Text="Go online to www.slotcarsgo.timtyler.co.uk to register with this track."
+                VerticalAlignment="Center"
+                Visibility="Collapsed"                                
+                Margin="0,10,10,0"/>
+            <Button
+                x:Name="ConfirmButton"
+                Grid.Row="4"
                 Content="Proceed"
                 IsEnabled="{Binding TrackNameEntered}"
                 HorizontalAlignment="Center"
                 Click="Button_Click"
                 Background="Orange"
-                Margin="0,50,0,0"/>
+                Margin="0,30,0,0"/>
         </Grid>
     </ScrollViewer>
 </ContentDialog>

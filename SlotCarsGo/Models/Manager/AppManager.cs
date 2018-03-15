@@ -69,19 +69,23 @@ namespace SlotCarsGo.Models.Manager
         /// Registers the track name on the server and saves the name and Id to local settings.
         /// </summary>
         /// <param name="trackName"></param>
-        public async static void RegisterTrackOnStartup(string trackName)
+        public async static Task<string> RegisterTrackOnStartup(string trackName)
         {
             string trackId = String.Empty; // TODO: contact server for trackId
             float length = 0.0f;
             string macAddress = String.Empty; // TODO: get Mac https://stackoverflow.com/questions/34097870/c-sharp-get-mac-address-in-universal-apps
             AppManager.track = new Track(trackName, trackId, length, macAddress);
+            string secret = "SECRET" // get from returned track. TODO: show in settings
 
             ApplicationDataCompositeValue trackCompositeValue = new ApplicationDataCompositeValue();
             trackCompositeValue["TrackName"] = trackName;
             trackCompositeValue["TrackId"] = trackId;
             trackCompositeValue["Length"] = length;
+            trackCompositeValue["Secret"] = secret;
             trackCompositeValue["MacAddress"] = macAddress;
             await SettingsStorageExtensions.SaveAsync(localSettings, "Track", trackCompositeValue);
+
+            return secret;
         }
 
         /// <summary>
@@ -100,8 +104,8 @@ namespace SlotCarsGo.Models.Manager
             XmlElement audio = toastXml.CreateElement("audio");
             audio.SetAttribute("src", "ms-winsoundevent:Notification.SMS");
 
-            ToastNotification toast = new ToastNotification(toastXml);
-            toast.ExpirationTime = DateTime.Now.AddSeconds(4);
+//            ToastNotification toast = new ToastNotification(toastXml);
+//            toast.ExpirationTime = DateTime.Now.AddSeconds(4);
             // AppManager.toastService.ShowToastNotification(toast);
         }
     }
