@@ -22,38 +22,70 @@ namespace SlotCarsGo_Server.Controllers
         {
             ViewBag.Title = "Home Page";
 
+            try
+            {
+                string userId = this.User.Identity.GetUserId();
+                ApplicationUser user = Request.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
+
+                if (user.Tracks.Count == 0)
+                {
+                    return RedirectToAction("RegisterTrack");
+                }
+                else
+                {
+                    HomeViewModel homeModel = new HomeViewModel();
+                    homeModel.Setup(user);
+                    return View(homeModel);
+                }
+            }
+            catch (Exception)
+            {
+                return View();
+            }
+        }
+
+        public ActionResult RegisterTrack()
+        {
             string userId = this.User.Identity.GetUserId();
             ApplicationUser user = Request.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
 
-            if (user != null)
-            {
-                HomeViewModel model = new HomeViewModel();
-                model.Setup(user);
-                return View(model);
-            }
+            RegisterTrackViewModel registerModel = new RegisterTrackViewModel();
+            registerModel.User = user;
+            return View(registerModel);
+        }
+
+
+        public ActionResult About()
+        {
+            ViewBag.Title = "About";
 
             return View();
         }
 
-        //
         // POST: /Register
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(HomeViewModel registerModel)
+        public async Task<ActionResult> RegisterTrackPost(RegisterTrackViewModel registerModel)
         {
             if (registerModel.Secret != null)
             {
+                string userId = this.User.Identity.GetUserId();
+
                 TracksRepository<Track> tracksRepo = new TracksRepository<Track>();
-                IEnumerable<Track> tracks = tracksRepo.GetForId(registerModel.Secret);
-//                List<Track> results = tracksRepo.GetForId(registerModel.Secret).ToList();
-                Track track = tracks.FirstOrDefault();
+                IEnumerable<Track> tracks = tracksRepo.GetFor(registerModel.Secret);
+                Track track = tracks.FirstOrDefault() as Track;
                 if (track != null)
                 {
-                    string userId = this.User.Identity.GetUserId();
-                    ApplicationUser user = Request.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
-                    track.ApplicationUsers.Add(user);
-                    EntityState state = await tracksRepo.Update(track.Id, track);
+                    EntityState state = await tracksRepo.RegisterUser(track.Id, userId);
+                    if (state == EntityState.Modified)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Sorry, something went wrong - please try again.");
+                    }
                 }
                 else
                 {
@@ -61,7 +93,7 @@ namespace SlotCarsGo_Server.Controllers
                 }
             }
 
-            return Index();
+            return View("RegisterTrack", registerModel);
         }
 
         //
@@ -69,17 +101,36 @@ namespace SlotCarsGo_Server.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Join(HomeViewModel model)
+        public async Task<ActionResult> JoinRace(HomeViewModel model)
         {
             if (ModelState.IsValid)
             {
-                IRepositoryAsync<Track> tracksRepo = new TracksRepository<Track>();
-                Track track = tracksRepo.GetAll().Where(t => t.Secret == model.Secret).FirstOrDefault();
-                track.ApplicationUsers.Add(model.User);
-                EntityState state = await tracksRepo.Update(track.Id, track);
+                string userId = this.User.Identity.GetUserId();
+                DriversRepository<Driver, DriverDTO> driversRepo = new DriversRepository<Driver, DriverDTO>();
+                Driver driver = driversRepo.GetForUser(userId);
+
+                if (driver == null)
+                {
+                    driver = new Driver()
+                    {
+                        ApplicationUserId = userId,
+                        CarId = model.SelectedCarId,
+                        ControllerId = Convert.ToInt32(model.SelectedControllerId),
+                        TrackId = model.SelectedTrackId
+                    };
+
+                    driver = await driversRepo.Insert(driver);
+                }
+                else
+                {
+                    driver.CarId = model.SelectedCarId;
+                    driver.ControllerId = Convert.ToInt32(model.SelectedControllerId);
+                    driver.TrackId = model.SelectedTrackId;
+                    EntityState state = await driversRepo.Update(driver.Id, driver);
+                }
             }
 
-            return Index();
+            return View("Index", model);
         }
     }
 }

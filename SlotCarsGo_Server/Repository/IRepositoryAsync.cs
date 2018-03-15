@@ -13,7 +13,6 @@ namespace SlotCarsGo_Server.Repository
         bool Exists(string id);
         IEnumerable<T> GetAll();
         Task<T> GetById(string id);
-        IEnumerable<T> GetFor(string id);
         Task<T> Insert(T obj);
         Task<EntityState> Update(string id, T obj);
     }

@@ -1,0 +1,76 @@
+﻿@model SlotCarsGo_Server.Models.ViewModels.GarageViewModel
+
+@if (Model.SelectedCar == null)
+{
+    <div class="jumbotron" style="background-color:#FFD968">
+        <div class="row">
+            <div class="col-xs-12 col-lg-6">
+                <img src="~/Content/Images/SoftCarPostcard_400.png" style="width:400px; height:400px;margin-left:auto;margin-right:auto;display:block;" />
+            </div>
+            <div class="col-xs-12 col-lg-6">
+                <h1 style="color:white;">Add a Car</h1>
+                @Html.Partial("CreateCar", Model.NewCarViewModel)
+            </div>
+        </div>
+    </div>
+}
+else
+{
+<div class="jumbotron" style="background-color:#FFD968">
+    <div class="row">
+        <div class="col-xs-12 col-lg-6">
+            <img style="display:inline;" width="150" height="150" src="~/Content/Images/SoftTrackPostcard_400.png" alt="logo" />
+            <h1 style="display: inline; color:white;"> Garage</h1>
+        </div>
+        <div class="col-xs-12 col-lg-6">
+            <div class="row">
+                @Html.Partial("ChangeTrackDropDown", Model.ChangeTrackViewModel)
+            </div>
+            <div class="row">
+                @Html.Partial("ChangeCarDropDown", Model.ChangeCarViewModel)
+            </div>
+        </div>
+    </div>
+</div>
+}
+<div class="jumbotron" style="background-color:#FFE599">
+    <div class="row">
+        <div class="col-xs-12 col-lg-7">
+            <h2 style="font-weight:bold">@Model.SelectedTrack.Name</h2>
+            <p>Best Lap: @Model.TrackRecord, held by @Model.TrackRecordHolder</p>
+            <h3 style="font-weight:bold">Car Ranking</h3>
+            @Html.Partial("TrackData", Model)
+        </div>
+        <div class="col-xs-12 col-lg-5">
+            <h2 style="font-weight:bold">@Model.SelectedCar.Name</h2>
+            <p>Best Lap: @Model.SelectedCar.TrackRecord, held by @Model.SelectedCar.RecordHolder</p>
+            <img src="~/Content/Images/Cars/@Model.SelectedCar.ImageName" style="max-width:400px; height:auto;margin-left:auto;margin-right:auto;display:block;" />
+            @if (Model.BestLapTimesForCar.Count > 0)
+            {
+                <h3 style="font-weight:bold">Driver Ranking for @Model.SelectedCar.Name</h3>
+                @Html.Partial("CarData", Model)
+            }
+        </div>
+    </div>
+</div>
+@if (Model.SelectedCar != null)
+{
+    <div class="jumbotron" style="background-color:#FFF4D6">
+        <div class="row">
+            <div class="col-md-4">
+                <h2 style="font-weight:bold">Add a Car</h2>
+                @Html.Partial("CreateCar", Model.NewCarViewModel)
+                <br />
+            </div>
+            <div class="col-md-4">
+                <h2 style="font-weight:bold">Edit a Car</h2>
+                @Html.Partial("EditCar", Model.EditCarViewModel)
+                <br />
+            </div>
+            <div class="col-md-4">
+                <h2 style="font-weight:bold">Delete a Car</h2>
+                @Html.Partial("DeleteCar", Model.DeleteCarViewModel)
+            </div>
+        </div>
+    </div>
+}

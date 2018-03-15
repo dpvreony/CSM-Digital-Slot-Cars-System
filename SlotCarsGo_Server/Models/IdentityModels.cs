@@ -13,6 +13,7 @@ namespace SlotCarsGo_Server.Models
     {
         public ApplicationUser() : base()
         {
+
             this.Tracks = new HashSet<Track>();
             this.DriverResults = new HashSet<DriverResult>();
         }
@@ -20,6 +21,7 @@ namespace SlotCarsGo_Server.Models
         public string ImageName { get; set; }
         public virtual ICollection<Track> Tracks { get; set; }
         public virtual ICollection<DriverResult> DriverResults { get; set; }
+        public virtual ICollection<BestLapTime> BestLapTimes { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -55,5 +57,7 @@ namespace SlotCarsGo_Server.Models
         public DbSet<RaceType> RaceTypes { get; set; }
 
         public DbSet<LapTime> LapTimes { get; set; }
+
+        public DbSet<BestLapTime> BestLapTimes { get; set; }
     }
 }

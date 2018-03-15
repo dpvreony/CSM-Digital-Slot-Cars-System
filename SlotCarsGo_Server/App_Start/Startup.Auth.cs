@@ -18,15 +18,6 @@ namespace SlotCarsGo_Server
         // For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
-/*
-            using (var ctx = new ApplicationDbContext())
-            {
-                using (var writer = new XmlTextWriter(@"C:\users\tango\source\repos\CSM-Digital-Slot-Cars-System\SlotCarsGo_Server\Model.edmx", Encoding.Default))
-                {
-                    EdmxWriter.WriteEdmx(ctx, writer);
-                }
-            }
-*/
             // Configure the db context, user manager and signin manager to use a single instance per request
             app.CreatePerOwinContext(ApplicationDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);

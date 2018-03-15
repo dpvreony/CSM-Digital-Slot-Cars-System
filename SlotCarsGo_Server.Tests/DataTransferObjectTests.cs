@@ -19,6 +19,7 @@ namespace SlotCarsGo_Server.Tests
         RaceSession raceSession;
         RaceType raceType;
         Track track;
+        BestLapTime bestLapTime;
 
         string carId = "5";
         string driverId = "7";
@@ -26,6 +27,8 @@ namespace SlotCarsGo_Server.Tests
         string trackId = "45";
         string raceSessionId = "23564";
         string raceTypeId = "3";
+        string lapTimeId = "125678";
+        string bestLapTimeId = "123";
 
         string name = "Test Car Name";
         TimeSpan trackRecord = new TimeSpan(0, 0, 0, 5, 450);
@@ -58,22 +61,23 @@ namespace SlotCarsGo_Server.Tests
                 Mapper.Initialize(cfg => {
                     cfg.CreateMap<RaceSession, RaceSessionDTO>()
                         .ReverseMap()
-                            .ForMember(dest => dest.DriverResults, opt => opt.Ignore())
-                            .ForMember(dest => dest.RaceType, opt => opt.Ignore())
-                            .ForMember(dest => dest.Track, opt => opt.Ignore());
+                            .ForMember(src => src.DriverResults, opt => opt.Ignore())
+                            .ForMember(src => src.RaceType, opt => opt.Ignore())
+                            .ForMember(src => src.Track, opt => opt.Ignore());
                     cfg.CreateMap<DriverResult, DriverResultDTO>()
                         .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src.ApplicationUserId))
                         .ReverseMap()
                             .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.DriverId));
                     cfg.CreateMap<Track, TrackDTO>()
                         .ReverseMap()
-                            .ForMember(dest => dest.ApplicationUserId, opt => opt.Ignore())
-                            .ForMember(dest => dest.ApplicationUsers, opt => opt.Ignore())
-                            .ForMember(dest => dest.Cars, opt => opt.Ignore());
+                            .ForMember(src => src.BestLapTimeId, opt => opt.Ignore())
+                            .ForMember(src => src.ApplicationUsers, opt => opt.Ignore())
+                            .ForMember(src => src.Cars, opt => opt.Ignore());
                     cfg.CreateMap<Car, CarDTO>()
-                        .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
+                        .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.BestLapTime.ApplicationUser.UserName))
+                        .ForPath(dest => dest.TrackRecord, opt => opt.MapFrom(src => src.BestLapTime.LapTime.Time))
                         .ReverseMap()
-                            .ForPath(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.RecordHolder));
+                            .ForPath(src => src.BestLapTimeId, opt => opt.Ignore());
                     cfg.CreateMap<RaceType, RaceTypeDTO>();
                     cfg.CreateMap<Driver, DriverDTO>()
                         .ForPath(dest => dest.UserId, opt => opt.MapFrom(src => src.ApplicationUser.Id))
@@ -81,13 +85,13 @@ namespace SlotCarsGo_Server.Tests
                         .ForPath(dest => dest.ImageName, opt => opt.MapFrom(src => src.ApplicationUser.ImageName))
                         .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.Car))
                         .ReverseMap()
-                            .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.UserId))
-                            .ForPath(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.UserName))
-                            .ForPath(dest => dest.ApplicationUser.ImageName, opt => opt.MapFrom(src => src.ImageName))
-                            .ForMember(dest => dest.Car, opt => opt.MapFrom(src => src.SelectedCar));
+                            .ForMember(src => src.ApplicationUserId, opt => opt.MapFrom(dest => dest.UserId))
+                            .ForPath(src => src.ApplicationUser.UserName, opt => opt.MapFrom(dest => dest.UserName))
+                            .ForPath(src => src.ApplicationUser.ImageName, opt => opt.MapFrom(dest => dest.ImageName))
+                            .ForMember(src => src.Car, opt => opt.MapFrom(dest => dest.SelectedCar));
                     cfg.CreateMap<LapTime, LapTimeDTO>()
                         .ReverseMap()
-                            .ForMember(dest => dest.DriverResult, opt => opt.Ignore());
+                            .ForMember(src => src.DriverResult, opt => opt.Ignore());
                 });
 
                 automapperIntialised = true;
@@ -99,12 +103,17 @@ namespace SlotCarsGo_Server.Tests
             raceType.Rules = raceTypeRules;
             raceType.Symbol = raceTypeSymbol;
 
+            bestLapTime = new BestLapTime();
+            bestLapTime.ApplicationUserId = driverId.ToString();
+            bestLapTime.CarId = carId;
+            bestLapTime.LapTimeId = bestLapTimeId;
+
             user = new ApplicationUser();
             user.Id = driverId.ToString();
             user.UserName = recordHolderName;
 
             track = new Track();
-            track.ApplicationUserId = user.Id;
+            track.BestLapTime = bestLapTime;
             track.Length = trackLength;
             track.Name = trackName;
             track.Id = trackId;
@@ -115,9 +124,7 @@ namespace SlotCarsGo_Server.Tests
             car.ImageName = imageName;
             car.Name = name;
             car.Track = new Track();
-            car.TrackRecord = trackRecord;
-            car.ApplicationUser = user;
-            car.ApplicationUser.UserName = user.UserName;
+            car.BestLapTime = bestLapTime;
 
             driver = new Driver();
             driver.Id = driverId;
@@ -175,14 +182,12 @@ namespace SlotCarsGo_Server.Tests
             Assert.AreEqual(car.Id, carDTO.Id);
             Assert.AreEqual(car.ImageName, carDTO.ImageName);
             Assert.AreEqual(car.Name, carDTO.Name);
-            Assert.AreEqual(car.ApplicationUser.UserName, carDTO.RecordHolder);
-            Assert.AreEqual(car.TrackRecord, carDTO.TrackRecord);
+            Assert.AreEqual(car.BestLapTime.ApplicationUser.UserName, carDTO.RecordHolder);
+            Assert.AreEqual(car.BestLapTime.LapTime.Time, carDTO.TrackRecord);
 
             Assert.AreEqual(car.Id, testCar.Id);
             Assert.AreEqual(car.ImageName, testCar.ImageName);
             Assert.AreEqual(car.Name, testCar.Name);
-            Assert.AreEqual(car.ApplicationUser.UserName, testCar.ApplicationUser.UserName);
-            Assert.AreEqual(car.TrackRecord, testCar.TrackRecord);
         }
 
         [TestMethod]
@@ -208,9 +213,9 @@ namespace SlotCarsGo_Server.Tests
             Assert.AreEqual(driver.ControllerId, testDriver.ControllerId);
             Assert.AreEqual(driver.ApplicationUser.ImageName, testDriver.ApplicationUser.ImageName);
             Assert.AreEqual(carDTO.Id, testDriver.Car.Id);
-            Assert.AreEqual(carDTO.RecordHolder, testDriver.Car.ApplicationUser.UserName);
+            Assert.AreEqual(carDTO.RecordHolder, testDriver.Car.BestLapTime.ApplicationUser.UserName);
             Assert.AreEqual(carDTO.ImageName, testDriver.Car.ImageName);
-            Assert.AreEqual(carDTO.TrackRecord, testDriver.Car.TrackRecord);
+            Assert.AreEqual(carDTO.TrackRecord, testDriver.Car.BestLapTime.LapTime.Time);
             Assert.AreEqual(driver.ApplicationUser.UserName, testDriver.ApplicationUser.UserName);
         }
 

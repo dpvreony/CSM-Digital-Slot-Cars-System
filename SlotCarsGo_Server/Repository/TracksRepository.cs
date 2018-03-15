@@ -39,11 +39,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<Track> GetAll()
+        public IEnumerable<Track> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks;
+                return db.Tracks.ToList();
             }
         }
 
@@ -55,11 +55,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<Track> GetForId(string secret)
+        public IEnumerable<Track> GetFor(string secret)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Tracks.Where(t => t.Secret == secret);
+                return db.Tracks.Where(t => t.Secret == secret).ToList();
             }
         }
 
@@ -74,6 +74,36 @@ namespace SlotCarsGo_Server.Repository
             }
 
             return track;
+        }
+
+        public async Task<EntityState> RegisterUser(string trackId, string userId)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                Track track = await db.Tracks.FindAsync(trackId);
+                ApplicationUser user = db.Users.Find(userId); 
+                track.ApplicationUsers.Add(user);
+                user.Tracks.Add(track);
+                db.Entry(track).State = EntityState.Modified;
+                db.Entry(user).State = EntityState.Modified;
+                try
+                {
+                    await db.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (db.Tracks.Count(e => e.Id == track.Id) == 0)
+                    {
+                        return EntityState.Unchanged;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return EntityState.Modified;
+            }
         }
 
         public async Task<EntityState> Update(string id, Track track)

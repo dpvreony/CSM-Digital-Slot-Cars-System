@@ -1,98 +1,70 @@
 ﻿@model SlotCarsGo_Server.Models.ViewModels.HomeViewModel
-<div class="jumbotron">
-    <h1>Join a Race</h1>
-    @if (Model.LastTrack == null)
-    {
-        <p>Register with a track to join a race, enter a track's 5-digit Secret below.</p>
-
-        using (Html.BeginForm("Register", "Home", FormMethod.Post, new { registerModel = Model, @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.ValidationSummary("", new { @class = "text-danger" })
-            <div class="form-group">
-                @Html.LabelFor(m => m.Secret, new { @class = "col-md-2 control-label" })
-                <div class="col-md-6">
-                    @Html.TextBoxFor(m => m.Secret, new { @class = "form-control", maxLength=5})
+<div class="jumbotron" style="background-color:#FFD968">
+    <div class="row">
+        <div class="col-xs-12 col-lg-6">
+            <img src="~/Content/Images/SoftCarPostcard_400.png" style="width:400px; height:400px;margin-left:auto;margin-right:auto;display:block;" />
+        </div>
+        <div class="col-xs-12 col-lg-6">
+            <h1 style="color:white">Join a Race</h1>
+            <p>Select your configuration to get on the starting grid.</p>
+            @using (Html.BeginForm("JoinRace", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(m => m.SelectedTrackId, new { @class = "col-xs-4 control-label" })
+                    <div class="col-xs-8">
+                        @Html.DropDownListFor(m => m.SelectedTrackId, Model.MyTracksListItems, "-- Select Track --", new { @class = "form-control", style = "width:300px" })
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" class="btn btn-primary btn-lg" value="Register" />
+                <div class="form-group">
+                    @Html.LabelFor(m => m.SelectedCarId, new { @class = "col-xs-4 control-label" })
+                    <div class="col-xs-8">
+                        @Html.DropDownListFor(m => m.SelectedCarId, Model.AvailableCarsListItems, "-- Select Car --", new { @class = "form-control", style = "width:300px" })
+                    </div>
                 </div>
-            </div>
-        }
-    }
-    else
-    {
-        using (Html.BeginForm("JoinRace", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.ValidationSummary("", new { @class = "text-danger" })
-            <div class="form-group">
-                @Html.LabelFor(m => m.SelectedTrackId, new { @class = "col-md-2 control-label" })
-                <div class="col-md-10">
-                    @Html.DropDownListFor(m => m.SelectedTrackId, Model.MyTracksListItems, "-- Select Track --")
+                <div class="form-group">
+                    @Html.LabelFor(m => m.SelectedControllerId, new { @class = "col-xs-4 control-label" })
+                    <div class="col-xs-8">
+                        @Html.DropDownListFor(m => m.SelectedControllerId, Model.AvailableControllersListItems, "-- Select Controller --", new { @class = "form-control", style = "width:300px" })
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(m => m.SelectedCarId, new { @class = "col-md-2 control-label" })
-                <div class="col-md-10">
-                    @Html.DropDownListFor(m => m.SelectedCarId, Model.AvailableCarsListItems, "-- Select Car --")
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-xs-8">
+                        <input type="submit" class="btn btn-primary btn-lg" value="Join" />
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(m => m.SelectedControllerId, new { @class = "col-md-2 control-label" })
-                <div class="col-md-10">
-                    @Html.DropDownListFor(m => m.SelectedControllerId, Model.AvailableControllersListItems, "-- Select Controller --")
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" class="btn btn-primary btn-lg" value="Join" />
-                </div>
-            </div>
-        }
-    }
+            }
+        </div>
+    </div>
 </div>
 <div class="row">
-    @if (Model.LastSession != null)
-    {
-        <div class="col-md-4">
-            <h2>Your Last Race</h2>
-            <h3>@Model.LastSession.RaceType.Name</h3>
-            <p>Finished: @Model.LastSession.EndTime</p>
-            <p>Car: @Model.LastDriverResult.Car.Name</p>
-            <p>Position: @Model.LastDriverResult.Position</p>
-            <p>Best Lap: @Model.LastDriverResult.BestLapTime</p>
-            <p>Total Time: @Model.LastDriverResult.TotalTime</p>
-            <p>Off Pace: @Model.LastDriverResult.TimeOffPace</p>
-            <br/>
-            <p>
-                <a class="btn btn-default" href="@Url.Action("Index", "Session", new { DriverResultId = Model.LastSession.Id }, Request.Url.Scheme)">
-                    <span>View Last Session</span>
-                </a>
-            </p>
-        </div>
-    }
-    @if (Model.LastTrack != null)
-    {
-        <div class="col-md-4">
-            <h2>Session History</h2>
-            <p>View all previous race sessions for any of your tracks.</p>
-            <p>
-                <a class="btn btn-default" href="@Url.Action("Index", "Session", new { DriverResultId = Model.LastSession.Id }, Request.Url.Scheme)">
-                    <span>View All Sessions</span>
-                </a>
-            </p>
-        </div>
-        <div class="col-md-4">
-            <h2>Car Garage</h2>
-            <p>View all cars and best lap times in your track's garage.</p>
-            <p>
-                <a class="btn btn-default" href="@Url.Action("Index", "Garage", new { TrackId = Model.LastTrack.Id}, Request.Url.Scheme)">
-                    <span>View Garage</span>
-                </a>
-            </p>
-        </div>
-    }
+    <div class="col-md-4">
+        <h2>Race History</h2>
+        <p>Analyse race results and laptimes for all previous race sessions at any of your tracks.</p>
+        <p>
+            <a class="btn btn-primary btn-lg" href="@Url.Action("Index", "Session", Request.Url.Scheme)">
+                <span>View History</span>
+            </a>
+        </p>
+    </div>
+    <div class="col-md-4">
+        <h2>Manage Garage</h2>
+        <p>Add a new car or view the best lap times for cars in your garage.</p>
+        <p>
+            <a class="btn btn-primary btn-lg" href="@Url.Action("Index", "Garage", Request.Url.Scheme)">
+                <span>View Garage</span>
+            </a>
+        </p>
+    </div>
+    <div class="col-md-4">
+        <h2>Join a New Track</h2>
+        <p>Register with a different track to join other races.</p>
+        <br/>
+        <p>
+            <a class="btn btn-primary btn-lg" href="@Url.Action("RegisterTrack", "Home", Request.Url.Scheme)">
+                <span>Add Track</span>
+            </a>
+        </p>
+    </div>
 </div>

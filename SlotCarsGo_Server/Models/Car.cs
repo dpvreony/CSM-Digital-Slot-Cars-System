@@ -8,22 +8,29 @@ namespace SlotCarsGo_Server.Models
 {
     public class Car
     {
+        public Car()
+        {
+            this.ImageName = "0.jpg";
+        }
+
         public string Id { get; set; }
 
         [Required]
         public string Name { get; set; }
 
-        public TimeSpan TrackRecord { get; set; }
-        public string ImageName { get; set; } = "0.jpg";
+        public string ImageName { get; set; }
 
         // Foreign key
-        public string ApplicationUserId { get; set; }
-        // Navigation property
-        public ApplicationUser ApplicationUser { get; set; }
-
-        // Foreign key
+        [Required]
         public string TrackId { get; set; }
         // Navigation property
         public Track Track { get; set; }
+
+        // Foreign Key
+        public string BestLapTimeId { get; set; }
+        // Navigation Property
+        public BestLapTime BestLapTime { get; set; }
+
+        public virtual ICollection<BestLapTime> BestLapTimes { get; set; }
     }
 }

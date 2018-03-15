@@ -10,6 +10,6 @@ namespace SlotCarsGo_Server.Repository
 {
     public interface IRepositoryDTOAsync<DTO> where DTO:class
     {
-        IEnumerable<DTO> GetAllAsDTO();
+        IEnumerable<DTO> GetAllAsDTO(string trackId);
     }
 }

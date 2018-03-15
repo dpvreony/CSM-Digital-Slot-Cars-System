@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -14,10 +15,7 @@ namespace SlotCarsGo_Server.Models
             this.Cars = new HashSet<Car>();
         }
 
-        [Key]
         public string Id { get; set; }
-
-        public string ApplicationUserId { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -25,6 +23,9 @@ namespace SlotCarsGo_Server.Models
         public float Length { get; set; }
 
         public string Secret { get; set; }
+
+        public string BestLapTimeId { get; set; }
+        public BestLapTime BestLapTime { get; set; }
 
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
 

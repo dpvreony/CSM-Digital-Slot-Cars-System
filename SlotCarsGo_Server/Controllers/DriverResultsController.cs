@@ -23,47 +23,6 @@ namespace SlotDriverResultsGo_Server.Controllers
         {
             private IRepositoryAsync<DriverResult> repo = new DriverResultsRepository<DriverResult>();
 
-            // GET: api/DriverResults
-            public IEnumerable<DriverResultDTO> GetDriverResults()
-            {
-                return repo.GetAll().ProjectTo<DriverResultDTO>();
-            }
-
-            // GET: api/DriverResults/5
-            [ResponseType(typeof(DriverResultDTO))]
-            public async Task<IHttpActionResult> GetDriverResult(string id)
-            {
-                DriverResult driverResult = await repo.GetById(id);
-                if (driverResult == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(Mapper.Map<DriverResultDTO>(driverResult));
-            }
-
-            // PUT: api/DriverResults/5
-            [ResponseType(typeof(void))]
-            public async Task<IHttpActionResult> PutDriverResult(string id, DriverResult driverResult)
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                if (id != driverResult.Id)
-                {
-                    return BadRequest();
-                }
-
-                if (await repo.Update(id, driverResult) != EntityState.Modified)
-                {
-                    return NotFound();
-                }
-
-                return StatusCode(HttpStatusCode.NoContent);
-            }
-
             // POST: api/DriverResults
             [ResponseType(typeof(DriverResultDTO))]
             public async Task<IHttpActionResult> PostDriverResult(DriverResultDTO driverResultDTO)

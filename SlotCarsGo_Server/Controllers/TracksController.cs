@@ -21,12 +21,6 @@ namespace SlotTracksGo_Server.Controllers
     {
         private IRepositoryAsync<Track> repo = new TracksRepository<Track>();
 
-        // GET: api/Tracks
-        public IEnumerable<TrackDTO> GetTracks()
-        {
-            return repo.GetAll().ProjectTo<TrackDTO>();
-        }
-
         // GET: api/Tracks/5
         [ResponseType(typeof(TrackDTO))]
         public async Task<IHttpActionResult> GetTrack(string id)
@@ -42,17 +36,21 @@ namespace SlotTracksGo_Server.Controllers
 
         // PUT: api/Tracks/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutTrack(string id, Track track)
+        public async Task<IHttpActionResult> PutTrack(string id, TrackDTO trackDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != track.Id)
+            if (id != trackDTO.Id)
             {
                 return BadRequest();
             }
+
+            Track track = await repo.GetById(id);
+            track.Name = trackDTO.Name;
+            track.Length = trackDTO.Length;
 
             if (await repo.Update(id, track) != EntityState.Modified)
             {

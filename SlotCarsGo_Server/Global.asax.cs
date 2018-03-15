@@ -27,22 +27,25 @@ namespace SlotCarsGo_Server
             Mapper.Initialize(cfg => {
                 cfg.CreateMap<RaceSession, RaceSessionDTO>()
                     .ReverseMap()
-                        .ForMember(dest => dest.DriverResults, opt => opt.Ignore())
-                        .ForMember(dest => dest.RaceType, opt => opt.Ignore())
-                        .ForMember(dest => dest.Track, opt => opt.Ignore());
+                        .ForMember(src => src.DriverResults, opt => opt.Ignore())
+                        .ForMember(src => src.RaceType, opt => opt.Ignore())
+                        .ForMember(src => src.Track, opt => opt.Ignore());
                 cfg.CreateMap<DriverResult, DriverResultDTO>()
                     .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src.ApplicationUserId))
                     .ReverseMap()
                         .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.DriverId));
                 cfg.CreateMap<Track, TrackDTO>()
+                    .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.BestLapTime == null ? "No Record set" : src.BestLapTime.ApplicationUser.UserName))
+                    .ForPath(dest => dest.TrackRecord, opt => opt.MapFrom(src => src.BestLapTime == null ? new System.TimeSpan(0, 0, 59) : src.BestLapTime.LapTime.Time))
                     .ReverseMap()
-                        .ForMember(dest => dest.ApplicationUserId, opt => opt.Ignore())
-                        .ForMember(dest => dest.ApplicationUsers, opt => opt.Ignore())
-                        .ForMember(dest => dest.Cars, opt => opt.Ignore());
+                        .ForMember(src => src.BestLapTimeId, opt => opt.Ignore())
+                        .ForMember(src => src.ApplicationUsers, opt => opt.Ignore())
+                        .ForMember(src => src.Cars, opt => opt.Ignore());
                 cfg.CreateMap<Car, CarDTO>()
-                    .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
+                    .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.BestLapTime == null ? "No Record set" : src.BestLapTime.ApplicationUser.UserName))
+                    .ForPath(dest => dest.TrackRecord, opt => opt.MapFrom(src => src.BestLapTime == null ? new System.TimeSpan(0,0,59) : src.BestLapTime.LapTime.Time))
                     .ReverseMap()
-                        .ForPath(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.RecordHolder));
+                        .ForPath(src => src.BestLapTimeId, opt => opt.Ignore());
                 cfg.CreateMap<RaceType, RaceTypeDTO>();
                 cfg.CreateMap<Driver, DriverDTO>()
                     .ForPath(dest => dest.UserId, opt => opt.MapFrom(src => src.ApplicationUser.Id))
@@ -50,13 +53,13 @@ namespace SlotCarsGo_Server
                     .ForPath(dest => dest.ImageName, opt => opt.MapFrom(src => src.ApplicationUser.ImageName))
                     .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.Car))
                     .ReverseMap()
-                        .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.UserId))
-                        .ForPath(dest => dest.ApplicationUser.UserName, opt => opt.MapFrom(src => src.UserName))
-                        .ForPath(dest => dest.ApplicationUser.ImageName, opt => opt.MapFrom(src => src.ImageName))
-                        .ForMember(dest => dest.Car, opt => opt.MapFrom(src => src.SelectedCar));
+                        .ForMember(src => src.ApplicationUserId, opt => opt.MapFrom(dest => dest.UserId))
+                        .ForPath(src => src.ApplicationUser.UserName, opt => opt.MapFrom(dest => dest.UserName))
+                        .ForPath(src => src.ApplicationUser.ImageName, opt => opt.MapFrom(dest => dest.ImageName))
+                        .ForMember(src => src.Car, opt => opt.MapFrom(dest => dest.SelectedCar));
                 cfg.CreateMap<LapTime, LapTimeDTO>()
                     .ReverseMap()
-                        .ForMember(dest => dest.DriverResult, opt => opt.Ignore());
+                        .ForMember(src => src.DriverResult, opt => opt.Ignore());
             });
         }
     }

@@ -15,3 +15,11 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.jumbo-h1 {
+    color: white;
+}
+
+.jumbo-bgnd {
+    background-color: #FFD968;
+}

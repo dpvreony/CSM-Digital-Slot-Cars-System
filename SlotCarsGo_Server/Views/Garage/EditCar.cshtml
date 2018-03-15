@@ -1,0 +1,29 @@
+﻿@model SlotCarsGo_Server.Models.ViewModels.EditCarViewModel
+@using (Html.BeginForm("EditCar", "Garage", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(m => m.SelectedCarToEditId, new { @class = "col-md-3 control-label" })
+        <div class="col-md-9">
+            @Html.DropDownListFor(m => m.SelectedCarToEditId, Model.CarsInGarageListItems, "-- Select Car --", new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name, new { @class = "col-md-3 control-label" })
+        <div class="col-md-9">
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Image, new { @class = "col-md-3 control-label"})
+        <div class="col-md-9">
+            <input type="file" name="file" style="width:125px;overflow:hidden" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-3 col-md-12">
+            <input type="submit" class="btn btn-primary btn-lg" value="Edit" />
+        </div>
+    </div>
+}

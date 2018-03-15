@@ -1,0 +1,27 @@
+﻿@model SlotCarsGo_Server.Models.ViewModels.RegisterTrackViewModel
+<div class="jumbotron" style="background-color:#FFD968">
+    <div class="row">
+        <div class="col-xs-12 col-lg-6">
+            <img src="~/Content/Images/Soft2CarTrackPostcard_400.png" style="width:400px; height:400px;margin-left:auto;margin-right:auto;display:block;" />
+        </div>
+        <div class="col-xs-12 col-lg-6">
+            <h1>Register a Track</h1>
+            <p>To join a race, first register a track by entering a track's 5-digit Secret below.</p>
+            @using (Html.BeginForm("RegisterTrackPost", "Home", FormMethod.Post, new { @class = "form-inline", role = "form", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Secret, new { @class = "col-xs-5 control-label" })
+                    <div class="col-xs-3">
+                        @Html.TextBoxFor(m => m.Secret, new { @class = "form-control", maxLength = 5, minLength = 5, style = "width:100px" })
+                    </div>
+                    <div class="col-md-offset-1 col-md-3">
+                        <input type="submit" class="btn btn-primary btn-lg" value="Register" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

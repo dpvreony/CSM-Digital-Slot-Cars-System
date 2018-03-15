@@ -20,47 +20,6 @@ namespace SlotCarsGo_Server.Controllers
     {
         private IRepositoryAsync<LapTime> repo = new LapTimesRepository<LapTime>();
 
-        // GET: api/LapTimes
-        public IEnumerable<LapTimeDTO> GetLapTimes()
-        {
-            return repo.GetAll().ProjectTo<LapTimeDTO>();
-        }
-
-        // GET: api/LapTimes/5
-        [ResponseType(typeof(LapTimeDTO))]
-        public async Task<IHttpActionResult> GetLapTime(string id)
-        {
-            LapTime lapTime = await repo.GetById(id);
-            if (lapTime == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(Mapper.Map<LapTimeDTO>(lapTime));
-        }
-
-        // PUT: api/LapTimes/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutLapTime(string id, LapTime lapTime)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != lapTime.Id)
-            {
-                return BadRequest();
-            }
-
-            if (await repo.Update(id, lapTime) != EntityState.Modified)
-            {
-                return NotFound();
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
         // POST: api/LapTimes
         [ResponseType(typeof(LapTimeDTO))]
         public async Task<IHttpActionResult> PostLapTime(LapTimeDTO lapTimeDTO)
@@ -74,19 +33,6 @@ namespace SlotCarsGo_Server.Controllers
             lapTime = await repo.Insert(lapTime);
 
             return CreatedAtRoute("DefaultApi", new { id = lapTime.Id }, Mapper.Map<LapTimeDTO>(lapTime));
-        }
-
-        // DELETE: api/LapTimes/5
-        [ResponseType(typeof(LapTimeDTO))]
-        public async Task<IHttpActionResult> DeleteLapTime(string id)
-        {
-            LapTime lapTime = await repo.Delete(id);
-            if (lapTime == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(Mapper.Map<LapTimeDTO>(lapTime));
         }
 
         protected override void Dispose(bool disposing)

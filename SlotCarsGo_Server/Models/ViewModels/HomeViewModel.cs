@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using SlotCarsGo_Server.Models.DTO;
 
 namespace SlotCarsGo_Server.Models.ViewModels
 {
@@ -15,12 +16,6 @@ namespace SlotCarsGo_Server.Models.ViewModels
         private IEnumerable<int> controllers = new List<int> { 1, 2, 3, 4, 5, 6 };
 
         public ApplicationUser User { get; set; }
-
-        // Register with a Track
-        [Required]
-        [Display(Name = "Track Secret")]
-        public string Secret { get; set; }
-
 
         // Last session details
         public RaceSession LastSession { get; set; }
@@ -32,9 +27,9 @@ namespace SlotCarsGo_Server.Models.ViewModels
         public IEnumerable<Car> AvailableCars { get; set; }
         public IEnumerable<int> AvailableControllerIds { get; set; }
 
-        public List<SelectListItem> MyTracksListItems { get; set; }
-        public List<SelectListItem> AvailableCarsListItems { get; set; }
-        public List<SelectListItem> AvailableControllersListItems { get; set; }
+        public List<SelectListItem> MyTracksListItems { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AvailableCarsListItems { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AvailableControllersListItems { get; set; } = new List<SelectListItem>();
 
         [Required]
         [Display(Name = "Track")]
@@ -64,9 +59,9 @@ namespace SlotCarsGo_Server.Models.ViewModels
                 // Populate join race form choices
                 this.MyTracks = this.User.Tracks.ToList();
 
-                IRepositoryAsync<Driver> driversRepo = new DriversRepository<Driver>();
-                this.confirmedDrivers = driversRepo.GetAll().Where(d => d.TrackId == this.LastTrack.Id).ToList();
-
+                DriversRepository<Driver, DriverDTO> driversRepo = new DriversRepository<Driver, DriverDTO>();
+                this.confirmedDrivers = driversRepo.GetForTrack(LastTrack.Id);
+                
                 this.AvailableCars = (from car in this.LastTrack.Cars
                                       where !(this.confirmedDrivers.Any(driver => driver.CarId == car.Id))
                                       select car).ToList();
@@ -86,16 +81,20 @@ namespace SlotCarsGo_Server.Models.ViewModels
                 }
                 foreach (int controller in this.AvailableControllerIds)
                 {
-                    AvailableCarsListItems.Add(new SelectListItem { Text = controller.ToString(), Value = controller.ToString() });
+                    AvailableControllersListItems.Add(new SelectListItem { Text = controller.ToString(), Value = controller.ToString() });
                 }
-
-                /*
-                                this.AvailableCars = (from car in this.SelectedTrack.Cars.AsQueryable()
-                                                      join driver in this.confirmedDrivers.AsQueryable()
-                                                      on car.Id equals driver.CarId
-                                                      select )
-                */
             }
         }
     }
+
+    public class RegisterTrackViewModel
+    {
+        public ApplicationUser User { get; set; }
+
+        // Register with a Track
+        [Required]
+        [Display(Name = "Track Secret")]
+        public string Secret { get; set; }
+
+}
 }

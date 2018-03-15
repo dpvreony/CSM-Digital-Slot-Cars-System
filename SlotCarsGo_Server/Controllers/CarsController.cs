@@ -14,17 +14,18 @@ using SlotCarsGo_Server.Repository;
 using SlotCarsGo_Server.Models.DTO;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
+using System.IO;
 
 namespace SlotCarsGo_Server.Controllers
 {
     public class CarsController : ApiController
     {
-        private IRepositoryAsync<Car> repo = new CarsRepository<Car>();
+        private CarsRepository<Car, CarDTO> repo = new CarsRepository<Car, CarDTO>();
 
-        // GET: api/Cars
-        public IEnumerable<CarDTO> GetCars()
+        // GET: api/Cars/{trackId}
+        public IEnumerable<CarDTO> GetCars(string trackId)
         {
-            return repo.GetAll().ProjectTo<CarDTO>();
+            return repo.GetAllAsDTO(trackId);
         }
 
         // GET: api/Cars/5

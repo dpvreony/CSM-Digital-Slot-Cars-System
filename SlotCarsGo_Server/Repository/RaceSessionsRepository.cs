@@ -12,7 +12,7 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class RaceSessionsRepository<T, DTO> : IRepositoryAsync<RaceSession>, IRepositoryDTOAsync<RaceSessionDTO>
+    public class RaceSessionsRepository<T> : IRepositoryAsync<RaceSession>
     {
         public async Task<RaceSession> Delete(string id)
         {
@@ -47,11 +47,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IEnumerable<RaceSessionDTO> GetAllAsDTO()
+        public IEnumerable<RaceSessionDTO> GetAllAsDTO(string trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.RaceSessions.ProjectTo<RaceSessionDTO>();
+                return db.RaceSessions.Where(rs => rs.TrackId == trackId).ProjectTo<RaceSessionDTO>();
             }
         }
 

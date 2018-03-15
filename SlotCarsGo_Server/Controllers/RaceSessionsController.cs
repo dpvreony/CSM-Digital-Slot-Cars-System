@@ -19,48 +19,7 @@ namespace SlotRaceSessionsGo_Server.Controllers
 {
     public class RaceSessionsController : ApiController
     {
-        private RaceSessionsRepository<RaceSession, RaceSessionDTO> repo = new RaceSessionsRepository<RaceSession, RaceSessionDTO>();
-
-        // GET: api/RaceSessions
-        public IEnumerable<RaceSessionDTO> GetRaceSessions()
-        {
-            return repo.GetAllAsDTO();
-        }
-
-        // GET: api/RaceSessions/5
-        [ResponseType(typeof(RaceSessionDTO))]
-        public async Task<IHttpActionResult> GetRaceSession(string id)
-        {
-            RaceSession raceSession = await repo.GetById(id);
-            if (raceSession == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(Mapper.Map<RaceSessionDTO>(raceSession));
-        }
-
-        // PUT: api/RaceSessions/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutRaceSession(string id, RaceSession raceSession)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != raceSession.Id)
-            {
-                return BadRequest();
-            }
-
-            if (await repo.Update(id, raceSession) != EntityState.Modified)
-            {
-                return NotFound();
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+        private RaceSessionsRepository<RaceSession> repo = new RaceSessionsRepository<RaceSession>();
 
         // POST: api/RaceSessions
         [ResponseType(typeof(RaceSessionDTO))]

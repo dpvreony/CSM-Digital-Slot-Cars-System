@@ -39,7 +39,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<LapTime> GetAll()
+        public IEnumerable<LapTime> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {

@@ -5,13 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class CarsRepository<T> : IRepositoryAsync<Car> where T : Car 
+    public class CarsRepository<T, DTO> : IRepositoryAsync<Car> , IRepositoryDTOAsync<CarDTO>
     {
         public async Task<Car> Delete(string id)
         {
@@ -38,11 +39,19 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<Car> GetAll()
+        public IEnumerable<Car> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 return db.Cars;
+            }
+        }
+
+        public IEnumerable<CarDTO> GetAllAsDTO(string trackId)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                return db.Cars.Where(c => c.TrackId == trackId).ProjectTo<CarDTO>();
             }
         }
 
@@ -54,7 +63,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<Car> GetForId(string trackId)
+        public IEnumerable<Car> GetFor(string trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {

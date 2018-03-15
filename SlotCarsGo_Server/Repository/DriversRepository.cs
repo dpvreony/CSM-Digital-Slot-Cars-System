@@ -12,7 +12,7 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class DriversRepository<T> : IRepositoryAsync<Driver> where T : Driver
+    public class DriversRepository<T, DTO> : IRepositoryAsync<Driver>, IRepositoryDTOAsync<DriverDTO>
     {
         public async Task<Driver> Delete(string id)
         {
@@ -39,11 +39,19 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<Driver> GetAll()
+        public IEnumerable<Driver> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 return db.Drivers;
+            }
+        }
+
+        public IEnumerable<DriverDTO> GetAllAsDTO(string trackId)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                return db.Drivers.Where(d => d.TrackId == trackId).ProjectTo<DriverDTO>();
             }
         }
 
@@ -55,11 +63,19 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<Driver> GetForId(string trackId)
+        public IEnumerable<Driver> GetForTrack(string trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Drivers.Where(d => d.Track.Id == trackId);
+                return db.Drivers.Where(d => d.Track.Id == trackId).ToList();
+            }
+        }
+
+        public Driver GetForUser(string userId)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                return db.Drivers.Where(d => d.ApplicationUserId == userId).FirstOrDefault();
             }
         }
 

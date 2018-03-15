@@ -11,7 +11,7 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class RaceTypesRepository<T> : IRepositoryAsync<RaceType> where T : RaceType
+    public class RaceTypesRepository<T, DTO> : IRepositoryAsync<RaceType>, IRepositoryDTOAsync<RaceTypeDTO>
     {
         public async Task<RaceType> Delete(string id)
         {
@@ -38,11 +38,19 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<RaceType> GetAll()
+        public IEnumerable<RaceType> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 return db.RaceTypes;
+            }
+        }
+
+        public IEnumerable<RaceTypeDTO> GetAllAsDTO(string trackId)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                return db.RaceTypes.ProjectTo<RaceTypeDTO>();
             }
         }
 
@@ -54,7 +62,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<RaceType> GetForId(string trackId)
+        public IEnumerable<RaceType> GetForId(string trackId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {

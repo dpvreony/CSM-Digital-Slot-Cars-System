@@ -38,7 +38,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<DriverResult> GetAll()
+        public IEnumerable<DriverResult> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
@@ -54,7 +54,7 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public IQueryable<DriverResult> GetForId(string sessionId)
+        public IEnumerable<DriverResult> GetForId(string sessionId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
