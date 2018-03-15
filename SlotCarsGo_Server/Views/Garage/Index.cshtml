@@ -19,10 +19,11 @@ else
 <div class="jumbotron" style="background-color:#FFD968">
     <div class="row">
         <div class="col-xs-12 col-lg-6">
-            <img style="display:inline;" width="150" height="150" src="~/Content/Images/SoftTrackPostcard_400.png" alt="logo" />
-            <h1 style="display: inline; color:white;"> Garage</h1>
-        </div>
-        <div class="col-xs-12 col-lg-6">
+            <div class="row">
+                <img style="display:inline;" width="175" height="175" src="~/Content/Images/SoftTrackPostcard_400.png" alt="logo" />
+                <h1 style="display: inline; color:white;"> Garage</h1>
+            </div>
+            <br/>
             <div class="row">
                 @Html.Partial("ChangeTrackDropDown", Model.ChangeTrackViewModel)
             </div>
@@ -30,25 +31,30 @@ else
                 @Html.Partial("ChangeCarDropDown", Model.ChangeCarViewModel)
             </div>
         </div>
+        <div class="col-xs-12 col-lg-6">
+            <h2 style="font-weight:bold;color:white;">@Model.SelectedTrack.Name</h2>
+            <p>Best Lap: @Model.TrackRecord, held by @Model.TrackRecordHolder</p>
+            @Html.Partial("TrackData", Model)
+        </div>
     </div>
 </div>
 }
 <div class="jumbotron" style="background-color:#FFE599">
     <div class="row">
-        <div class="col-xs-12 col-lg-7">
-            <h2 style="font-weight:bold">@Model.SelectedTrack.Name</h2>
-            <p>Best Lap: @Model.TrackRecord, held by @Model.TrackRecordHolder</p>
-            <h3 style="font-weight:bold">Car Ranking</h3>
-            @Html.Partial("TrackData", Model)
-        </div>
-        <div class="col-xs-12 col-lg-5">
+        <div class="col-xs-12 col-lg-6">
             <h2 style="font-weight:bold">@Model.SelectedCar.Name</h2>
             <p>Best Lap: @Model.SelectedCar.TrackRecord, held by @Model.SelectedCar.RecordHolder</p>
             <img src="~/Content/Images/Cars/@Model.SelectedCar.ImageName" style="max-width:400px; height:auto;margin-left:auto;margin-right:auto;display:block;" />
+        </div>
+        <div class="col-xs-12 col-lg-6">
             @if (Model.BestLapTimesForCar.Count > 0)
             {
                 <h3 style="font-weight:bold">Driver Ranking for @Model.SelectedCar.Name</h3>
                 @Html.Partial("CarData", Model)
+            }
+            else
+            {
+                <h3>No laptimes recorded yet.</h3>
             }
         </div>
     </div>

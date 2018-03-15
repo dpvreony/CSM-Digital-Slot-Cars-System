@@ -204,14 +204,8 @@ namespace SlotCarsGo_Server.Controllers
                         var avatarFilePath = Path.Combine(userImagesPath, avatarImageName);
                         if (System.IO.File.Exists(avatarFilePath))
                         {
-                            // Save a default avatar as users avatar
-                            using (StreamReader reader = new StreamReader(avatarFilePath))
-                            {
-                                using (StreamWriter writer = new StreamWriter(saveToPath))
-                                {
-                                    writer.Write(reader.ReadToEnd());
-                                }
-                            }
+                            byte[] bytes = System.IO.File.ReadAllBytes(avatarFilePath);
+                            System.IO.File.WriteAllBytes(saveToPath, bytes);
                         }
                     }
 

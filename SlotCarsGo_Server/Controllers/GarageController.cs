@@ -74,14 +74,14 @@ namespace SlotCarsGo_Server.Controllers
                 };
 
                 string carsImagesPath = HttpContext.Server.MapPath("~/Content/Images/Cars");
-
+                bool fileNotFound = true;
                 // Add uploaded image if selected, or use default
                 if (Request.Files.Count > 0)
                 {
                     var postedFile = Request.Files[0];
                     if (postedFile != null && postedFile.ContentLength > 0)
                     {
-
+                        fileNotFound = false;
                         string extension = Path.GetExtension(postedFile.FileName);
                         string carFileName = $"{carId}{extension}";
                         car.ImageName = carFileName;
@@ -89,7 +89,8 @@ namespace SlotCarsGo_Server.Controllers
                         postedFile.SaveAs(saveToPath);
                     }
                 }
-                else
+
+                if (fileNotFound)
                 {
                     var defaultCarFileToUsePath = Path.Combine(carsImagesPath, "0.jpg");
                     if (System.IO.File.Exists(defaultCarFileToUsePath))
@@ -97,15 +98,8 @@ namespace SlotCarsGo_Server.Controllers
                         string defaultCarImageWithUniqueCarId = $"{carId}.jpg";
                         car.ImageName = defaultCarImageWithUniqueCarId;
                         string defaultSaveToPath = Path.Combine(carsImagesPath, defaultCarImageWithUniqueCarId);
-
-                        // Save a default avatar as users avatar
-                        using (StreamReader reader = new StreamReader(defaultCarFileToUsePath))
-                        {
-                            using (StreamWriter writer = new StreamWriter(defaultSaveToPath))
-                            {
-                                writer.Write(reader.ReadToEnd());
-                            }
-                        }
+                        byte[] bytes = System.IO.File.ReadAllBytes(defaultCarFileToUsePath);
+                        System.IO.File.WriteAllBytes(defaultSaveToPath, bytes);
                     }
                 }
 
@@ -189,6 +183,12 @@ namespace SlotCarsGo_Server.Controllers
                 {
                     Car car = await carsRepo.Delete(deleteCarViewModel.SelectedCarToDeleteId);
                     if (car == null) ModelState.AddModelError(string.Empty, "Failed to delete car.");
+                    string carsImagesPath = HttpContext.Server.MapPath("~/Content/Images/Cars");
+                    string fileNamePath = Path.Combine(carsImagesPath, car.ImageName);
+                    if (System.IO.File.Exists(fileNamePath))
+                    {
+                        System.IO.File.Delete(fileNamePath);
+                    }
                 }
                 catch(Exception)
                 {
