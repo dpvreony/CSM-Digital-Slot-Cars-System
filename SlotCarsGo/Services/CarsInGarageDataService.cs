@@ -16,6 +16,9 @@ namespace SlotCarsGo.Services
 
         private static IEnumerable<Car> CarsInGarage()
         {
+
+
+/*
             // TODO: Query logins 
             var data = new ObservableCollection<Car>
             {
@@ -28,8 +31,9 @@ namespace SlotCarsGo.Services
             };
 
             garage = data;
-
-            return data;
+*/
+            
+            return new List<Car>();
         }
 
         // TODO WTS: Remove this once your MasterDetail pages are displaying real data
@@ -51,7 +55,7 @@ namespace SlotCarsGo.Services
             {
                 CarsInGarage();
             }
-            return garage.SingleOrDefault(c => c.CarID == carId);
+            return garage.SingleOrDefault(c => c.Id == carId);
         }
     }
 }

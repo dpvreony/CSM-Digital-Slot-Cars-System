@@ -30,7 +30,46 @@
                     x:Uid="Settings_Personalization"
                     Style="{StaticResource SubtitleTextBlockStyle}" />
 
-                <StackPanel Margin="{StaticResource SettingsSubheaderMargin}">
+
+                <TextBlock
+                    Text="Slot cars Go!"
+                    Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                <StackPanel Margin="{StaticResource EightTopMargin}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+						Text="Website:" Margin="0,0,20,0"/>
+                        <HyperlinkButton
+						Content="https://slotscarsgo.timtyler.co.uk"
+						/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+						Text="Track Secret:" />
+                        <TextBlock
+						Text="{x:Bind ViewModel.Secret, Mode=OneWay}" />
+                    </StackPanel>
+                    <TextBlock
+						Text="Log in to the website and enter this track's secret in order to join races."
+						Margin="{StaticResource EightTopMargin}" />
+                </StackPanel>
+
+                <TextBlock
+                        x:Uid="Settings_AppInfo"
+                        Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                <TextBlock
+                        x:Uid="Settings_About"
+                        Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                <StackPanel Margin="{StaticResource EightTopMargin}">
+                    <TextBlock
+                        Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
+                    <TextBlock
+                        x:Uid="Settings_AboutDescription"
+                        Margin="{StaticResource EightTopMargin}" />
+
+                 <StackPanel Margin="{StaticResource SettingsSubheaderMargin}">
                     <TextBlock
                         x:Uid="Settings_Theme"
                         Style="{StaticResource BodyTextStyle}" />
@@ -66,16 +105,6 @@
                     </StackPanel>
                 </StackPanel>
 
-                <TextBlock
-                        x:Uid="Settings_About"
-                        Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-                <StackPanel Margin="{StaticResource EightTopMargin}">
-                    <TextBlock
-                        Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
-                    <TextBlock
-                        x:Uid="Settings_AboutDescription"
-                        Margin="{StaticResource EightTopMargin}" />
 
                     <HyperlinkButton
                         x:Uid="Settings_PrivacyTermsLink"

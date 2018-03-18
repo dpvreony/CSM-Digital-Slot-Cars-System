@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GalaSoft.MvvmLight.Ioc;
+using Newtonsoft.Json;
 using SlotCarsGo.Helpers;
 using SlotCarsGo.Models.Comms;
 using SlotCarsGo.Models.Racing;
@@ -10,48 +11,118 @@ using SlotCarsGo_Server.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.Storage;
 using Windows.UI.Notifications;
 
+
 namespace SlotCarsGo.Models.Manager
 {
     public class AppManager
     {
+        public static Track Track { get; set; }
+        public static readonly string ServerHostURL;//"https://localhost:44377";//
+        public static StorageFolder TemporaryFolder { get; set; }
+
         private static ToastNotificationsService toastService;
         private static ApplicationDataContainer localSettings;
         private static StorageFolder localFolder;
-        private static Track track = new Track("Tim's Raceway", String.Empty, 3.6f, "00:34:A9:DE:29"); // TODO: replace with real data
 
         /// <summary>
         /// Static constructor for AppManager class.
         /// </summary>
         static AppManager()
         {
+            ServerHostURL = @"https://slotcarsgo.timtyler.co.uk";
             AppManager.localSettings = ApplicationData.Current.LocalSettings;
             AppManager.localFolder = ApplicationData.Current.LocalFolder;
+            AppManager.TemporaryFolder = ApplicationData.Current.TemporaryFolder;
             AppManager.toastService = new ToastNotificationsService();
-            AppManager.localSettings.Values["Track"] = null;
-            var trackCompositeValue = (ApplicationDataCompositeValue)localSettings.Values["Track"];
-            if (trackCompositeValue != null)
+            AppManager.Track = new Track()
             {
-                AppManager.track = new Track(
-                    (string)trackCompositeValue["TrackName"],
-                    (string)trackCompositeValue["TrackId"],
-                    (float)trackCompositeValue["Length"],
-                    (string)trackCompositeValue["MacAddress"]);
-            }
+                Name = (string)localSettings.Values["TrackName"],
+                Id = (string)localSettings.Values["TrackId"],
+//                Length = (float)trackCompositeValue["Length"],
+//                MacAddress = (string)trackCompositeValue["MacAddress"],
+                Secret = (string)localSettings.Values["Secret"]
+            };
+
             ThemeSelectorService.Theme = Windows.UI.Xaml.ElementTheme.Dark;
 
             Mapper.Initialize(cfg => {
-                cfg.CreateMap<RaceSessionDTO, RaceSession>();
-                cfg.CreateMap<DriverResultDTO, DriverResult>();
+                cfg.CreateMap<RaceSession, RaceSessionDTO>()
+                    .ForMember(dest => dest.RaceLimitValue, opt => opt.MapFrom(src => src.RaceType.RaceLimitValue))
+                    .ForMember(dest => dest.RaceTypeId, opt => opt.MapFrom(src => src.RaceType.Name))
+                    .ForMember(dest => dest.RaceLength, opt => opt.MapFrom(src => src.RaceType.RaceLength))
+                    .ForMember(dest => dest.LapsNotDuration, opt => opt.MapFrom(src => src.RaceType.LapsNotDuration))
+                    .ForMember(dest => dest.CrashPenalty, opt => opt.MapFrom(src => src.RaceType.CrashPenalty));
+                cfg.CreateMap<DriverResult, DriverResultDTO>()
+                    .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src.Driver.UserId))
+                    .ForMember(dest => dest.CarId, opt => opt.MapFrom(src => src.Car.Id))
+                    .ForMember(dest => dest.Laps, opt => opt.MapFrom(src => src.LapTimes.Count));
                 cfg.CreateMap<TrackDTO, Track>();
                 cfg.CreateMap<CarDTO, Car>();
+                cfg.CreateMap<DriverDTO, Driver>()
+                    .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.SelectedCar))
+                    .ReverseMap()
+                        .ForMember(src => src.SelectedCar, opt => opt.MapFrom(dest => dest.SelectedCar));
                 cfg.CreateMap<RaceTypeDTO, RaceType>();
             });
+            /*
+        public string Id { get; set; }
+        public string DriverId { get; set; }
+        public int Position { get; set; }
+        public string RaceSessionId { get; set; }
+        public int ControllerNumber { get; set; }
+        public string CarId { get; set; }
+        public int Laps { get; set; }
+        public bool Finished { get; set; }
+        public float Fuel { get; set; }
+        public TimeSpan TotalTime { get; set; }
+        public TimeSpan TimeOffPace { get; set; }
+        public TimeSpan BestLapTime { get; set; }
+            Mapper.Initialize(cfg => {
+                            cfg.CreateMap<RaceSession, RaceSessionDTO>()
+                                .ReverseMap()
+                                    .ForMember(src => src.DriverResults, opt => opt.Ignore())
+                                    .ForMember(src => src.RaceType, opt => opt.Ignore())
+                                    .ForMember(src => src.Track, opt => opt.Ignore());
+                            cfg.CreateMap<DriverResult, DriverResultDTO>()
+                                .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src.ApplicationUserId))
+                                .ReverseMap()
+                                    .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.DriverId));
+                            cfg.CreateMap<Track, TrackDTO>()
+                                .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.BestLapTime == null ? "No Record set" : src.BestLapTime.ApplicationUser.UserName))
+                                .ForPath(dest => dest.TrackRecord, opt => opt.MapFrom(src => src.BestLapTime == null ? new System.TimeSpan(0, 0, 59) : src.BestLapTime.LapTime.Time))
+                                .ReverseMap()
+                                    .ForMember(src => src.BestLapTimeId, opt => opt.Ignore())
+                                    .ForMember(src => src.ApplicationUsers, opt => opt.Ignore())
+                                    .ForMember(src => src.Cars, opt => opt.Ignore());
+                            cfg.CreateMap<Car, CarDTO>()
+                                .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.BestLapTime == null ? "No Record set" : src.BestLapTime.ApplicationUser.UserName))
+                                .ForPath(dest => dest.TrackRecord, opt => opt.MapFrom(src => src.BestLapTime == null ? new System.TimeSpan(0, 0, 59) : src.BestLapTime.LapTime.Time))
+                                .ReverseMap()
+                                    .ForPath(src => src.BestLapTimeId, opt => opt.Ignore());
+                            cfg.CreateMap<RaceType, RaceTypeDTO>();
+                            cfg.CreateMap<Driver, DriverDTO>()
+                                .ForPath(dest => dest.UserId, opt => opt.MapFrom(src => src.ApplicationUser.Id))
+                                .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
+                                .ForPath(dest => dest.ImageName, opt => opt.MapFrom(src => src.ApplicationUser.ImageName))
+                                .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.Car))
+                                .ReverseMap()
+                                    .ForMember(src => src.ApplicationUserId, opt => opt.MapFrom(dest => dest.UserId))
+                                    .ForPath(src => src.ApplicationUser.UserName, opt => opt.MapFrom(dest => dest.UserName))
+                                    .ForPath(src => src.ApplicationUser.ImageName, opt => opt.MapFrom(dest => dest.ImageName))
+                                    .ForMember(src => src.Car, opt => opt.MapFrom(dest => dest.SelectedCar));
+                            cfg.CreateMap<LapTime, LapTimeDTO>()
+                                .ReverseMap()
+                                    .ForMember(src => src.DriverResult, opt => opt.Ignore());
+                        });
+            */
         }
 
         /// <summary>
@@ -63,7 +134,6 @@ namespace SlotCarsGo.Models.Manager
 
         }
 
-        internal static Track Track { get => AppManager.track; }
 
         /// <summary>
         /// Registers the track name on the server and saves the name and Id to local settings.
@@ -71,21 +141,44 @@ namespace SlotCarsGo.Models.Manager
         /// <param name="trackName"></param>
         public async static Task<string> RegisterTrackOnStartup(string trackName)
         {
-            string trackId = String.Empty; // TODO: contact server for trackId
-            float length = 0.0f;
-            string macAddress = String.Empty; // TODO: get Mac https://stackoverflow.com/questions/34097870/c-sharp-get-mac-address-in-universal-apps
-            AppManager.track = new Track(trackName, trackId, length, macAddress);
-            string secret = "SECRET" // get from returned track. TODO: show in settings
+            TrackDTO trackDTO = new TrackDTO() { Name = trackName, Length = 0f };
+            string returnSecret = string.Empty;
 
-            ApplicationDataCompositeValue trackCompositeValue = new ApplicationDataCompositeValue();
-            trackCompositeValue["TrackName"] = trackName;
-            trackCompositeValue["TrackId"] = trackId;
-            trackCompositeValue["Length"] = length;
-            trackCompositeValue["Secret"] = secret;
-            trackCompositeValue["MacAddress"] = macAddress;
-            await SettingsStorageExtensions.SaveAsync(localSettings, "Track", trackCompositeValue);
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.BaseAddress = new Uri(ServerHostURL);
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    httpClient.Timeout = new TimeSpan(0, 0, 0, 20);
+                    string endpoint = @"/api/tracks";
 
-            return secret;
+                    HttpResponseMessage response = httpClient.PostAsJsonAsync(endpoint, trackDTO).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResponse = await response.Content.ReadAsStringAsync();
+                        trackDTO = JsonConvert.DeserializeObject<TrackDTO>(jsonResponse);
+                        if (trackDTO != null)
+                        {
+                            AppManager.Track = Mapper.Map<Track>(trackDTO);
+                            localSettings.Values["TrackName"] = Track.Name;
+                            localSettings.Values["TrackId"] = Track.Id;
+                            localSettings.Values["Secret"] = Track.Secret;
+                            // TODO: trackCompositeValue["Length"] = length;
+                            // TODO: trackCompositeValue["MacAddress"] = macAddress; https://stackoverflow.com/questions/34097870/c-sharp-get-mac-address-in-universal-apps
+
+                            returnSecret = trackDTO.Secret;
+                        }
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return returnSecret;
         }
 
         /// <summary>
@@ -104,9 +197,9 @@ namespace SlotCarsGo.Models.Manager
             XmlElement audio = toastXml.CreateElement("audio");
             audio.SetAttribute("src", "ms-winsoundevent:Notification.SMS");
 
-//            ToastNotification toast = new ToastNotification(toastXml);
-//            toast.ExpirationTime = DateTime.Now.AddSeconds(4);
-            // AppManager.toastService.ShowToastNotification(toast);
+            ToastNotification toast = new ToastNotification(toastXml);
+            toast.ExpirationTime = DateTime.Now.AddSeconds(4);
+            AppManager.toastService.ShowToastNotification(toast);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace SlotCarsGo.Views
         private void QuitRaceButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             //            ViewModel.QuitButtonClicked();
-            ViewModel.RaceFinished();
+            ViewModel.RaceFinishedAsync();
         }
     }
 }

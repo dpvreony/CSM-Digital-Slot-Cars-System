@@ -54,8 +54,8 @@ namespace SlotCarsGo_Server
                     .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.Car))
                     .ReverseMap()
                         .ForMember(src => src.ApplicationUserId, opt => opt.MapFrom(dest => dest.UserId))
-                        .ForPath(src => src.ApplicationUser.UserName, opt => opt.MapFrom(dest => dest.UserName))
-                        .ForPath(src => src.ApplicationUser.ImageName, opt => opt.MapFrom(dest => dest.ImageName))
+                        .ForPath(src => src.ApplicationUser, opt => opt.Ignore())
+                        .ForPath(src => src.Track, opt => opt.Ignore())
                         .ForMember(src => src.Car, opt => opt.MapFrom(dest => dest.SelectedCar));
                 cfg.CreateMap<LapTime, LapTimeDTO>()
                     .ReverseMap()

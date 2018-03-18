@@ -10,6 +10,7 @@ using SlotCarsGo.Services;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
+using SlotCarsGo.Models.Manager;
 
 namespace SlotCarsGo.ViewModels
 {
@@ -17,6 +18,7 @@ namespace SlotCarsGo.ViewModels
     {
         // TODO WTS: Add other settings as necessary. For help see https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/pages/settings.md
         private ElementTheme _elementTheme = ThemeSelectorService.Theme;
+        public string Secret { get; set; }
 
         public ElementTheme ElementTheme
         {
@@ -61,6 +63,7 @@ namespace SlotCarsGo.ViewModels
         public void Initialize()
         {
             VersionDescription = GetVersionDescription();
+            Secret = AppManager.Track.Secret;
         }
 
         private string GetVersionDescription()

@@ -18,6 +18,11 @@ using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using static SlotCarsGo.Helpers.Enums;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using SlotCarsGo_Server.Models.DTO;
+using AutoMapper;
+using Newtonsoft.Json;
 
 namespace SlotCarsGo.ViewModels
 {
@@ -77,12 +82,12 @@ namespace SlotCarsGo.ViewModels
         public string Player4_GridNumber { get => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].ControllerId.ToString() : String.Empty; set => Set(ref player4_GridNumber, value); }
         public string Player5_GridNumber { get => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].ControllerId.ToString() : String.Empty; set => Set(ref player5_GridNumber, value); }
         public string Player6_GridNumber { get => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].ControllerId.ToString() : String.Empty; set => Set(ref player6_GridNumber, value); }
-        public string Player1_Avatar => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].ImageName : Driver.DefaultDriver.ImageName;
-        public string Player2_Avatar => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].ImageName : Driver.DefaultDriver.ImageName;
-        public string Player3_Avatar => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].ImageName : Driver.DefaultDriver.ImageName;
-        public string Player4_Avatar => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].ImageName : Driver.DefaultDriver.ImageName;
-        public string Player5_Avatar => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].ImageName : Driver.DefaultDriver.ImageName;
-        public string Player6_Avatar => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].ImageName : Driver.DefaultDriver.ImageName;
+        public string Player1_Avatar => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].ImageName : Driver.DefaultImageName;
+        public string Player2_Avatar => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].ImageName : Driver.DefaultImageName;
+        public string Player3_Avatar => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].ImageName : Driver.DefaultImageName;
+        public string Player4_Avatar => this.Session.NumberOfDrivers >= 4 ? this.Session.Drivers[3].ImageName : Driver.DefaultImageName;
+        public string Player5_Avatar => this.Session.NumberOfDrivers >= 5 ? this.Session.Drivers[4].ImageName : Driver.DefaultImageName;
+        public string Player6_Avatar => this.Session.NumberOfDrivers >= 6 ? this.Session.Drivers[5].ImageName : Driver.DefaultImageName;
         public string Player1_Name => this.Session.NumberOfDrivers >= 1 ? this.Session.Drivers[0].UserName : String.Empty;
         public string Player2_Name => this.Session.NumberOfDrivers >= 2 ? this.Session.Drivers[1].UserName : String.Empty;
         public string Player3_Name => this.Session.NumberOfDrivers >= 3 ? this.Session.Drivers[2].UserName : String.Empty;
@@ -270,7 +275,7 @@ namespace SlotCarsGo.ViewModels
                     if (this.Session.Started)
                     {
                         // race finished correctly
-                        this.RaceFinished();
+                        await this.RaceFinishedAsync();
                     }
                     else
                     {
@@ -288,7 +293,7 @@ namespace SlotCarsGo.ViewModels
         /// <summary>
         /// Race finished naturally, stop display and save session Id, update instance and navigate to Results.
         /// </summary>
-        public void RaceFinished()
+        public async Task RaceFinishedAsync()
         {
             if (this.raceTimeDisplayTimer != null)
             {
@@ -298,20 +303,65 @@ namespace SlotCarsGo.ViewModels
                 });
             }
 
-            // TODO: check that data is saved before ending
-            // TODO: int sessionId = getSessionIdFromServer (post to server)
-            string sessionId = "1";
-            foreach (KeyValuePair<int, DriverResult> driver in this.Session.DriverResults)
-            {
-                driver.Value.RaceSessionId = sessionId;
-                // post DRIVER SESSIONS TO THE SERVER.
-                // POST laptimes? TBC?
-            }
-
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(RaceResultsViewModel).FullName, this.Session);
             });
+
+            try
+            {
+                RaceSessionDTO sessionDTO = Mapper.Map<RaceSessionDTO>(this.Session);
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.BaseAddress = new Uri(AppManager.ServerHostURL);
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    httpClient.Timeout = new TimeSpan(0, 0, 0, 20);
+                    string endpoint = @"/api/RaceSessions";
+
+                    HttpResponseMessage response = httpClient.PostAsJsonAsync(endpoint, sessionDTO).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResponse = await response.Content.ReadAsStringAsync();
+                        sessionDTO = JsonConvert.DeserializeObject<RaceSessionDTO>(jsonResponse);
+                        if (sessionDTO != null)
+                        {
+                            foreach (KeyValuePair<int, DriverResult> driver in this.Session.DriverResults)
+                            {
+                                endpoint = @"/api/DriverResults";
+                                driver.Value.RaceSessionId = sessionDTO.Id;
+                                DriverResultDTO driverResultDTO = Mapper.Map<DriverResultDTO>(driver.Value);
+                                response = httpClient.PostAsJsonAsync(endpoint, driverResultDTO).Result;
+                                if (response.IsSuccessStatusCode)
+                                {
+                                    jsonResponse = await response.Content.ReadAsStringAsync();
+                                    driverResultDTO = JsonConvert.DeserializeObject<DriverResultDTO>(jsonResponse);
+                                    if (driverResultDTO != null)
+                                    {
+                                        endpoint = @"/api/LapTimes";
+                                        int lap = 1;
+                                        foreach (TimeSpan lapTime in driver.Value.LapTimes)
+                                        {
+                                            LapTimeDTO lapTimeDTO = new LapTimeDTO()
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                DriverResultId = driverResultDTO.Id,
+                                                LapNumber = lap++,
+                                                Time = lapTime,
+                                            };
+
+                                            response = httpClient.PostAsJsonAsync(endpoint, lapTimeDTO).Result;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
 
 

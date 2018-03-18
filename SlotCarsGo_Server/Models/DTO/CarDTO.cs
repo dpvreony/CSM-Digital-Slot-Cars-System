@@ -9,5 +9,6 @@ namespace SlotCarsGo_Server.Models.DTO
         public TimeSpan TrackRecord { get; set; }
         public string RecordHolder { get; set; }
         public string ImageName { get; set; }
+        public byte[] CarImageBytes { get; set; }
     }
 }

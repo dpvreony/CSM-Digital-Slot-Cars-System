@@ -5,67 +5,64 @@
     <div class="jumbotron" style="background-color:#FFD968">
         <div class="row">
             <div class="col-xs-12 col-lg-6">
-                <img src="~/Content/Images/SoftCarPostcard_400.png" style="width:400px; height:400px;margin-left:auto;margin-right:auto;display:block;" />
+                <img src="~/Content/Images/SoftCarPostcard_400.png" style="width:350px; height:350px;margin-left:auto;margin-right:auto;display:block;" />
             </div>
             <div class="col-xs-12 col-lg-6">
                 <h1 style="color:white;">Add a Car</h1>
-                @Html.Partial("CreateCar", Model.NewCarViewModel)
+                @Html.Partial("CreateCar", Model.CreateCarViewModel)
             </div>
         </div>
     </div>
 }
 else
 {
-<div class="jumbotron" style="background-color:#FFD968">
-    <div class="row">
-        <div class="col-xs-12 col-lg-6">
-            <div class="row">
-                <img style="display:inline;" width="175" height="175" src="~/Content/Images/SoftTrackPostcard_400.png" alt="logo" />
-                <h1 style="display: inline; color:white;"> Garage</h1>
+    <div class="jumbotron" style="background-color:#FFD968">
+        <div class="row">
+            <div class="col-xs-12 col-lg-6">
+                <div class="row">
+                    <img style="display:inline;" width="175" height="175" src="~/Content/Images/SoftTrackPostcard_400.png" alt="logo" />
+                    <h1 style="display: inline; color:white;"> Garage</h1>
+                </div>
+                <br/>
+                <div class="row">
+                    @Html.Partial("ChangeTrackDropDown", Model.ChangeTrackViewModel)
+                </div>
+                <div class="row">
+                    @Html.Partial("ChangeCarDropDown", Model.ChangeCarViewModel)
+                </div>
             </div>
-            <br/>
-            <div class="row">
-                @Html.Partial("ChangeTrackDropDown", Model.ChangeTrackViewModel)
+            <div class="col-xs-12 col-lg-6">
+                <h2 style="font-weight:bold;color:white;">@Model.SelectedTrack.Name</h2>
+                <p>Best Lap: @Model.TrackRecord, held by @Model.TrackRecordHolder</p>
+                @Html.Partial("TrackData", Model)
             </div>
-            <div class="row">
-                @Html.Partial("ChangeCarDropDown", Model.ChangeCarViewModel)
-            </div>
-        </div>
-        <div class="col-xs-12 col-lg-6">
-            <h2 style="font-weight:bold;color:white;">@Model.SelectedTrack.Name</h2>
-            <p>Best Lap: @Model.TrackRecord, held by @Model.TrackRecordHolder</p>
-            @Html.Partial("TrackData", Model)
         </div>
     </div>
-</div>
-}
-<div class="jumbotron" style="background-color:#FFE599">
-    <div class="row">
-        <div class="col-xs-12 col-lg-6">
-            <h2 style="font-weight:bold">@Model.SelectedCar.Name</h2>
-            <p>Best Lap: @Model.SelectedCar.TrackRecord, held by @Model.SelectedCar.RecordHolder</p>
-            <img src="~/Content/Images/Cars/@Model.SelectedCar.ImageName" style="max-width:400px; height:auto;margin-left:auto;margin-right:auto;display:block;" />
-        </div>
-        <div class="col-xs-12 col-lg-6">
-            @if (Model.BestLapTimesForCar.Count > 0)
-            {
-                <h3 style="font-weight:bold">Driver Ranking for @Model.SelectedCar.Name</h3>
-                @Html.Partial("CarData", Model)
-            }
-            else
-            {
-                <h3>No laptimes recorded yet.</h3>
-            }
+    <div class="jumbotron" style="background-color:#FFE599">
+        <div class="row">
+            <div class="col-xs-12 col-lg-6">
+                <h2 style="font-weight:bold">@Model.SelectedCar.Name</h2>
+                <p>Best Lap: @Model.SelectedCar.TrackRecord, held by @Model.SelectedCar.RecordHolder</p>
+                <img src="~/Content/Images/Cars/@Model.SelectedCar.ImageName" style="max-width:350px; height:auto;margin-left:auto;margin-right:auto;display:block;" />
+            </div>
+            <div class="col-xs-12 col-lg-6">
+                @if (Model.BestLapTimesForCar.Count > 0)
+                {
+                    <h3 style="font-weight:bold">Driver Ranking for @Model.SelectedCar.Name</h3>
+                    @Html.Partial("CarData", Model)
+                }
+                else
+                {
+                    <h3>No laptimes recorded yet.</h3>
+                }
+            </div>
         </div>
     </div>
-</div>
-@if (Model.SelectedCar != null)
-{
     <div class="jumbotron" style="background-color:#FFF4D6">
         <div class="row">
             <div class="col-md-4">
                 <h2 style="font-weight:bold">Add a Car</h2>
-                @Html.Partial("CreateCar", Model.NewCarViewModel)
+                @Html.Partial("CreateCar", Model.CreateCarViewModel)
                 <br />
             </div>
             <div class="col-md-4">

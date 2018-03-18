@@ -30,12 +30,13 @@ namespace SlotCarsGo.Views
                     string secret = AppManager.RegisterTrackOnStartup(trackName).Result;
                     if (string.IsNullOrEmpty(secret))
                     {
+                        this.BannerText.Text = "Track not registered, check internet connection.";
                         AppManager.MakeToast("Track not registered, check internet connection."); //TODO: fix (use sample)
                     }
                     else
                     {
                         this.PostRegistrationPanel.Visibility = Visibility.Visible;
-                        this.RegisterMessageText.Visibility = Visibility.Visible;
+                        this.BannerText.Text = $"Login to {AppManager.ServerHostURL} to join this track.";
                         this.ConfirmButton.Content = "OK";
                         this.TrackSecret_TextBox.Text = secret;
                         this.Registered = true;
@@ -43,6 +44,7 @@ namespace SlotCarsGo.Views
                 }
                 else
                 {
+                    this.BannerText.Text = "Track name cannot be empty!";
                     AppManager.MakeToast("Track name cannot be empty!"); //TODO: fix (use sample)
                 }
             }

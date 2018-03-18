@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SlotCarsGo_Server.Models.DTO
 {
-    class TrackDTO
+    public class TrackDTO
     {
-        public string Name { get; set; }
         public string Id { get; set; }
+        public string Name { get; set; }
         public float Length { get; set; }
+        public string Secret { get; set; }
+        public TimeSpan TrackRecord { get; set; }
+        public string RecordHolder { get; set; }
     }
 }

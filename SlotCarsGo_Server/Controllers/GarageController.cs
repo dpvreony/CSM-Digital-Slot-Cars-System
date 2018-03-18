@@ -28,7 +28,7 @@ namespace SlotCarsGo_Server.Controllers
 
                 if (user?.Tracks.Count == 0)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "About");
                 }
                 else
                 {
@@ -61,7 +61,7 @@ namespace SlotCarsGo_Server.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateCar(NewCarViewModel newCarViewModel)
+        public async Task<ActionResult> CreateCar(CreateCarViewModel newCarViewModel)
         {
             if (ModelState.IsValid)
             {

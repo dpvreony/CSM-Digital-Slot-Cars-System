@@ -9,27 +9,20 @@ namespace SlotCarsGo.Models.Manager
 {
     public class Driver
     {
-        string id;
-        string username;
-        string imageName;
-        int controllerId;
-        Car selectedCar;
 
-        public Driver(string id, string username, string imageName, int controllerId, Car car)
+        public Driver()
         {
-            this.Id = id;
-            this.UserName = username;
-            this.ImageName = "/Assets/UserImages/" + imageName;
-            this.ControllerId = controllerId;
-            this.SelectedCar = car;
         }
 
-        public string Id { get => id; set => id = value; }
-        public string UserName { get => username; set => username = value; }
-        public string ImageName { get => imageName; set => imageName = value; }
-        public int ControllerId { get => controllerId; set => controllerId = value; }
-        internal Car SelectedCar { get => selectedCar; set => selectedCar = value; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public string ImageName { get; set; }
+        public int ControllerId { get; set; }
+        public Car SelectedCar { get; set; }
 
-        public static readonly Driver DefaultDriver = new Driver("id", "Default User", "0.png", 1, Car.DefaultCar);
+
+        internal static string DefaultUserName = "No name set";
+        internal static string DefaultImageName = "0.png";
+
     }
 }

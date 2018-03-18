@@ -40,7 +40,6 @@ namespace SlotCarsGo.Models.Racing
             this.Position = 0;
             this.Laps = 0;
             this.TotalTime = new TimeSpan();
-            this.BestLap = new TimeSpan();
             this.TimeOffPace = new TimeSpan();
             this.LapTimes = new List<TimeSpan>();
             this.PreviousLapTime = new TimeSpan();
@@ -59,7 +58,6 @@ namespace SlotCarsGo.Models.Racing
         public bool Finished { get => finished; set => finished = value; }
         public float Fuel { get => fuel; set => fuel = value; }
         public TimeSpan TotalTime { get => totalTime; set => totalTime = value; }
-        public TimeSpan BestLap { get => bestLap; set => bestLap = value; }
         public TimeSpan TimeOffPace { get => timeOffPace; set => timeOffPace = value; }
         public List<TimeSpan> LapTimes { get => lapTimes; set => lapTimes = value; }
         public TimeSpan PreviousLapTime { get => previousLapTime; set => previousLapTime = value; }

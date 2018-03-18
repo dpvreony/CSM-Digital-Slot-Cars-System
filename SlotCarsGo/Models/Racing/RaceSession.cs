@@ -51,7 +51,7 @@ namespace SlotCarsGo.Models.Racing
         public RaceSession(RaceType raceType, ObservableCollection<Driver> users)
         {
             this.Id = String.Empty; // Updated at end of race
-            this.TrackID = AppManager.Track.Id;
+            this.TrackId = AppManager.Track.Id;
             this.RaceType = raceType;
             this.FuelEnabled = raceType.FuelEnabled;
             this.Drivers = users.ToList();
@@ -60,7 +60,7 @@ namespace SlotCarsGo.Models.Racing
             this.InitialiseSession();
         }
 
-        public string TrackID { get => this.trackID; set => this.trackID = value; }
+        public string TrackId { get => this.trackID; set => this.trackID = value; }
         public RaceType RaceType { get => this.raceType; set => this.raceType = value; }
         public DateTime StartTime { get => this.startTime; set => this.startTime = value; }
         public DateTime EndTime { get => this.endTime; set => this.endTime = value; }

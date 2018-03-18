@@ -19,7 +19,7 @@ namespace SlotCarsGo_Server.Models.ViewModels
         public ApplicationUser User { get; set; }
         public ChangeTrackViewModel ChangeTrackViewModel { get; set; }
         public ChangeCarViewModel ChangeCarViewModel { get; set; }
-        public NewCarViewModel NewCarViewModel { get; set; }
+        public CreateCarViewModel CreateCarViewModel { get; set; }
         public EditCarViewModel EditCarViewModel { get; set; }
         public DeleteCarViewModel DeleteCarViewModel { get; set; }
 
@@ -68,31 +68,36 @@ namespace SlotCarsGo_Server.Models.ViewModels
                     .Where(c => c.TrackId == this.SelectedTrackId && c.BestLapTime == null))
                     .OrderBy(c => c.Name)
                     .ToList();
-            foreach (Car car in cars)
+
+            if (cars.Count > 0)
             {
-                CarDTO carDTO = Mapper.Map<Car, CarDTO>(car);
-                this.CarsInGarage.Add(carDTO);
-                this.CarsInGarageListItems.Add(new SelectListItem() { Text = carDTO.Name, Value = carDTO.Id });
+                foreach (Car car in cars)
+                {
+                    CarDTO carDTO = Mapper.Map<Car, CarDTO>(car);
+                    this.CarsInGarage.Add(carDTO);
+                    this.CarsInGarageListItems.Add(new SelectListItem() { Text = carDTO.Name, Value = carDTO.Id });
+                }
+
+                Car tempCar = string.IsNullOrEmpty(SelectedCarId)
+                    ? cars.FirstOrDefault()
+                    : cars.Where(c => c.Id == this.SelectedCarId).FirstOrDefault();
+
+                this.SelectedCarId = tempCar.Id;
+                this.SelectedCar = Mapper.Map<Car, CarDTO>(tempCar);
+                this.BestLapTimesForCar = tempCar.BestLapTimes.OrderBy(l => l.LapTime.Time).ToList();
+                // Set up child View Models
+                this.ChangeTrackViewModel = new ChangeTrackViewModel { SelectedTrackId = this.SelectedTrackId, MyTracksListItems = this.MyTracksListItems };
+                this.ChangeCarViewModel = new ChangeCarViewModel { SelectedCarId = this.SelectedCarId, CarsInGarageListItems = this.CarsInGarageListItems };
+                this.EditCarViewModel = new EditCarViewModel { CarsInGarageListItems = this.CarsInGarageListItems };
+                this.DeleteCarViewModel = new DeleteCarViewModel { CarsInGarageListItems = CarsInGarageListItems };
+
+                // Set selected Car Values
+                this.EditCarViewModel.SetCarToEdit(tempCar);
+                this.DeleteCarViewModel.SetCarToDelete(tempCar);
             }
 
-            Car tempCar = string.IsNullOrEmpty(SelectedCarId)
-                ? cars.FirstOrDefault()
-                : cars.Where(c => c.Id == this.SelectedCarId).FirstOrDefault();
-
-            this.SelectedCarId = tempCar.Id;
-            this.SelectedCar = Mapper.Map<Car, CarDTO>(tempCar);
-            this.BestLapTimesForCar = tempCar.BestLapTimes.OrderBy(l => l.LapTime.Time).ToList();
-
-            // Set up child View Models
-            this.ChangeTrackViewModel = new ChangeTrackViewModel { SelectedTrackId = this.SelectedTrackId, MyTracksListItems = this.MyTracksListItems };
-            this.ChangeCarViewModel = new ChangeCarViewModel { SelectedCarId = this.SelectedCarId, CarsInGarageListItems = this.CarsInGarageListItems };
-            this.NewCarViewModel = new NewCarViewModel { MyTracksListItems = this.MyTracksListItems };
-            this.EditCarViewModel = new EditCarViewModel { CarsInGarageListItems = this.CarsInGarageListItems };
-            this.DeleteCarViewModel = new DeleteCarViewModel { CarsInGarageListItems = CarsInGarageListItems };
-
-            // Set selected Car Values
-            this.EditCarViewModel.SetCarToEdit(tempCar);
-            this.DeleteCarViewModel.SetCarToDelete(tempCar);
+            // Required for adding first car.
+            this.CreateCarViewModel = new CreateCarViewModel { MyTracksListItems = this.MyTracksListItems };
         }
     }
 
@@ -122,9 +127,9 @@ namespace SlotCarsGo_Server.Models.ViewModels
         public List<SelectListItem> CarsInGarageListItems { get; set; }
     }
 
-    public class NewCarViewModel
+    public class CreateCarViewModel
     {
-        public NewCarViewModel()
+        public CreateCarViewModel()
         {
         }
 

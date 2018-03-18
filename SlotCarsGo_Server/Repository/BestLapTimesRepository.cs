@@ -1,6 +1,7 @@
 ﻿using AutoMapper.QueryableExtensions;
 using SlotCarsGo_Server.Models;
 using SlotCarsGo_Server.Models.DTO;
+using SlotCarsGo_Server.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -11,74 +12,76 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class DriverResultsRepository<T> : IRepositoryAsync<DriverResult> where T : DriverResult 
+    public class LapTimesRepository<T> : IRepositoryAsync<LapTime> where T : LapTime
     {
-        public async Task<DriverResult> Delete(string id)
+        public async Task<LapTime> Delete(string id)
         {
-            DriverResult driverResult;
+            LapTime lapTime;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                driverResult = await db.DriverResults.FindAsync(id);
-                if (driverResult != null)
+                lapTime = await db.LapTimes.FindAsync(id);
+                if (lapTime != null)
                 {
-                    db.DriverResults.Remove(driverResult);
+                    db.LapTimes.Remove(lapTime);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return driverResult;
+            return lapTime;
         }
 
         public bool Exists(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.DriverResults.Count(e => e.Id == id) > 0;
+                return db.LapTimes.Count(e => e.Id == id) > 0;
             }
         }
 
-        public IEnumerable<DriverResult> GetAll()
+        public IEnumerable<LapTime> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.DriverResults;
+                return db.LapTimes;
             }
         }
 
-        public async Task<DriverResult> GetById(string id)
+        public async Task<LapTime> GetById(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.DriverResults.FindAsync(id);
+                return await db.LapTimes.FindAsync(id);
             }
         }
 
-        public IEnumerable<DriverResult> GetForId(string sessionId)
+        public IQueryable<LapTime> GetForId(string driverResultId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.DriverResults.Where(dr => dr.SessionId == sessionId);
+                DriverResult dr = db.DriverResults.Find(driverResultId);
+
+                return db.LapTimes.Where(lt => lt.DriverResultId == driverResultId);
             }
         }
 
-        public async Task<DriverResult> Insert(DriverResult driverResult)
+        public async Task<LapTime> Insert(LapTime lapTime)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                driverResult.Id = string.IsNullOrEmpty(driverResult.Id) ? Guid.NewGuid().ToString() : driverResult.Id;
-                driverResult = db.DriverResults.Add(driverResult);
+                lapTime.Id = lapTime.Id == null | lapTime.Id == string.Empty ? Guid.NewGuid().ToString() : lapTime.Id;
+                lapTime = db.LapTimes.Add(lapTime);
                 await db.SaveChangesAsync();
             }
 
-            return driverResult;
+            return lapTime;
         }
 
-        public async Task<EntityState> Update(string id, DriverResult driverResult)
+        public async Task<EntityState> Update(string id, LapTime lapTime)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(driverResult).State = EntityState.Modified;
+                db.Entry(lapTime).State = EntityState.Modified;
 
                 try
                 {
@@ -86,7 +89,7 @@ namespace SlotCarsGo_Server.Repository
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (db.DriverResults.Count(e => e.Id == id) == 0)
+                    if (db.LapTimes.Count(e => e.Id == id) == 0)
                     {
                         return EntityState.Unchanged;
                     }
@@ -96,7 +99,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(driverResult).State;
+                return db.Entry(lapTime).State;
             }
         }
     }

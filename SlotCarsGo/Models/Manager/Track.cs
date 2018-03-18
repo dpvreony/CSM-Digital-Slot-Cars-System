@@ -6,24 +6,16 @@ using System.Threading.Tasks;
 
 namespace SlotCarsGo.Models.Manager
 {
-    class Track
+    public class Track
     {
-        string name;
-        string id;
-        float length;
-        string macAddress;
-
-        public Track(string name, string id, float length, string macAddress)
+        public Track()
         {
-            this.Name = name;
-            this.Id = id;
-            this.Length = length;
-            this.MacAddress = macAddress;
         }
 
-        public string Name { get => name; set => name = value; }
-        public string Id { get => id; set => id = value; }
-        public float Length { get => length; set => length = value; }
-        public string MacAddress { get => macAddress; set => macAddress = value; }
+        public string Name { get; set; }
+        public string Id { get; set; }
+        public float Length { get; set; }
+        public string Secret { get; set; }
+        public string MacAddress { get; set; }
     }
 }

@@ -80,7 +80,7 @@ namespace SlotCarsGo_Server.Controllers
                     EntityState state = await tracksRepo.RegisterUser(track.Id, userId);
                     if (state == EntityState.Modified)
                     {
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", "Garage");
                     }
                     else
                     {

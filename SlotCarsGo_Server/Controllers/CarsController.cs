@@ -15,6 +15,7 @@ using SlotCarsGo_Server.Models.DTO;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
 using System.IO;
+using System.Web;
 
 namespace SlotCarsGo_Server.Controllers
 {

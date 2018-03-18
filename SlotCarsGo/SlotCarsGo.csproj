@@ -41,7 +41,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -96,6 +96,9 @@
     <PackageReference Include="AutoMapper">
       <Version>6.2.2</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client">
+      <Version>5.2.4</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.1</Version>
     </PackageReference>
@@ -134,6 +137,7 @@
     <Compile Include="Models\DTO\DriverDTO.cs" />
     <Compile Include="Models\DTO\DriverResultDTO.cs" />
     <Compile Include="Models\DTO\Enums.cs" />
+    <Compile Include="Models\DTO\LapTimeDTO.cs" />
     <Compile Include="Models\DTO\RaceSessionDTO.cs" />
     <Compile Include="Models\DTO\RaceTypeDTO.cs" />
     <Compile Include="Models\DTO\TrackDTO.cs" />
@@ -149,7 +153,7 @@
     <Compile Include="Activation\DefaultLaunchActivationHandler.cs" />
     <Compile Include="Services\FirstRunDisplayService.cs" />
     <Compile Include="Services\CarsInGarageDataService.cs" />
-    <Compile Include="Services\LoggedInUsersDataService.cs" />
+    <Compile Include="Services\DriversWaitingToRaceDataService.cs" />
     <Compile Include="Services\NavigationServiceEx.cs" />
     <Compile Include="Services\SelectRaceTypeService.cs" />
     <Compile Include="Services\SampleDataService.cs" />
