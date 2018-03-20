@@ -13,12 +13,15 @@ namespace SlotCarsGo_Server.Models
             this.ImageName = "0.jpg";
         }
 
+        [Required]
         public string Id { get; set; }
 
         [Required]
         public string Name { get; set; }
 
         public string ImageName { get; set; }
+
+        public bool Selectable { get; set; } = true;
 
         // Foreign key
         [Required]

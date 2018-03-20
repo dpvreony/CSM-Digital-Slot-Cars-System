@@ -37,9 +37,9 @@ namespace SlotCarsGo_Server.Models
 
         // Foreign key
         [Required]
-        public string SessionId { get; set; }
+        public string RaceSessionId { get; set; }
         // Navigation property
-        public RaceSession Session { get; set; }
+        public RaceSession RaceSession { get; set; }
 
         // Foreign key
         public string CarId { get; set; }

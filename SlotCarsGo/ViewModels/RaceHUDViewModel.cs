@@ -305,6 +305,7 @@ namespace SlotCarsGo.ViewModels
 
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
+                this.ResetDisplay();
                 SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(RaceResultsViewModel).FullName, this.Session);
             });
 
@@ -338,20 +339,25 @@ namespace SlotCarsGo.ViewModels
                                     driverResultDTO = JsonConvert.DeserializeObject<DriverResultDTO>(jsonResponse);
                                     if (driverResultDTO != null)
                                     {
+                                        // Delete driver config
+                                        endpoint = $@"/api/Drivers/{driverResultDTO.DriverId}";
+                                        response = await httpClient.DeleteAsync(endpoint);
+
+                                        // post laptimes
                                         endpoint = @"/api/LapTimes";
+                                        List<LapTimeDTO> lapTimeDTOs = new List<LapTimeDTO>();
                                         int lap = 1;
                                         foreach (TimeSpan lapTime in driver.Value.LapTimes)
                                         {
-                                            LapTimeDTO lapTimeDTO = new LapTimeDTO()
+                                            lapTimeDTOs.Add(new LapTimeDTO()
                                             {
-                                                Id = Guid.NewGuid(),
                                                 DriverResultId = driverResultDTO.Id,
                                                 LapNumber = lap++,
                                                 Time = lapTime,
-                                            };
-
-                                            response = httpClient.PostAsJsonAsync(endpoint, lapTimeDTO).Result;
+                                            });
                                         }
+
+                                        response = httpClient.PostAsJsonAsync(endpoint, lapTimeDTOs).Result;
                                     }
                                 }
                             }
@@ -377,7 +383,7 @@ namespace SlotCarsGo.ViewModels
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 // Dispatch back to the main thread
-                switch (this.Session.DriverResults[carId].ControllerNumber)
+                switch (this.Session.DriverResults[carId].ControllerId)
                 {
                     case 1:
                         Player1_BestLap = this.Session.DriverResults[carId].BestLapTime.ToString("m':'ss'.'fff");

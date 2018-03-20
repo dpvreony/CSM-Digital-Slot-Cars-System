@@ -326,8 +326,17 @@
     <Compile Include="Migrations\201803140932103_AddBestLapTimeToCarAndTrack.Designer.cs">
       <DependentUpon>201803140932103_AddBestLapTimeToCarAndTrack.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803191022278_FullRaceSessionColumnNameInDriverResult.cs" />
+    <Compile Include="Migrations\201803191022278_FullRaceSessionColumnNameInDriverResult.Designer.cs">
+      <DependentUpon>201803191022278_FullRaceSessionColumnNameInDriverResult.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803191046229_Remove Constraint on Driver Result CarId.cs" />
+    <Compile Include="Migrations\201803191046229_Remove Constraint on Driver Result CarId.Designer.cs">
+      <DependentUpon>201803191046229_Remove Constraint on Driver Result CarId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BestLapTime.cs" />
+    <Compile Include="Models\DTO\BestLapTimeDTO.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\DTO\CarDTO.cs" />
     <Compile Include="Models\Driver.cs" />
@@ -356,6 +365,7 @@
     </Compile>
     <Compile Include="Repository\IRepositoryAsync.cs" />
     <Compile Include="Repository\IRepositoryDTOAsync.cs" />
+    <Compile Include="Repository\BestLapTimesRepository.cs" />
     <Compile Include="Repository\LapTimesRepository.cs" />
     <Compile Include="Repository\RaceTypesRepository.cs" />
     <Compile Include="Repository\RaceSessionsRepository.cs" />
@@ -555,6 +565,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803140932103_AddBestLapTimeToCarAndTrack.resx">
       <DependentUpon>201803140932103_AddBestLapTimeToCarAndTrack.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803191022278_FullRaceSessionColumnNameInDriverResult.resx">
+      <DependentUpon>201803191022278_FullRaceSessionColumnNameInDriverResult.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803191046229_Remove Constraint on Driver Result CarId.resx">
+      <DependentUpon>201803191046229_Remove Constraint on Driver Result CarId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

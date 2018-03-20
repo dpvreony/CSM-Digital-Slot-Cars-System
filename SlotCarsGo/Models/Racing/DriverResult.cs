@@ -12,31 +12,8 @@ namespace SlotCarsGo.Models.Racing
     /// </summary>
     public class DriverResult
     {
-        string raceSessionId;
-        Driver driver;
-        int controllerNumber;
-        int position;
-        string carId;
-        Car car;
-        int laps;
-        private bool finished;
-        private float fuel;
-        TimeSpan totalTime;
-        TimeSpan bestLap;
-        TimeSpan timeOffPace;
-        private List<TimeSpan> lapTimes;
-        private TimeSpan previousLapTime;
-        private TimeSpan bestLapTime;
-        private List<UInt32> lapGameCounters;
-        private UInt32 previousGameCounter;
-        private Symbol symbol = Symbol.Flag;
-        private SolidColorBrush symbolBrush;
-
-        public DriverResult(Driver driver, int controllerNumber)
+        public DriverResult()
         {
-            this.Driver = driver;
-            this.ControllerNumber = controllerNumber;
-            this.Car = driver.SelectedCar;
             this.Position = 0;
             this.Laps = 0;
             this.TotalTime = new TimeSpan();
@@ -48,22 +25,24 @@ namespace SlotCarsGo.Models.Racing
             this.PreviousGameCounter = 0;
         }
 
-        public Driver Driver { get => driver; private set => driver = value; }
-        public int Position { get => position; set => this.position = value; }
-        public string RaceSessionId { get => raceSessionId; set => raceSessionId = value; }
-        public int ControllerNumber { get => controllerNumber; set => controllerNumber = value; }
-        public string CarId { get => carId; set => carId = value; }
-        public Car Car { get => car; private set => car = value; }
-        public int Laps { get => laps; set => laps = value; }
-        public bool Finished { get => finished; set => finished = value; }
-        public float Fuel { get => fuel; set => fuel = value; }
-        public TimeSpan TotalTime { get => totalTime; set => totalTime = value; }
-        public TimeSpan TimeOffPace { get => timeOffPace; set => timeOffPace = value; }
-        public List<TimeSpan> LapTimes { get => lapTimes; set => lapTimes = value; }
-        public TimeSpan PreviousLapTime { get => previousLapTime; set => previousLapTime = value; }
-        public TimeSpan BestLapTime { get => bestLapTime; set => bestLapTime = value; }
-        public List<uint> LapGameCounters { get => lapGameCounters; set => lapGameCounters = value; }
-        public uint PreviousGameCounter { get => previousGameCounter; set => previousGameCounter = value; }
+        public Driver Driver { get; set; }
+        public int Position { get; set; }
+        public string RaceSessionId { get; set; }
+        public int ControllerId { get; set; }
+        public string CarId { get; set; }
+        public Car Car { get; set; }
+        public int Laps { get; set; }
+        public bool Finished { get; set; }
+        public float Fuel { get; set; }
+        public TimeSpan TotalTime { get; set; }
+        public TimeSpan TimeOffPace { get; set; }
+        public List<TimeSpan> LapTimes { get; set; }
+        public TimeSpan PreviousLapTime { get; set; }
+        public TimeSpan BestLapTime { get; set; }
+        public List<uint> LapGameCounters { get; set; }
+        public uint PreviousGameCounter { get; set; }
+        public Symbol Symbol = Symbol.Flag;
+        public SolidColorBrush SymbolBrush { get; set; }
 
 
         public override string ToString()

@@ -58,7 +58,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.DriverResults.Where(dr => dr.SessionId == sessionId);
+                return db.DriverResults.Where(dr => dr.RaceSessionId == sessionId);
             }
         }
 

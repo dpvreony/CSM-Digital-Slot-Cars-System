@@ -181,8 +181,9 @@ namespace SlotCarsGo_Server.Controllers
                 CarsRepository<Car, CarDTO> carsRepo = new CarsRepository<Car, CarDTO>();
                 try
                 {
-                    Car car = await carsRepo.Delete(deleteCarViewModel.SelectedCarToDeleteId);
-                    if (car == null) ModelState.AddModelError(string.Empty, "Failed to delete car.");
+
+                    Car car = await carsRepo.Remove(deleteCarViewModel.SelectedCarToDeleteId);
+                    if (car == null) ModelState.AddModelError(string.Empty, "Failed to remove car from garage.");
                     string carsImagesPath = HttpContext.Server.MapPath("~/Content/Images/Cars");
                     string fileNamePath = Path.Combine(carsImagesPath, car.ImageName);
                     if (System.IO.File.Exists(fileNamePath))
@@ -192,7 +193,7 @@ namespace SlotCarsGo_Server.Controllers
                 }
                 catch(Exception)
                 {
-                    ModelState.AddModelError(string.Empty, "Failed to delete car.");
+                    ModelState.AddModelError(string.Empty, "Failed to remove car.");
                 }
             }
 

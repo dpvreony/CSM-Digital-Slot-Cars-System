@@ -12,76 +12,124 @@ using System.Web;
 
 namespace SlotCarsGo_Server.Repository
 {
-    public class LapTimesRepository<T> : IRepositoryAsync<LapTime> where T : LapTime
+    public class BestLapTimesRepository<T> : IRepositoryAsync<BestLapTime> where T : BestLapTime
     {
-        public async Task<LapTime> Delete(string id)
+        public async Task<BestLapTime> Delete(string id)
         {
-            LapTime lapTime;
+            BestLapTime bestLapTime;
 
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                lapTime = await db.LapTimes.FindAsync(id);
-                if (lapTime != null)
+                bestLapTime = await db.BestLapTimes.FindAsync(id);
+                if (bestLapTime != null)
                 {
-                    db.LapTimes.Remove(lapTime);
+                    db.BestLapTimes.Remove(bestLapTime);
                     await db.SaveChangesAsync();
                 }
             }
 
-            return lapTime;
+            return bestLapTime;
         }
 
         public bool Exists(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.LapTimes.Count(e => e.Id == id) > 0;
+                return db.BestLapTimes.Count(e => e.Id == id) > 0;
             }
         }
 
-        public IEnumerable<LapTime> GetAll()
+        public IEnumerable<BestLapTime> GetAll()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.LapTimes;
+                return db.BestLapTimes;
             }
         }
 
-        public async Task<LapTime> GetById(string id)
+        public async Task<BestLapTime> GetById(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.LapTimes.FindAsync(id);
+                return await db.BestLapTimes.FindAsync(id);
             }
         }
 
-        public IQueryable<LapTime> GetForId(string driverResultId)
+        public IQueryable<BestLapTime> GetForUserId(string userId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                DriverResult dr = db.DriverResults.Find(driverResultId);
-
-                return db.LapTimes.Where(lt => lt.DriverResultId == driverResultId);
+                return db.BestLapTimes.Where(lt => lt.ApplicationUserId == userId);
             }
         }
 
-        public async Task<LapTime> Insert(LapTime lapTime)
+        public async Task<BestLapTime> Insert(BestLapTime bestLapTime)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                lapTime.Id = lapTime.Id == null | lapTime.Id == string.Empty ? Guid.NewGuid().ToString() : lapTime.Id;
-                lapTime = db.LapTimes.Add(lapTime);
-                await db.SaveChangesAsync();
+                bestLapTime.Id = string.IsNullOrEmpty(bestLapTime.Id) ? Guid.NewGuid().ToString() : bestLapTime.Id;
+                bestLapTime = db.BestLapTimes.Add(bestLapTime); // register in context
+
+                LapTime lapTime = await db.LapTimes
+                    .Where(l => l.Id == bestLapTime.LapTimeId)
+                    .Include(l => l.DriverResult)
+                    .Include(l => l.DriverResult.ApplicationUser)
+                    .Include(l => l.DriverResult.Car)
+                    .Include(l => l.DriverResult.RaceSession)
+                    .Include(l => l.DriverResult.RaceSession.Track)
+                    .FirstOrDefaultAsync();
+
+                TimeSpan time = bestLapTime.LapTime.Time;
+                DriverResult driverResult = bestLapTime.LapTime.DriverResult;
+                Car car = driverResult.Car;
+                ApplicationUser user = driverResult.ApplicationUser;
+                Track track = driverResult.RaceSession.Track;
+
+                bool modified = false;
+
+                // Check Track's overall record
+                if (string.IsNullOrEmpty(track.BestLapTimeId)|| track.BestLapTime.LapTime.Time > time)
+                {
+                    track.BestLapTimeId = bestLapTime.Id;
+                    modified = true;
+                }
+
+                // Check this car's overall record
+                if (string.IsNullOrEmpty(car.BestLapTimeId) || car.BestLapTime.LapTime.Time > time)
+                {
+                    car.BestLapTimeId = bestLapTime.Id;
+                    modified = true;
+                }
+
+                // Check this car's best time for this user
+                BestLapTime usersCarBestLap = car.BestLapTimes.Where(l => l.ApplicationUserId == user.Id).FirstOrDefault();
+                if (usersCarBestLap == null)
+                {
+                    modified = true;
+                    user.BestLapTimes.Add(bestLapTime);
+                    car.BestLapTimes.Add(bestLapTime);
+                }
+                else if (time < usersCarBestLap.LapTime.Time)
+                {
+                    usersCarBestLap.LapTimeId = bestLapTime.Id;
+                    modified = true;
+                }
+                
+                // If changes made then save best lap time
+                if (modified)
+                {
+                    await db.SaveChangesAsync();
+                }
             }
 
-            return lapTime;
+            return bestLapTime;
         }
 
-        public async Task<EntityState> Update(string id, LapTime lapTime)
+        public async Task<EntityState> Update(string id, BestLapTime bestLapTime)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                db.Entry(lapTime).State = EntityState.Modified;
+                db.Entry(bestLapTime).State = EntityState.Modified;
 
                 try
                 {
@@ -89,7 +137,7 @@ namespace SlotCarsGo_Server.Repository
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (db.LapTimes.Count(e => e.Id == id) == 0)
+                    if (db.BestLapTimes.Count(e => e.Id == id) == 0)
                     {
                         return EntityState.Unchanged;
                     }
@@ -99,7 +147,7 @@ namespace SlotCarsGo_Server.Repository
                     }
                 }
 
-                return db.Entry(lapTime).State;
+                return db.Entry(bestLapTime).State;
             }
         }
     }

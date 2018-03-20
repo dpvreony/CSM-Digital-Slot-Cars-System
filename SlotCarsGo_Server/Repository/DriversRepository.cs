@@ -96,7 +96,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                driver.Id = driver.Id == null | driver.Id == string.Empty ? Guid.NewGuid().ToString() : driver.Id;
+                driver.Id = string.IsNullOrEmpty(driver.Id) ? Guid.NewGuid().ToString() : driver.Id;
                 driver = db.Drivers.Add(driver);
                 await db.SaveChangesAsync();
             }

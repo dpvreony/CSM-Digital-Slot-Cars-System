@@ -7,10 +7,10 @@
 <table id="assets-data-table" class="table table-striped table-bordered table-condensed" style="width:100%">
     <thead>
         <tr>
-            <th bgcolor="#FFD968">Rank</th>
-            <th bgcolor="#FFD968">Lap Time</th>
-            <th bgcolor="#FFD968">Driver</th>
-            <th bgcolor="#FFD968">Off Pace</th>
+            <th bgcolor="#FFD968" style="font-size:small">Rank</th>
+            <th bgcolor="#FFD968" style="font-size:small">Lap Time</th>
+            <th bgcolor="#FFD968" style="font-size:small">Driver</th>
+            <th bgcolor="#FFD968" style="font-size:small">Off Pace</th>
         </tr>
     </thead>
     @{ int playerRank = 1;
@@ -28,10 +28,10 @@
                 diff = lapTime.LapTime.Time - bestLap;
             }
             <tr>
-                <td>@playerRank</td>
-                <td>@lapTime.LapTime.Time.ToString(@"m\:ss\.fff")</td>
-                <td>@lapTime.ApplicationUser.UserName</td>
-                <td>@diff.ToString(@"ss\.fff")</td>
+                <td valign="middle" style="font-size:small">@playerRank</td>
+                <td valign="middle" style="font-size:small">@lapTime.LapTime.Time.ToString(@"m\:ss\.fff")</td>
+                <td valign="middle" style="font-size:small">@lapTime.ApplicationUser.UserName</td>
+                <td valign="middle" style="font-size:small">@diff.ToString(@"ss\.fff")</td>
             </tr>
             playerRank++;
         }

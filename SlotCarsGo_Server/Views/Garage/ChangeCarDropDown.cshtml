@@ -1,14 +1,14 @@
 ﻿@model SlotCarsGo_Server.Models.ViewModels.ChangeCarViewModel
-@using (Html.BeginForm("ChangeCar", "Garage", FormMethod.Post, new { @class = "form-inline", role = "form", enctype = "multipart/form-data" }))
+@using (Html.BeginForm("ChangeCar", "Garage", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     <div class="form-group">
-        @Html.LabelFor(m => m.SelectedCarId, new { @class = "col-xs-2 control-label", style = "width:75px" })
-        <div class="col-xs-7">
-            @Html.DropDownListFor(m => m.SelectedCarId, Model.CarsInGarageListItems, "-- Select Car --", new { @class = "form-control", style = "width:250px" })
+<!--        Html.LabelFor(m => m.SelectedCarId, new { class = "col-md-3 control-label" }) -->
+        <div class="col-md-12">
+            @Html.DropDownListFor(m => m.SelectedCarId, Model.CarsInGarageListItems, "-- Select Car --", new { @class = "form-control" })
         </div>
-        <div class="col-xs-offset-1 col-xs-2">
-            <input type="submit" class="btn btn-primary" value="Refresh" />
+        <div class="col-md-12">
+            <input type="submit" class="btn btn-primary" value="Change Car" />
         </div>
     </div>
 }

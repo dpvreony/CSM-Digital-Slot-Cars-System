@@ -49,39 +49,57 @@ namespace SlotCarsGo_Server.Models.ViewModels
         public void Setup(ApplicationUser loggedInUser)
         {
             this.User = loggedInUser;
-            if (this.User.Tracks.Count > 0)
-            {
-                // Try to find last session details
-                this.LastDriverResult = this.User.DriverResults?.OrderByDescending(dr => dr.Session.EndTime).FirstOrDefault();
-                this.LastSession = this.LastDriverResult?.Session;
-                this.LastTrack = this.LastSession == null ? this.User.Tracks?.FirstOrDefault() : this.LastSession?.Track;
+            DriversRepository<Driver, DriverDTO> driversRepo = new DriversRepository<Driver, DriverDTO>();
+            Driver driver = driversRepo.GetForUser(this.User.Id);
 
-                // Populate join race form choices
-                this.MyTracks = this.User.Tracks.ToList();
+            // Try to find last session details
+            this.LastTrack = this.User.Tracks.FirstOrDefault();
 
-                DriversRepository<Driver, DriverDTO> driversRepo = new DriversRepository<Driver, DriverDTO>();
-                this.confirmedDrivers = driversRepo.GetForTrack(LastTrack.Id);
+            // Populate join race form choices
+            this.MyTracks = this.User.Tracks.ToList();
+
+            this.confirmedDrivers = driversRepo.GetForTrack(LastTrack.Id).Where(d => d.ApplicationUserId != this.User.Id);
                 
-                this.AvailableCars = (from car in this.LastTrack.Cars
-                                      where !(this.confirmedDrivers.Any(driver => driver.CarId == car.Id))
-                                      select car).ToList();
+            this.AvailableCars = (from car in this.LastTrack.Cars
+                                    where car.Selectable == true && !(this.confirmedDrivers.Any(d => d.CarId == car.Id))
+                                    select car).ToList();
 
-                this.AvailableControllerIds = (from controller in this.controllers
-                                               where !(this.confirmedDrivers.Any(driver => driver.ControllerId == controller))
-                                               select controller).ToList();
+            this.AvailableControllerIds = (from controller in this.controllers
+                                            where !(this.confirmedDrivers.Any(d => d.ControllerId == controller))
+                                            select controller).ToList();
 
-                // Populate dropdown menu select item lists
-                foreach (Track track in this.MyTracks)
+            // Populate dropdown menu select item lists
+            foreach (Track track in this.MyTracks)
+            {
+                if (driver == null || driver.TrackId != track.Id)
                 {
                     MyTracksListItems.Add(new SelectListItem { Text = track.Name, Value = track.Id });
                 }
-                foreach (Car car in this.AvailableCars)
+                else
+                {
+                    MyTracksListItems.Add(new SelectListItem { Text = track.Name, Value = track.Id, Selected = true });
+                }
+            }
+            foreach (Car car in this.AvailableCars)
+            {
+                if (driver == null || driver.CarId != car.Id)
                 {
                     AvailableCarsListItems.Add(new SelectListItem { Text = car.Name, Value = car.Id });
                 }
-                foreach (int controller in this.AvailableControllerIds)
+                else
+                {
+                    AvailableCarsListItems.Add(new SelectListItem { Text = car.Name, Value = car.Id, Selected = true });
+                }
+            }
+            foreach (int controller in this.AvailableControllerIds)
+            {
+                if (driver == null || driver.ControllerId != controller)
                 {
                     AvailableControllersListItems.Add(new SelectListItem { Text = controller.ToString(), Value = controller.ToString() });
+                }
+                else
+                {
+                    AvailableControllersListItems.Add(new SelectListItem { Text = controller.ToString(), Value = controller.ToString(), Selected = true });
                 }
             }
         }

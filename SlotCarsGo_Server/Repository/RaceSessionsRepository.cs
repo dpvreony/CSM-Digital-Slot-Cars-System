@@ -75,7 +75,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                raceSession.Id = raceSession.Id == null | raceSession.Id == string.Empty ? Guid.NewGuid().ToString() : raceSession.Id;
+                raceSession.Id = string.IsNullOrEmpty(raceSession.Id) ? Guid.NewGuid().ToString() : raceSession.Id;
                 raceSession = db.RaceSessions.Add(raceSession);
                 await db.SaveChangesAsync();
             }

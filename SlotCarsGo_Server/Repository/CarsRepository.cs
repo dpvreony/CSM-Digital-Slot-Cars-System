@@ -84,6 +84,29 @@ namespace SlotCarsGo_Server.Repository
             return car;
         }
 
+        /// <summary>
+        /// Removes car from garage so that car can't be selected for new races.
+        /// </summary>
+        /// <param name="id">Car id.</param>
+        /// <returns>the car.</returns>
+        public async Task<Car> Remove(string id)
+        {
+            Car car;
+
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                car = await db.Cars.FindAsync(id);
+                if (car != null)
+                {
+                    car.Selectable = false;
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            return car;
+        }
+
+
         public async Task<EntityState> Update(string id, Car car)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())

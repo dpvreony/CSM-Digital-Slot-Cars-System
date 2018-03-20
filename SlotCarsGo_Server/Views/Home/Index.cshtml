@@ -2,39 +2,39 @@
 <div class="jumbotron" style="background-color:#FFD968">
     <div class="row">
         <div class="col-xs-12 col-lg-6">
-            <img src="~/Content/Images/SoftCarPostcard_400.png" style="width:350px; height:350px;margin-left:auto;margin-right:auto;display:block;" />
+            <img src="~/Content/Images/SoftCarPostcard_400.png" style="max-width:100%; height:auto;margin-left:auto;margin-right:auto;display:block;" />
         </div>
         <div class="col-xs-12 col-lg-6">
             <h1 style="color:white">Join a Race</h1>
             <p>Select your configuration to get on the starting grid.</p>
-            @using (Html.BeginForm("JoinRace", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
-            {
-                @Html.AntiForgeryToken()
-                @Html.ValidationSummary("", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(m => m.SelectedTrackId, new { @class = "col-xs-4 control-label" })
-                    <div class="col-xs-8">
-                        @Html.DropDownListFor(m => m.SelectedTrackId, Model.MyTracksListItems, "-- Select Track --", new { @class = "form-control", style = "width:300px" })
-                    </div>
+        @using (Html.BeginForm("JoinRace", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.SelectedTrackId, new { @class = "col-md-3 control-label" })
+                <div class="col-md-9">
+                    @Html.DropDownListFor(m => m.SelectedTrackId, Model.MyTracksListItems, "-- Select Track --", new { @class = "form-control"})
                 </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.SelectedCarId, new { @class = "col-xs-4 control-label" })
-                    <div class="col-xs-8">
-                        @Html.DropDownListFor(m => m.SelectedCarId, Model.AvailableCarsListItems, "-- Select Car --", new { @class = "form-control", style = "width:300px" })
-                    </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.SelectedCarId, new { @class = "col-md-3 control-label" })
+                <div class="col-md-9">
+                    @Html.DropDownListFor(m => m.SelectedCarId, Model.AvailableCarsListItems, "-- Select Car --", new { @class = "form-control"})
                 </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.SelectedControllerId, new { @class = "col-xs-4 control-label" })
-                    <div class="col-xs-8">
-                        @Html.DropDownListFor(m => m.SelectedControllerId, Model.AvailableControllersListItems, "-- Select Controller --", new { @class = "form-control", style = "width:300px" })
-                    </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.SelectedControllerId, new { @class = "col-md-3 control-label" })
+                <div class="col-md-9">
+                    @Html.DropDownListFor(m => m.SelectedControllerId, Model.AvailableControllersListItems, "-- Select Controller --", new { @class = "form-control" })
                 </div>
-                <div class="form-group">
-                    <div class="col-md-offset-4 col-xs-8">
-                        <input type="submit" class="btn btn-primary btn-lg" value="Join" />
-                    </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-3 col-md-12">
+                    <input type="submit" class="btn btn-primary btn-lg" value="Join" />
                 </div>
-            }
+            </div>
+        }
         </div>
     </div>
 </div>

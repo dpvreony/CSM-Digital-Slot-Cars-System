@@ -25,7 +25,6 @@ namespace SlotCarsGo.Services
         {
             ObservableCollection<Driver> drivers = new ObservableCollection<Driver>();
 
-
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Accept.Clear();

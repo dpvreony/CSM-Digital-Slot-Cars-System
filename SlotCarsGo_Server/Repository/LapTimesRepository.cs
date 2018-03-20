@@ -69,7 +69,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                lapTime.Id = lapTime.Id == null | lapTime.Id == string.Empty ? Guid.NewGuid().ToString() : lapTime.Id;
+                lapTime.Id = string.IsNullOrEmpty(lapTime.Id) ? Guid.NewGuid().ToString() : lapTime.Id;
                 lapTime = db.LapTimes.Add(lapTime);
                 await db.SaveChangesAsync();
             }

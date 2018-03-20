@@ -22,17 +22,39 @@ namespace SlotCarsGo_Server.Controllers
 
         // POST: api/LapTimes
         [ResponseType(typeof(LapTimeDTO))]
-        public async Task<IHttpActionResult> PostLapTime(LapTimeDTO lapTimeDTO)
+        public async Task<IHttpActionResult> PostLapTime(IEnumerable<LapTimeDTO> lapTimeDTOs)
         {
-            LapTime lapTime = Mapper.Map<LapTime>(lapTimeDTO);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            lapTime = await repo.Insert(lapTime);
+            TimeSpan fastestLap = lapTimeDTOs.Min(l => l.Time);
+            BestLapTime bestLapTime = new BestLapTime();
 
-            return CreatedAtRoute("DefaultApi", new { id = lapTime.Id }, Mapper.Map<LapTimeDTO>(lapTime));
+            foreach (LapTimeDTO lapTimeDTO in lapTimeDTOs)
+            {
+                LapTime lapTime = Mapper.Map<LapTime>(lapTimeDTO);
+                lapTime = await repo.Insert(lapTime);
+
+                if (lapTimeDTO.Time == fastestLap)
+                {
+                    IRepositoryAsync<DriverResult> driverResultsRepo = new DriverResultsRepository<DriverResult>();
+                    DriverResult driverResult = await driverResultsRepo.GetById(lapTime.DriverResultId);
+                    bestLapTime = new BestLapTime()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        ApplicationUserId = driverResult.ApplicationUserId,
+                        CarId = driverResult.CarId,
+                        LapTimeId = lapTime.Id,
+                    };
+
+                    BestLapTimesRepository<BestLapTime> bestLapsRepo = new BestLapTimesRepository<BestLapTime>();
+                    bestLapTime = await bestLapsRepo.Insert(bestLapTime);
+                }
+            }
+
+            return CreatedAtRoute("DefaultApi", new { id = bestLapTime.Id }, Mapper.Map<BestLapTimeDTO>(bestLapTime));
         }
 
         protected override void Dispose(bool disposing)

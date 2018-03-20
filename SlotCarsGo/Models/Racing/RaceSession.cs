@@ -85,7 +85,16 @@ namespace SlotCarsGo.Models.Racing
             this.driverResults = new Dictionary<int, DriverResult>();
             foreach (Driver driver in this.Drivers)
             {
-                this.driverResults.Add(driver.ControllerId,  new DriverResult(driver, driver.ControllerId));
+                this.driverResults.Add(
+                    driver.ControllerId,
+                    new DriverResult()
+                    {
+                        Driver = driver,
+                        ControllerId = driver.ControllerId,
+                        Car = driver.SelectedCar,
+                        CarId = driver.SelectedCar.Id
+                    }
+                );
             }
             this.LapsRemaining = this.RaceType.LapsNotDuration ? this.RaceType.RaceLimitValue : 0;
         }

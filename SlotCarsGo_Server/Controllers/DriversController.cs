@@ -129,6 +129,26 @@ namespace SlotDriversGo_Server.Controllers
             return drivers;
         }
 
+        // DELETE: api/Drivers/5
+        [ResponseType(typeof(DriverDTO))]
+        public async Task<IHttpActionResult> DeleteDriver(string userId)
+        {
+            DriversRepository<Driver, DriverDTO> driversRepo = new DriversRepository<Driver, DriverDTO>();
+            Driver driver = driversRepo.GetForUser(userId);
+            if (driver == null)
+            {
+                return NotFound();
+            }
+
+            await driversRepo.Delete(driver.Id);
+
+            return Ok(Mapper.Map<DriverDTO>(driver));
+        }
+
+
+
+
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);

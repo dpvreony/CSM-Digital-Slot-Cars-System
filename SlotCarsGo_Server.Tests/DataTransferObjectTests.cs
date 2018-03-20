@@ -261,7 +261,7 @@ namespace SlotCarsGo_Server.Tests
             Assert.AreEqual(driverResult.Fuel, driverResultDTO.Fuel);
             Assert.AreEqual(driverResult.Laps, driverResultDTO.Laps);
             Assert.AreEqual(driverResult.Position, driverResultDTO.Position);
-            Assert.AreEqual(driverResult.SessionId, driverResultDTO.RaceSessionId);
+            Assert.AreEqual(driverResult.RaceSessionId, driverResultDTO.RaceSessionId);
             Assert.AreEqual(driverResult.TimeOffPace, driverResultDTO.TimeOffPace);
             Assert.AreEqual(driverResult.TotalTime, driverResultDTO.TotalTime);
 
@@ -274,7 +274,7 @@ namespace SlotCarsGo_Server.Tests
             Assert.AreEqual(driverResult.Fuel, testDriverResult.Fuel);
             Assert.AreEqual(driverResult.Laps, testDriverResult.Laps);
             Assert.AreEqual(driverResult.Position, testDriverResult.Position);
-            Assert.AreEqual(driverResult.SessionId, testDriverResult.SessionId);
+            Assert.AreEqual(driverResult.RaceSessionId, testDriverResult.RaceSessionId);
             Assert.AreEqual(driverResult.TimeOffPace, testDriverResult.TimeOffPace);
             Assert.AreEqual(driverResult.TotalTime, testDriverResult.TotalTime);
         }
