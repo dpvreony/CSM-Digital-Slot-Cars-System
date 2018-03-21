@@ -7,8 +7,8 @@
     Style="{StaticResource PageStyle}"
     DataContext="{Binding GarageViewModel, Source={StaticResource Locator}}"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    xmlns:model="using:SlotCarsGo.Models"
     xmlns:views="using:SlotCarsGo.Views"
+    xmlns:model="using:SlotCarsGo.Models.Racing"
     mc:Ignorable="d">
     <Page.Transitions>
         <TransitionCollection>
@@ -16,7 +16,7 @@
         </TransitionCollection>
     </Page.Transitions>
     <Page.Resources>
-        <DataTemplate x:Key="ItemTemplate" x:DataType="model:SampleOrder">
+        <DataTemplate x:Key="ItemTemplate" x:DataType="model:Car">
             <Grid Height="64" Padding="0,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -24,8 +24,8 @@
                 </Grid.ColumnDefinitions>
                 <FontIcon Grid.Column="0" Tag="{x:Bind HashIdentIcon}" FontSize="40" Glyph="{x:Bind SymbolAsChar}" VerticalAlignment="Center" />
                 <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind Company}" Tag="{x:Bind HashIdentTitle}" Style="{ThemeResource ListTitleStyle}"/>
-                    <TextBlock Text="{x:Bind Status}" Style="{StaticResource ListSubTitleStyle}"/>
+                    <TextBlock Text="{x:Bind Name}" Tag="{x:Bind HashIdentTitle}" Style="{ThemeResource ListTitleStyle}"/>
+                    <TextBlock Text="{x:Bind RecordHolder}" Style="{StaticResource ListSubTitleStyle}"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -55,7 +55,7 @@
         <controls:MasterDetailsView
             Grid.Row="1"
             x:Name="MasterDetailsViewControl"
-            ItemsSource="{x:Bind ViewModel.SampleItems, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.CarsInGarage, Mode=OneWay}"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
             ItemTemplate="{StaticResource ItemTemplate}"
             DetailsTemplate="{StaticResource DetailsTemplate}"

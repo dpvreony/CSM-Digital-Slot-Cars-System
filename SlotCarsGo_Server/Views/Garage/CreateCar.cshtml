@@ -6,13 +6,13 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Make, new { @class = "col-md-3 control-label" })
         <div class="col-md-9">
-            @Html.TextBoxFor(m => m.Make, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.Make, new { @class = "form-control", style="max-width=100%;" })
         </div>
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Model, new { @class = "col-md-3 control-label" })
         <div class="col-md-9">
-            @Html.TextBoxFor(m => m.Model, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.Model, new { @class = "form-control", style="max-width=100%;" })
         </div>
     </div>
     <div class="form-group">
@@ -24,7 +24,7 @@
     <div class="form-group">
         @Html.LabelFor(m => m.TrackId, new { @class = "col-md-3 control-label" })
         <div class="col-md-9">
-            @Html.DropDownListFor(m => m.TrackId, Model.MyTracksListItems, "-- Select Track --", new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.TrackId, Model.MyTracksListItems, "-- Select Track --", new { @class = "form-control", style="max-width=100%;" })
         </div>
     </div>
     <div class="form-group">

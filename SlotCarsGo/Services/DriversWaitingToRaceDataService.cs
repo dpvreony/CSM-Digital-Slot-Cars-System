@@ -64,56 +64,6 @@ namespace SlotCarsGo.Services
             }
         }
 
-                        /*
-                                                BitmapImage userImage, carImage;
-                                                using (InMemoryRandomAccessStream ms = new InMemoryRandomAccessStream())
-                                                {
-                                                    using (DataWriter writer = new DataWriter(ms.GetOutputStreamAt(0)))
-                                                    {
-                                                        writer.WriteBytes(driverDTO.UserImageBytes);
-                                                        writer.StoreAsync().GetResults();
-                                                    }
-                                                    userImage = new BitmapImage();
-                                                    userImage.SetSource(ms);
-                                                }
-
-
-                                                /*
-                                    m_fileToken = m_localSettings["scenario1FileToken"].ToString();
-                                    StorageFile file = await m_futureAccess.GetFileAsync(m_fileToken);
-
-                                    BitmapImage src = new BitmapImage();
-                                    using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read))
-                                    {
-                                        await src.SetSourceAsync(stream);
-                                    }
-
-                                    PreviewImage.Source = src;
-
-
-                                                StorageFile savedImage
-                                                 savedImage.
-
-                                                //                        Image userImage = driver.UserImageBytes
-                                                StorageFile savedImage = AppManager.TemporaryFolder.
-                        //                        string imageName = "path in temp fodler";
-                                               */
-
-
-                /*
-                            // TODO: Query logins from server
-                            var data = new ObservableCollection<Driver>
-                            {
-                                new Driver("1", "Tyler", "1.png", 1, Car.DefaultCar)
-                                ,new Driver("2","Armshaw", "2.png", 2, Car.DefaultCar)
-                                ,new Driver("3","Bowes", "3.png", 3, Car.DefaultCar)
-                                ,new Driver("4","Tyler", "4.png", 4, Car.DefaultCar)
-                                ,new Driver("5","Atkins", "5.png", 5, Car.DefaultCar)
-                                ,new Driver("6","Botten", "6.png", 6, Car.DefaultCar)
-                            };
-                */
-                //            users = new ObservableCollection<Driver>(data.OrderBy(u => u.ControllerId));
-
         // TODO WTS: Remove this once your MasterDetail pages are displaying real data
         public static async Task<IEnumerable<Driver>> GetDriversWaitingToRaceAsync()
         {
@@ -121,21 +71,5 @@ namespace SlotCarsGo.Services
 
             return await LoggedInUsers();
         }
-
-/*
-        /// <summary>
-        /// Returns the user in collection with matching userId.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public static Driver GetUser(string userId)
-        {
-            if (users == null)
-            {
-                LoggedInUsers();
-            }
-            return users.SingleOrDefault(u => u.Id == userId);
-        }
-*/
     }
 }

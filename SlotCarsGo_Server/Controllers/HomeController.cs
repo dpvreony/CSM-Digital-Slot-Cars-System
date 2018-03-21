@@ -93,7 +93,7 @@ namespace SlotCarsGo_Server.Controllers
                 }
             }
 
-            return View("RegisterTrack", registerModel);
+            return RedirectToAction("Index", "Home");
         }
 
         //
@@ -130,7 +130,7 @@ namespace SlotCarsGo_Server.Controllers
                 }
             }
 
-            return View("Index", model);
+            return RedirectToAction("Index", "Home");
         }
     }
 }

@@ -10,20 +10,21 @@ using Microsoft.Toolkit.Uwp.UI.Controls;
 using SlotCarsGo.Models;
 using SlotCarsGo.Services;
 using Windows.UI.Xaml.Navigation;
+using SlotCarsGo.Models.Racing;
 
 namespace SlotCarsGo.ViewModels
 {
     public class GarageViewModel : NavigableViewModelBase
     {
-        private SampleOrder _selected;
+        private Car _selected;
 
-        public SampleOrder Selected
+        public Car Selected
         {
             get { return _selected; }
             set { Set(ref _selected, value); }
         }
 
-        public ObservableCollection<SampleOrder> SampleItems { get; private set; } = new ObservableCollection<SampleOrder>();
+        public ObservableCollection<Car> CarsInGarage { get; private set; } = new ObservableCollection<Car>();
 
         public GarageViewModel()
         {
@@ -31,18 +32,18 @@ namespace SlotCarsGo.ViewModels
 
         public async Task LoadDataAsync(MasterDetailsViewState viewState)
         {
-            SampleItems.Clear();
+            CarsInGarage.Clear();
 
-            var data = await SampleDataService.GetSampleModelDataAsync();
+            var data = await CarsInGarageDataService.GetCarsInGarageAsync();
 
-            foreach (var item in data)
+            foreach (var car in data)
             {
-                SampleItems.Add(item);
+                CarsInGarage.Add(car);
             }
 
-            if (viewState == MasterDetailsViewState.Both)
+            if (viewState == MasterDetailsViewState.Both && Selected != null)
             {
-                Selected = SampleItems.First();
+                Selected = CarsInGarage.First();
             }
         }
 

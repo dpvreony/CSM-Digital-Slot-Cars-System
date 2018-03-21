@@ -1,39 +1,59 @@
-﻿using SlotCarsGo.Models.Manager;
+﻿using AutoMapper;
+using SlotCarsGo.Helpers;
+using SlotCarsGo.Models.Manager;
 using SlotCarsGo.Models.Racing;
+using SlotCarsGo_Server.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 
 namespace SlotCarsGo.Services
 {
     public static class CarsInGarageDataService
     {
-        private static IEnumerable<Car> garage;
+        private static ObservableCollection<Car> garage;
 
-        private static IEnumerable<Car> CarsInGarage()
+        private async static Task GetCars()
         {
+            garage = new ObservableCollection<Car>();
 
-
-/*
-            // TODO: Query logins 
-            var data = new ObservableCollection<Car>
+            using (var httpClient = new HttpClient())
             {
-                new Car("1", "Ferrari F50", "1.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car("2", "Bentley Continental GT3", "2.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car("3", "Ford Escort 1980 MKII", "3.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car("4", "Lancia Delta S4", "4.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car("5", "Volkswagon Polo WRC 2013", "5.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-                ,new Car("6", "Mini Countryman WRC 2012", "6.jpg", new TimeSpan(0,0,5), "Dave Armshaw")
-            };
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.Timeout = new TimeSpan(0, 0, 0, 20);
+                var uri = new Uri($@"{AppManager.ServerHostURL}/api/Cars/{AppManager.Track.Id}");
 
-            garage = data;
-*/
-            
-            return new List<Car>();
+                try
+                {
+                    var response = await httpClient.GetAsync(uri);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string content = await response.Content.ReadAsStringAsync();
+                        var json = await Json.ToObjectAsync<IEnumerable<CarDTO>>(content);
+                        foreach (CarDTO carDTO in json)
+                        {
+                            StorageFile savedCarImage = await AppManager.TemporaryFolder.CreateFileAsync(carDTO.ImageName, CreationCollisionOption.ReplaceExisting);
+                            await FileIO.WriteBytesAsync(savedCarImage, carDTO.CarImageBytes);
+                            carDTO.ImageName = savedCarImage.Path;
+                            carDTO.CarImageBytes = null;
+
+                            garage.Add(Mapper.Map<Car>(carDTO));
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
         }
 
         // TODO WTS: Remove this once your MasterDetail pages are displaying real data
@@ -41,7 +61,12 @@ namespace SlotCarsGo.Services
         {
             await Task.CompletedTask;
 
-            return CarsInGarage();
+            if (garage == null)
+            {
+                await GetCars();
+            }
+
+            return garage;
         }
 
         /// <summary>
@@ -49,12 +74,13 @@ namespace SlotCarsGo.Services
         /// </summary>
         /// <param name="carId"></param>
         /// <returns></returns>
-        public static Car GetCar(string carId)
+        public static async Task<Car> GetCar(string carId)
         {
             if (garage == null)
             {
-                CarsInGarage();
+                await GetCars();
             }
+
             return garage.SingleOrDefault(c => c.Id == carId);
         }
     }

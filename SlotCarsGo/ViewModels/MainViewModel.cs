@@ -36,5 +36,10 @@ namespace SlotCarsGo.ViewModels
         {
             SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(RaceTypeSelectViewModel).FullName);
         }
+
+        internal void GarageButtonClicked()
+        {
+            SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(GarageViewModel).FullName);
+        }
     }
 }

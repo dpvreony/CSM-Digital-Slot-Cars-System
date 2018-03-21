@@ -28,5 +28,10 @@ namespace SlotCarsGo.Views
         {
             ViewModel.RaceTypeSelectClicked();
         }
+
+        private void GarageButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            ViewModel.GarageButtonClicked();
+        }
     }
 }
