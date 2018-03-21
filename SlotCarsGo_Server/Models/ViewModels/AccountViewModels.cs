@@ -79,7 +79,7 @@ namespace SlotCarsGo_Server.Models.ViewModels
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Display(Name = "Profile Image")]
+        [Display(Name = "Avatar")]
         public HttpPostedFileBase Image { get; set; }
 
         [Required]
