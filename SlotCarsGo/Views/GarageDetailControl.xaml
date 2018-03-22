@@ -11,11 +11,6 @@
     <ScrollViewer Name="ForegroundElement" VerticalScrollMode="Enabled" HorizontalAlignment="Stretch" Padding="12,0">
         <StackPanel HorizontalAlignment="Left">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,8,0,0">
-                <FontIcon
-                    FontSize="40"
-                    Glyph="{x:Bind MasterMenuItem.SymbolAsChar, Mode=OneWay}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"/>
                 <TextBlock
                     Margin="12,0,0,0"
                     Text="{x:Bind MasterMenuItem.Name, Mode=OneWay}"
@@ -23,13 +18,23 @@
             </StackPanel>
             <StackPanel Name="block" Padding="0,15,0,0">
                 <!-- Bottom Half - Car Details -->
+                <Grid Margin="8,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>                        
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Track Record" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="{x:Bind MasterMenuItem.TrackRecord, Mode=OneWay}" Style="{StaticResource BodyTextBlockStyle}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Record Holder" Style="{StaticResource SubtitleTextBlockStyle}" />
+                        <TextBlock Text="{x:Bind MasterMenuItem.RecordHolder, Mode=OneWay}" Style="{StaticResource BodyTextBlockStyle}" />
+                    </StackPanel>
+                </Grid>
                 <Border BorderThickness="10" >
                     <Image Source="{x:Bind MasterMenuItem.ImageName, Mode=OneWay}" />
                 </Border>
-                <TextBlock Text="Track Record" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                <TextBlock Text="{x:Bind MasterMenuItem.TrackRecord, Mode=OneWay}" Style="{StaticResource BodyTextBlockStyle}" />
-                <TextBlock Text="Record Holder" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,8,0,0"/>
-                <TextBlock Text="{x:Bind MasterMenuItem.RecordHolder, Mode=OneWay}" Style="{StaticResource BodyTextBlockStyle}" />
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

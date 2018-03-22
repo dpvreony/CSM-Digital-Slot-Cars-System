@@ -1,4 +1,5 @@
-﻿using AutoMapper.QueryableExtensions;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using SlotCarsGo_Server.Models;
 using SlotCarsGo_Server.Models.DTO;
 using System;
@@ -52,7 +53,18 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Cars.Where(c => c.TrackId == trackId).ProjectTo<CarDTO>();
+                List<CarDTO> carDTOs = new List<CarDTO>();
+                IQueryable<Car> cars = db.Cars
+                    .Where(d => d.TrackId == trackId)
+                    .Include(d => d.BestLapTime)
+                    .OrderBy(d => d.Name);
+
+                foreach (Car car in cars)
+                {
+                    carDTOs.Add(Mapper.Map<CarDTO>(car));
+                }
+
+                return carDTOs;
             }
         }
 
