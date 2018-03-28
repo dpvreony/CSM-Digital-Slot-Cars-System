@@ -14,6 +14,7 @@ using System.Web.Mvc;
 
 namespace SlotCarsGo_Server.Controllers
 {
+    [Authorize]
     public class GarageController : Controller
     {
         // GET: /Garage/Index
@@ -28,7 +29,7 @@ namespace SlotCarsGo_Server.Controllers
 
                 if (user?.Tracks.Count == 0)
                 {
-                    return RedirectToAction("Index", "About");
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {

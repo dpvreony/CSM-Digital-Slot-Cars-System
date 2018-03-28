@@ -22,10 +22,12 @@ namespace SlotTracksGo_Server.Controllers
         private IRepositoryAsync<Track> repo = new TracksRepository<Track>();
 
         // GET: api/Tracks/5
+        [HttpGet]
         [ResponseType(typeof(TrackDTO))]
-        public async Task<IHttpActionResult> GetTrack(string id)
+        [Route("api/Tracks/{secret}")]
+        public async Task<IHttpActionResult> GetTrack(string secret)
         {
-            Track track = await repo.GetById(id);
+            Track track = await repo.GetById(secret);
             if (track == null)
             {
                 return NotFound();

@@ -47,11 +47,11 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
-        public async Task<Track> GetById(string id)
+        public async Task<Track> GetById(string secret)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.Tracks.FindAsync(id);
+                return await db.Tracks.Where(t => t.Secret == secret).FirstOrDefaultAsync();
             }
         }
 

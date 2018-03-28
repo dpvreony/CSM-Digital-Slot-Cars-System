@@ -277,7 +277,7 @@ namespace SlotCarsGo.ViewModels
             else
             {                        
                 this.raceType = parameter as RaceType;
-                this.RefreshLoggedInUsers();
+                //this.RefreshLoggedInUsers();
             }
 
             return Task.CompletedTask;

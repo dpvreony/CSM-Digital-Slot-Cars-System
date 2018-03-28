@@ -9,57 +9,108 @@
     d:DesignWidth="550"
     RequestedTheme="Dark">
     <ScrollViewer>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <TextBlock
-                x:Name="BannerText"
-                Grid.Row="0"
-                HorizontalAlignment="Center"
-                Text="Register a name for your track"/>
-            <StackPanel
-                Orientation="Horizontal"
-                HorizontalAlignment="Center"
-                Grid.Row="1"
-                Margin="0,30,0,0">
-                <TextBlock
-                    Text="Track Name:"
-                    VerticalAlignment="Center"
-                    Margin="0,0,10,0"/>
-                <TextBox
-                    x:Name="RegisterTrackName_TextBox"
-                    PlaceholderText="You can change it later."
-                    Width="200"/>
-            </StackPanel>
-            <StackPanel
-                x:Name="PostRegistrationPanel"
-                Orientation="Horizontal"
-                HorizontalAlignment="Center"
-                Grid.Row="2"
-                Visibility="Collapsed"                
-                Margin="0,30,0,0">
-                <TextBlock
-                    Text="Track Secret"
-                    VerticalAlignment="Center"
-                    Margin="0,0,10,0"/>
-                <TextBox
-                    x:Name="TrackSecret_TextBox"
-                    Width="100"
-                    IsEnabled="False"/>
-            </StackPanel>
-            <Button
-                x:Name="ConfirmButton"
-                Grid.Row="3"
-                Content="Register"
-                IsEnabled="{Binding TrackNameEntered}"
-                HorizontalAlignment="Center"
-                Click="Button_Click"
-                Background="Orange"
-                Margin="0,30,0,0"/>
-        </Grid>
+        <Pivot>
+            <PivotItem Header="New Track">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>                        
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        x:Name="NewBannerText"
+                        Grid.Row="0"
+                        Margin="20,20,0,0"
+                        Text="Register a name for your track"/>
+                    <StackPanel
+                        Orientation="Horizontal"
+                        Grid.Row="1"
+                        Margin="20,20,0,0">
+                        <TextBlock
+                            Text="Track Name:"
+                            VerticalAlignment="Center"
+                            Margin="0,0,20,0"/>
+                        <TextBox
+                            x:Name="NewTrackName_TextBox"
+                            PlaceholderText="You can change it later."
+                            Width="300"/>
+                    </StackPanel>
+                    <StackPanel
+                        Orientation="Horizontal"
+                        Grid.Row="2"
+                        Margin="20,20,0,0">
+                        <TextBlock
+                            Text="Your Email:"
+                            VerticalAlignment="Center"
+                            Margin="0,0,28,0"/>
+                        <TextBox
+                            x:Name="NewTrackEmail_TextBox"
+                            PlaceholderText="Your SlotCarsGo profile email"
+                            Width="300"/>
+                    </StackPanel>                    
+                    <StackPanel
+                        x:Name="PostRegistrationPanel"
+                        Orientation="Horizontal"
+                        Grid.Row="3"
+                        Visibility="Collapsed"                
+                        Margin="20,20,0,0">
+                        <TextBlock
+                            Text="Track Secret"
+                            VerticalAlignment="Center"
+                            Margin="0,0,20,0"/>
+                        <TextBox
+                            x:Name="NewTrackSecret_TextBox"
+                            Width="100"
+                            IsEnabled="False"/>
+                    </StackPanel>
+                    <Button
+                        x:Name="NewTrackConfirmButton"
+                        Grid.Row="4"
+                        Content="Register"
+                        IsEnabled="{Binding TrackNameEntered}"
+                        Click="NewTrackButton_Click"
+                        Background="Orange"
+                        Margin="120,20,0,0"/> 
+                </Grid>
+            </PivotItem>
+            <PivotItem Header="Existing Track">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        x:Name="ExistingBannerText"
+                        Grid.Row="0"
+                        Margin="20,20,0,0"
+                        Text="Find your existing track"/>
+                    <StackPanel
+                        Orientation="Horizontal"
+                        Grid.Row="1"
+                        Margin="20,20,0,0">
+                        <TextBlock
+                            Text="Track Secret"
+                            VerticalAlignment="Center"
+                            Margin="0,0,15,0"/>
+                        <TextBox
+                            x:Name="ExistingTrackSecret_TextBox"
+                            PlaceholderText="5-digits"
+                            Width="100"/>
+                    </StackPanel>
+                    <Button
+                        x:Name="ExistingConfirmButton"
+                        Grid.Row="3" 
+                        Content="Find"
+                        IsEnabled="{Binding TrackNameEntered}"
+                        Click="ExistingTrackButton_Click"
+                        Background="Orange"
+                        Margin="115,80,0,0"/>
+                </Grid>
+            </PivotItem>
+        </Pivot>
     </ScrollViewer>
 </ContentDialog>

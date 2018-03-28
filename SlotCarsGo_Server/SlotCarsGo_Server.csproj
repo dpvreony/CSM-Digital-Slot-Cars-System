@@ -292,6 +292,7 @@
     <Compile Include="Controllers\DriverResultsController.cs" />
     <Compile Include="Controllers\DriversController.cs" />
     <Compile Include="Controllers\GarageController.cs" />
+    <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LapTimesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -333,6 +334,10 @@
     <Compile Include="Migrations\201803191046229_Remove Constraint on Driver Result CarId.cs" />
     <Compile Include="Migrations\201803191046229_Remove Constraint on Driver Result CarId.Designer.cs">
       <DependentUpon>201803191046229_Remove Constraint on Driver Result CarId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803271555382_AddTrackOwnerEmail.cs" />
+    <Compile Include="Migrations\201803271555382_AddTrackOwnerEmail.Designer.cs">
+      <DependentUpon>201803271555382_AddTrackOwnerEmail.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BestLapTime.cs" />
@@ -535,14 +540,13 @@
     <Content Include="Views\Garage\TrackData.cshtml" />
     <Content Include="Views\Garage\EditCar.cshtml" />
     <Content Include="Views\Garage\DeleteCar.cshtml" />
-    <Content Include="Views\Session\Index.cshtml" />
+    <Content Include="Views\History\Index.cshtml" />
     <Content Include="Views\Garage\ChangeTrackDropDown.cshtml" />
     <Content Include="Views\Garage\ChangeCarDropDown.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Providers\" />
-    <Folder Include="Views\AuthCallback\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -571,6 +575,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803191046229_Remove Constraint on Driver Result CarId.resx">
       <DependentUpon>201803191046229_Remove Constraint on Driver Result CarId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803271555382_AddTrackOwnerEmail.resx">
+      <DependentUpon>201803271555382_AddTrackOwnerEmail.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

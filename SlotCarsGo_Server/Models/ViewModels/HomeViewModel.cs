@@ -21,6 +21,7 @@ namespace SlotCarsGo_Server.Models.ViewModels
         public RaceSession LastSession { get; set; }
         public DriverResult LastDriverResult { get; set; }
         public Track LastTrack { get; set; }
+        public string DriverId { get; set; }
 
         // Join race form
         private IEnumerable<Track> MyTracks { get; set; }
@@ -51,6 +52,7 @@ namespace SlotCarsGo_Server.Models.ViewModels
             this.User = loggedInUser;
             DriversRepository<Driver, DriverDTO> driversRepo = new DriversRepository<Driver, DriverDTO>();
             Driver driver = driversRepo.GetForUser(this.User.Id);
+            this.DriverId = driver?.Id;
 
             // Try to find last session details
             this.LastTrack = this.User.Tracks.FirstOrDefault();

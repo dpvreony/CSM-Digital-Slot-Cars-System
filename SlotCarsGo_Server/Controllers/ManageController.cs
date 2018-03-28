@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using SlotCarsGo_Server.Models.ViewModels;
+using SlotCarsGo_Server.Models;
 
 namespace SlotCarsGo_Server.Controllers
 {
@@ -64,13 +65,20 @@ namespace SlotCarsGo_Server.Controllers
                 : "";
 
             var userId = User.Identity.GetUserId();
+            ApplicationUser user = Request.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
+            Track track = user.Tracks.Where(t => t.OwnerEmail == user.Email).FirstOrDefault();
+
             var model = new IndexViewModel
             {
                 HasPassword = HasPassword(),
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
                 Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
+                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId),
+                MyUserName = user.UserName,
+                MyAvatar = user.ImageName,
+                MyTrackName = track?.Name,
+                MyTrackSecret = track?.Secret,
             };
             return View(model);
         }

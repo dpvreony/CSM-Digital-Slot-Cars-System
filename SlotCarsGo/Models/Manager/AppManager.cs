@@ -25,7 +25,7 @@ namespace SlotCarsGo.Models.Manager
     public class AppManager
     {
         public static Track Track { get; set; }
-        public static readonly string ServerHostURL;//"https://localhost:44377";//
+        public static readonly string ServerHostURL;
         public static StorageFolder TemporaryFolder { get; set; }
 
         private static ToastNotificationsService toastService;
@@ -46,9 +46,9 @@ namespace SlotCarsGo.Models.Manager
             {
                 Name = (string)localSettings.Values["TrackName"],
                 Id = (string)localSettings.Values["TrackId"],
-//                Length = (float)trackCompositeValue["Length"],
-//                MacAddress = (string)trackCompositeValue["MacAddress"],
                 Secret = (string)localSettings.Values["Secret"]
+                //                Length = (float)trackCompositeValue["Length"],
+                //                MacAddress = (string)trackCompositeValue["MacAddress"],
             };
 
             ThemeSelectorService.Theme = Windows.UI.Xaml.ElementTheme.Dark;
@@ -72,57 +72,6 @@ namespace SlotCarsGo.Models.Manager
                         .ForMember(src => src.SelectedCar, opt => opt.MapFrom(dest => dest.SelectedCar));
                 cfg.CreateMap<RaceTypeDTO, RaceType>();
             });
-            /*
-        public string Id { get; set; }
-        public string DriverId { get; set; }
-        public int Position { get; set; }
-        public string RaceSessionId { get; set; }
-        public int ControllerNumber { get; set; }
-        public string CarId { get; set; }
-        public int Laps { get; set; }
-        public bool Finished { get; set; }
-        public float Fuel { get; set; }
-        public TimeSpan TotalTime { get; set; }
-        public TimeSpan TimeOffPace { get; set; }
-        public TimeSpan BestLapTime { get; set; }
-            Mapper.Initialize(cfg => {
-                            cfg.CreateMap<RaceSession, RaceSessionDTO>()
-                                .ReverseMap()
-                                    .ForMember(src => src.DriverResults, opt => opt.Ignore())
-                                    .ForMember(src => src.RaceType, opt => opt.Ignore())
-                                    .ForMember(src => src.Track, opt => opt.Ignore());
-                            cfg.CreateMap<DriverResult, DriverResultDTO>()
-                                .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src.ApplicationUserId))
-                                .ReverseMap()
-                                    .ForMember(dest => dest.ApplicationUserId, opt => opt.MapFrom(src => src.DriverId));
-                            cfg.CreateMap<Track, TrackDTO>()
-                                .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.BestLapTime == null ? "No Record set" : src.BestLapTime.ApplicationUser.UserName))
-                                .ForPath(dest => dest.TrackRecord, opt => opt.MapFrom(src => src.BestLapTime == null ? new System.TimeSpan(0, 0, 59) : src.BestLapTime.LapTime.Time))
-                                .ReverseMap()
-                                    .ForMember(src => src.BestLapTimeId, opt => opt.Ignore())
-                                    .ForMember(src => src.ApplicationUsers, opt => opt.Ignore())
-                                    .ForMember(src => src.Cars, opt => opt.Ignore());
-                            cfg.CreateMap<Car, CarDTO>()
-                                .ForPath(dest => dest.RecordHolder, opt => opt.MapFrom(src => src.BestLapTime == null ? "No Record set" : src.BestLapTime.ApplicationUser.UserName))
-                                .ForPath(dest => dest.TrackRecord, opt => opt.MapFrom(src => src.BestLapTime == null ? new System.TimeSpan(0, 0, 59) : src.BestLapTime.LapTime.Time))
-                                .ReverseMap()
-                                    .ForPath(src => src.BestLapTimeId, opt => opt.Ignore());
-                            cfg.CreateMap<RaceType, RaceTypeDTO>();
-                            cfg.CreateMap<Driver, DriverDTO>()
-                                .ForPath(dest => dest.UserId, opt => opt.MapFrom(src => src.ApplicationUser.Id))
-                                .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
-                                .ForPath(dest => dest.ImageName, opt => opt.MapFrom(src => src.ApplicationUser.ImageName))
-                                .ForMember(dest => dest.SelectedCar, opt => opt.MapFrom(src => src.Car))
-                                .ReverseMap()
-                                    .ForMember(src => src.ApplicationUserId, opt => opt.MapFrom(dest => dest.UserId))
-                                    .ForPath(src => src.ApplicationUser.UserName, opt => opt.MapFrom(dest => dest.UserName))
-                                    .ForPath(src => src.ApplicationUser.ImageName, opt => opt.MapFrom(dest => dest.ImageName))
-                                    .ForMember(src => src.Car, opt => opt.MapFrom(dest => dest.SelectedCar));
-                            cfg.CreateMap<LapTime, LapTimeDTO>()
-                                .ReverseMap()
-                                    .ForMember(src => src.DriverResult, opt => opt.Ignore());
-                        });
-            */
         }
 
         /// <summary>
@@ -139,9 +88,9 @@ namespace SlotCarsGo.Models.Manager
         /// Registers the track name on the server and saves the name and Id to local settings.
         /// </summary>
         /// <param name="trackName"></param>
-        public async static Task<string> RegisterTrackOnStartup(string trackName)
+        public async static Task<string> RegisterTrackOnStartup(string trackName, string email)
         {
-            TrackDTO trackDTO = new TrackDTO() { Name = trackName, Length = 0f };
+            TrackDTO trackDTO = new TrackDTO() { Name = trackName, OwnerEmail = email, Length = 0f };
             string returnSecret = string.Empty;
 
             try
@@ -161,10 +110,18 @@ namespace SlotCarsGo.Models.Manager
                         trackDTO = JsonConvert.DeserializeObject<TrackDTO>(jsonResponse);
                         if (trackDTO != null)
                         {
-                            AppManager.Track = Mapper.Map<Track>(trackDTO);
-                            localSettings.Values["TrackName"] = Track.Name;
-                            localSettings.Values["TrackId"] = Track.Id;
-                            localSettings.Values["Secret"] = Track.Secret;
+                            AppManager.Track = new Track()
+                            {
+                                Name = trackDTO.Name,
+                                Id = trackDTO.Id,
+                                Secret = trackDTO.Secret
+                                //                Length = (float)trackCompositeValue["Length"],
+                                //                MacAddress = (string)trackCompositeValue["MacAddress"],
+                            };
+
+                            localSettings.Values["TrackName"] = trackDTO.Name;
+                            localSettings.Values["TrackId"] = trackDTO.Id;
+                            localSettings.Values["Secret"] = trackDTO.Secret;
                             // TODO: trackCompositeValue["Length"] = length;
                             // TODO: trackCompositeValue["MacAddress"] = macAddress; https://stackoverflow.com/questions/34097870/c-sharp-get-mac-address-in-universal-apps
 
@@ -181,6 +138,60 @@ namespace SlotCarsGo.Models.Manager
             return returnSecret;
         }
 
+        /// <summary>
+        /// Registers the track name on the server and saves the name and Id to local settings.
+        /// </summary>
+        /// <param name="trackName"></param>
+        public async static Task<string> RegisterExistingTrackOnStartup(string secret)
+        {
+            TrackDTO trackDTO = new TrackDTO() { Secret = secret, Length = 0f };
+            string returnName = string.Empty;
+
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.Timeout = new TimeSpan(0, 0, 0, 20);
+                var uri = new Uri($@"{AppManager.ServerHostURL}/api/Tracks/{secret}");
+
+                try
+                {
+                    var response = await Task.Run(async () => await httpClient.GetAsync(uri));
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string content = await response.Content.ReadAsStringAsync();
+                        trackDTO = await Json.ToObjectAsync<TrackDTO>(content);
+                        if (trackDTO != null)
+                        {
+                            AppManager.Track = new Track()
+                            {
+                                Name = trackDTO.Name,
+                                Id = trackDTO.Id,
+                                Secret = trackDTO.Secret
+                                //                Length = (float)trackCompositeValue["Length"],
+                                //                MacAddress = (string)trackCompositeValue["MacAddress"],
+                            };
+
+                            localSettings.Values["TrackName"] = trackDTO.Name;
+                            localSettings.Values["TrackId"] = trackDTO.Id;
+                            localSettings.Values["Secret"] = trackDTO.Secret;
+                            // TODO: trackCompositeValue["Length"] = length;
+                            // TODO: trackCompositeValue["MacAddress"] = macAddress; https://stackoverflow.com/questions/34097870/c-sharp-get-mac-address-in-universal-apps
+
+                            returnName = trackDTO.Name;
+                        }
+
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            return returnName;
+        }
+        
         /// <summary>
         /// Generates a single line toast notification similar to Android.
         /// Ref: https://stackoverflow.com/questions/37541923/how-to-create-informative-toast-notification-in-uwp-app

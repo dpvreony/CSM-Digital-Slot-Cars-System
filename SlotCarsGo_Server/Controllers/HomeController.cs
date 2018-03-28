@@ -109,7 +109,7 @@ namespace SlotCarsGo_Server.Controllers
                 DriversRepository<Driver, DriverDTO> driversRepo = new DriversRepository<Driver, DriverDTO>();
                 Driver driver = driversRepo.GetForUser(userId);
 
-                if (driver == null)
+                if (Request.Form["new_driver"] != null)
                 {
                     driver = new Driver()
                     {
@@ -121,12 +121,16 @@ namespace SlotCarsGo_Server.Controllers
 
                     driver = await driversRepo.Insert(driver);
                 }
-                else
+                else if (Request.Form["change_driver"] != null)
                 {
                     driver.CarId = model.SelectedCarId;
                     driver.ControllerId = Convert.ToInt32(model.SelectedControllerId);
                     driver.TrackId = model.SelectedTrackId;
                     EntityState state = await driversRepo.Update(driver.Id, driver);
+                }
+                else if (Request.Form["delete_driver"] != null)
+                {
+                    await driversRepo.Delete(driver.Id);
                 }
             }
 

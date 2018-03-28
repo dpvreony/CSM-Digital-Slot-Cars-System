@@ -1,4 +1,7 @@
 ﻿@model SlotCarsGo_Server.Models.ViewModels.HomeViewModel
+@{
+    ViewBag.Title = "Home";
+}
 <div class="jumbotron" style="background-color:#FFD968">
     <div class="row">
         <div class="col-xs-12 col-lg-6">
@@ -29,11 +32,25 @@
                     @Html.DropDownListFor(m => m.SelectedControllerId, Model.AvailableControllersListItems, "-- Select Controller --", new { @class = "form-control" })
                 </div>
             </div>
+            if (string.IsNullOrEmpty(Model.DriverId))
+            {
             <div class="form-group">
                 <div class="col-md-offset-3 col-md-12">
-                    <input type="submit" class="btn btn-primary btn-lg" value="Join" />
+                    <input type="submit" name="new_driver" class="btn btn-primary btn-lg" value="Join" />
                 </div>
             </div>
+            }
+            else
+            {
+            <div class="form-group">
+                <div class="col-md-offset-3 col-xs-4">
+                    <input type="submit" name="change_driver" class="btn btn-primary btn-lg" value="Change" />
+                </div>
+                <div class="col-xs-4">
+                    <input type="submit" name="delete_driver" class="btn btn-danger btn-lg" value="Leave" />
+                </div>
+            </div>
+            }
         }
         </div>
     </div>
@@ -43,10 +60,11 @@
         <h2>Race History</h2>
         <p>Analyse race results and laptimes for all previous race sessions at any of your tracks.</p>
         <p>
-            <a class="btn btn-primary btn-lg" href="@Url.Action("Index", "Session", Request.Url.Scheme)">
+            <a class="btn btn-primary btn-lg" href="@Url.Action("Index", "History", Request.Url.Scheme)">
                 <span>View History</span>
             </a>
         </p>
+        <br />
     </div>
     <div class="col-md-4">
         <h2>Manage Garage</h2>
@@ -56,6 +74,7 @@
                 <span>View Garage</span>
             </a>
         </p>
+        <br />
     </div>
     <div class="col-md-4">
         <h2>Join a New Track</h2>
@@ -66,5 +85,6 @@
                 <span>Add Track</span>
             </a>
         </p>
+        <br />
     </div>
 </div>

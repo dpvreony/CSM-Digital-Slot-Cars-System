@@ -10,5 +10,6 @@ namespace SlotCarsGo_Server.Models.DTO
         public string Secret { get; set; }
         public TimeSpan TrackRecord { get; set; }
         public string RecordHolder { get; set; }
+        public string OwnerEmail { get; set; }
     }
 }

@@ -24,6 +24,8 @@ namespace SlotCarsGo_Server.Models
 
         public string Secret { get; set; }
 
+        public string OwnerEmail { get; set; }
+
         public string BestLapTimeId { get; set; }
         public BestLapTime BestLapTime { get; set; }
 
