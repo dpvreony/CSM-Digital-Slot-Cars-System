@@ -11,6 +11,8 @@ using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using SlotCarsGo.Models.Manager;
+using Windows.Networking.Connectivity;
+using System.Linq;
 
 namespace SlotCarsGo.ViewModels
 {
@@ -19,6 +21,7 @@ namespace SlotCarsGo.ViewModels
         // TODO WTS: Add other settings as necessary. For help see https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/pages/settings.md
         private ElementTheme _elementTheme = ThemeSelectorService.Theme;
         public string Secret { get; set; }
+        public string LocalIpAddress { get; set; }
 
         public ElementTheme ElementTheme
         {
@@ -64,6 +67,20 @@ namespace SlotCarsGo.ViewModels
         {
             VersionDescription = GetVersionDescription();
             Secret = AppManager.Track.Secret;
+            LocalIpAddress = this.GetLocalIp();
+        }
+
+        private string GetLocalIp()
+        {
+            var icp = NetworkInformation.GetInternetConnectionProfile();
+
+            if (icp?.NetworkAdapter == null) return "Not connected.";
+
+            var hostname = NetworkInformation.GetHostNames()
+                .SingleOrDefault(hn => hn.IPInformation?.NetworkAdapter != null && hn.IPInformation.NetworkAdapter.NetworkAdapterId == icp.NetworkAdapter.NetworkAdapterId);
+
+            // the ip address
+            return hostname?.CanonicalName;
         }
 
         private string GetVersionDescription()

@@ -50,7 +50,6 @@ namespace SlotCarsGo.Services
                             await FileIO.WriteBytesAsync(savedCarImage, driverDTO.SelectedCar.CarImageBytes);
                             driverDTO.SelectedCar.ImageName = savedCarImage.Path;
                             driverDTO.SelectedCar.CarImageBytes = null;
-
                             drivers.Add(Mapper.Map<Driver>(driverDTO));
                         }
                     }

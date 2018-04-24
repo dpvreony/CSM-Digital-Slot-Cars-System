@@ -167,6 +167,7 @@ namespace SlotCarsGo.ViewModels
             // More on Segoe UI Symbol icons: https://docs.microsoft.com/windows/uwp/style/segoe-ui-symbol-font
             // Or to use an IconElement instead of a Symbol see https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/projectTypes/navigationpane.md
             // Edit String/en-US/Resources.resw: Add a menu item title for each page
+/*
             _primaryItems.Add(new ShellNavigationItem("Shell_Home".GetLocalized(), Symbol.Home, typeof(MainViewModel).FullName));
             _primaryItems.Add(new ShellNavigationItem("Shell_Select Race".GetLocalized(), Symbol.Flag, typeof(RaceTypeSelectViewModel).FullName));
             _primaryItems.Add(new ShellNavigationItem("Shell_Grid".GetLocalized(), Symbol.ViewAll, typeof(GridConfirmationViewModel).FullName));
@@ -174,6 +175,7 @@ namespace SlotCarsGo.ViewModels
             _primaryItems.Add(new ShellNavigationItem("Shell_Results".GetLocalized(), Symbol.ZeroBars, typeof(RaceResultsViewModel).FullName));
             _primaryItems.Add(new ShellNavigationItem("Shell_Garage".GetLocalized(), Symbol.Street, typeof(GarageViewModel).FullName));
             _secondaryItems.Add(new ShellNavigationItem("Shell_Settings".GetLocalized(), Symbol.Setting, typeof(SettingsViewModel).FullName));
+*/
         }
 
         private void ItemSelected(ItemClickEventArgs args)

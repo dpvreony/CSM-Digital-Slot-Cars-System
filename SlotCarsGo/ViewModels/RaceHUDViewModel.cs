@@ -36,6 +36,7 @@ namespace SlotCarsGo.ViewModels
         private string remainingDisplay;
         private int countdown = 4;
         private string raceButtonText = "START";
+        private bool isRacePaused = true;
         private SolidColorBrush greenBrush = new SolidColorBrush(Windows.UI.Colors.LimeGreen);
         private SolidColorBrush amberBrush = new SolidColorBrush(Windows.UI.Colors.Orange);
         private SolidColorBrush redBrush = new SolidColorBrush(Windows.UI.Colors.OrangeRed);
@@ -49,7 +50,7 @@ namespace SlotCarsGo.ViewModels
         private string player1_BestLap = EmptyLapTime, player2_BestLap = EmptyLapTime, player3_BestLap = EmptyLapTime, player4_BestLap = EmptyLapTime, player5_BestLap = EmptyLapTime, player6_BestLap = EmptyLapTime;
         private string player1_LastLap = EmptyLapTime, player2_LastLap = EmptyLapTime, player3_LastLap = EmptyLapTime, player4_LastLap = EmptyLapTime, player5_LastLap = EmptyLapTime, player6_LastLap = EmptyLapTime;
         private string player1_Diff = EmptyDiffTime, player2_Diff = EmptyDiffTime, player3_Diff = EmptyDiffTime, player4_Diff = EmptyDiffTime, player5_Diff = EmptyDiffTime, player6_Diff = EmptyDiffTime;
-
+        private Dictionary<int, int> ControllerToPlayerMap;
 
         public RaceHUDViewModel()
         {
@@ -64,6 +65,7 @@ namespace SlotCarsGo.ViewModels
                 Symbol.Play);
             this.session = new RaceSession(defaultRaceType, new ObservableCollection<Driver>());
             this.RaceButtonBrush = this.greenBrush;
+            this.IsRacePaused = true;
         }
 
         internal RaceSession Session => session;
@@ -117,6 +119,7 @@ namespace SlotCarsGo.ViewModels
         public string Player4_Diff { get => this.player4_Diff; set => Set(ref player4_Diff, value); }
         public string Player5_Diff { get => this.player5_Diff; set => Set(ref player5_Diff, value); }
         public string Player6_Diff { get => this.player6_Diff; set => Set(ref player6_Diff, value); }
+        public bool IsRacePaused { get => isRacePaused; set => Set(ref isRacePaused, value); }
 
         /// <summary>
         /// Event handler for the start button, starts a race timer and starts the Powerbase communications.
@@ -131,12 +134,15 @@ namespace SlotCarsGo.ViewModels
                 this.Session.ResetRace();
                 SimpleIoc.Default.GetInstance<Powerbase>().UpdateRaceSession(this.Session);
                 this.ResetDisplay();
+
+                this.IsRacePaused = true;
             }
             else
             {
                 this.RaceButtonBrush = this.amberBrush;
 
                 // Setup countdown display timer
+                this.IsRacePaused = false;
                 this.countdown = 4;
                 this.countdownDisplayTimer = new DispatcherTimer();
                 this.countdownDisplayTimer.Tick += CountdownDisplayTimer_Tick;
@@ -300,6 +306,7 @@ namespace SlotCarsGo.ViewModels
                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
                 {
                     this.raceTimeDisplayTimer.Stop();
+                    this.Session.RaceType.RaceLength = DateTime.Now - this.Session.StartTime;
                 });
             }
 
@@ -332,6 +339,7 @@ namespace SlotCarsGo.ViewModels
                                 endpoint = @"/api/DriverResults";
                                 driver.Value.RaceSessionId = sessionDTO.Id;
                                 DriverResultDTO driverResultDTO = Mapper.Map<DriverResultDTO>(driver.Value);
+                                driverResultDTO.ControllerNumber = driver.Value.ControllerId;
                                 response = httpClient.PostAsJsonAsync(endpoint, driverResultDTO).Result;
                                 if (response.IsSuccessStatusCode)
                                 {
@@ -340,21 +348,21 @@ namespace SlotCarsGo.ViewModels
                                     if (driverResultDTO != null)
                                     {
                                         // Delete driver config
-                                        endpoint = $@"/api/Drivers/{driverResultDTO.DriverId}";
-                                        response = await httpClient.DeleteAsync(endpoint);
+//                                        endpoint = $@"/api/Drivers/{driverResultDTO.DriverId}";
+//                                        response = await httpClient.DeleteAsync(endpoint);
 
                                         // post laptimes
                                         endpoint = @"/api/LapTimes";
-                                        List<LapTimeDTO> lapTimeDTOs = new List<LapTimeDTO>();
+                                        LapTimeDTO[] lapTimeDTOs = new LapTimeDTO[driver.Value.LapTimes.Count];
                                         int lap = 1;
                                         foreach (TimeSpan lapTime in driver.Value.LapTimes)
                                         {
-                                            lapTimeDTOs.Add(new LapTimeDTO()
+                                            lapTimeDTOs[lap - 1] = new LapTimeDTO()
                                             {
                                                 DriverResultId = driverResultDTO.Id,
                                                 LapNumber = lap++,
-                                                Time = lapTime,
-                                            });
+                                                Time = lapTime
+                                            };
                                         }
 
                                         response = httpClient.PostAsJsonAsync(endpoint, lapTimeDTOs).Result;
@@ -380,10 +388,11 @@ namespace SlotCarsGo.ViewModels
             TimeSpan diff = this.Session.DriverResults[carId].PreviousLapTime - this.Session.DriverResults[carId].BestLapTime;
             string sign = diff > this.zeroTimeSpan ? "+" : "-";
             string diffString = sign + diff.ToString(@"ss\.fff");
+            int playerRow = ControllerToPlayerMap[this.Session.DriverResults[carId].ControllerId];
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 // Dispatch back to the main thread
-                switch (this.Session.DriverResults[carId].ControllerId)
+                switch (playerRow)
                 {
                     case 1:
                         Player1_BestLap = this.Session.DriverResults[carId].BestLapTime.ToString("m':'ss'.'fff");
@@ -471,9 +480,18 @@ namespace SlotCarsGo.ViewModels
                         break;
                 }
 
+                this.ControllerToPlayerMap = new Dictionary<int, int>();
+                int i = 1;
+                foreach (Driver driver in Session.Drivers)
+                {
+                    this.ControllerToPlayerMap.Add(driver.ControllerId, i);
+                    i += 1;
+                }
+
                 this.RaceButtonBrush = this.greenBrush;
                 this.RaceTimeDisplay = "00:00:00.0";
                 this.RaceButtonText = "START";
+                this.isRacePaused = true;
                 this.UpdateRemainingDisplay();
             }
 

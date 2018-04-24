@@ -42,7 +42,7 @@ else
         <div class="row">
             <div class="col-md-12 col-lg-6">
                 <h2 style="font-weight:bold">@Model.SelectedCar.Name</h2>
-                <p>Best Lap: @Model.SelectedCar.TrackRecord, held by @Model.SelectedCar.RecordHolder</p>
+                <p>Best Lap: @Model.SelectedCar.TrackRecord.ToString(@"m\:ss\.fff"), held by @Model.SelectedCar.RecordHolder</p>
                 <img src="~/Content/Images/Cars/@Model.SelectedCar.ImageName" style="max-width:100%; height:auto;margin-left:auto;margin-right:auto;display:block;" />
                 <br />
                 <div class="row">

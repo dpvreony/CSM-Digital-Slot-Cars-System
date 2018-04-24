@@ -37,7 +37,8 @@ namespace SlotCarsGo.Models.Manager
         /// </summary>
         static AppManager()
         {
-            ServerHostURL = @"https://slotcarsgo.timtyler.co.uk";
+            //            ServerHostURL = @"https://slotcarsgo.timtyler.co.uk";
+            ServerHostURL = @"http://localhost:55371";
             AppManager.localSettings = ApplicationData.Current.LocalSettings;
             AppManager.localFolder = ApplicationData.Current.LocalFolder;
             AppManager.TemporaryFolder = ApplicationData.Current.TemporaryFolder;
@@ -63,7 +64,8 @@ namespace SlotCarsGo.Models.Manager
                 cfg.CreateMap<DriverResult, DriverResultDTO>()
                     .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src.Driver.UserId))
                     .ForMember(dest => dest.CarId, opt => opt.MapFrom(src => src.Car.Id))
-                    .ForMember(dest => dest.Laps, opt => opt.MapFrom(src => src.LapTimes.Count));
+                    .ForMember(dest => dest.Laps, opt => opt.MapFrom(src => src.LapTimes.Count))
+                    .ForMember(dest => dest.ControllerNumber, opt => opt.MapFrom(src => src.ControllerId));
                 cfg.CreateMap<TrackDTO, Track>();
                 cfg.CreateMap<CarDTO, Car>();
                 cfg.CreateMap<DriverDTO, Driver>()

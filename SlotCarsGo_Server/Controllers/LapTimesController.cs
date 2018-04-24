@@ -21,40 +21,80 @@ namespace SlotCarsGo_Server.Controllers
         private IRepositoryAsync<LapTime> repo = new LapTimesRepository<LapTime>();
 
         // POST: api/LapTimes
-        [ResponseType(typeof(LapTimeDTO))]
-        public async Task<IHttpActionResult> PostLapTime(IEnumerable<LapTimeDTO> lapTimeDTOs)
+//        [ResponseType(typeof(LapTimeDTO))]
+        [Route("api/LapTimes")]
+        public async Task<HttpResponseMessage> PostLapTime(LapTimeDTO[] lapTimeDTOs)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 
-            TimeSpan fastestLap = lapTimeDTOs.Min(l => l.Time);
-            BestLapTime bestLapTime = new BestLapTime();
-
-            foreach (LapTimeDTO lapTimeDTO in lapTimeDTOs)
+            LapTimeDTO first = lapTimeDTOs.FirstOrDefault();
+            if (first != null)
             {
-                LapTime lapTime = Mapper.Map<LapTime>(lapTimeDTO);
-                lapTime = await repo.Insert(lapTime);
+                DriverResultsRepository<DriverResult> driverResultsRepo = new DriverResultsRepository<DriverResult>();
+                CarsRepository<Car, CarDTO> carsRepo = new CarsRepository<Car, CarDTO>();
+                TracksRepository<Track> tracksRepo = new TracksRepository<Track>();
+                BestLapTimesRepository<BestLapTime> bestLapsRepo = new BestLapTimesRepository<BestLapTime>();
 
-                if (lapTimeDTO.Time == fastestLap)
+                DriverResult driverResult = await driverResultsRepo.GetById(first.DriverResultId);
+
+                BestLapTime usersBestLapInCar = bestLapsRepo.GetForUserId(driverResult.ApplicationUserId).Where(bl => bl.CarId == driverResult.CarId).FirstOrDefault();
+                TimeSpan fastestLap = driverResult.BestLapTime;
+                BestLapTime bestLapTime = new BestLapTime();
+
+                foreach (LapTimeDTO lapTimeDTO in lapTimeDTOs)
                 {
-                    IRepositoryAsync<DriverResult> driverResultsRepo = new DriverResultsRepository<DriverResult>();
-                    DriverResult driverResult = await driverResultsRepo.GetById(lapTime.DriverResultId);
-                    bestLapTime = new BestLapTime()
+                    LapTime lapTime = new LapTime()
                     {
                         Id = Guid.NewGuid().ToString(),
-                        ApplicationUserId = driverResult.ApplicationUserId,
-                        CarId = driverResult.CarId,
-                        LapTimeId = lapTime.Id,
+                        DriverResultId = lapTimeDTO.DriverResultId,
+                        LapNumber = lapTimeDTO.LapNumber,
+                        Time = lapTimeDTO.Time
                     };
 
-                    BestLapTimesRepository<BestLapTime> bestLapsRepo = new BestLapTimesRepository<BestLapTime>();
-                    bestLapTime = await bestLapsRepo.Insert(bestLapTime);
+                    lapTime = await repo.Insert(lapTime);
+
+                    if (lapTime.Time == fastestLap)
+                    {
+                        bestLapTime = new BestLapTime()
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            ApplicationUserId = driverResult.ApplicationUserId,
+                            CarId = driverResult.CarId,
+                            LapTimeId = lapTime.Id,
+                        };
+
+                        if (usersBestLapInCar == null)
+                        {
+                            bestLapTime = await bestLapsRepo.Insert(bestLapTime);
+                        }
+                        else if (fastestLap < usersBestLapInCar.LapTime.Time)
+                        {
+                            EntityState response = await bestLapsRepo.Update(usersBestLapInCar.Id, bestLapTime);
+                        }
+
+                        Car car = await carsRepo.GetById(driverResult.CarId);
+                        var carsBestLapTime = car?.BestLapTime?.LapTime?.Time;
+                        if (car?.BestLapTimeId == null || fastestLap < carsBestLapTime)
+                        {
+                            car.BestLapTimeId = bestLapTime.Id;
+                            await carsRepo.Update(car.Id, car);
+                        }
+
+                        Track track = await tracksRepo.GetById(car?.TrackId);
+                        var trackBestLap = track?.BestLapTime?.LapTime?.Time;
+                        if (track?.BestLapTimeId == null || fastestLap < trackBestLap)
+                        {
+                            track.BestLapTimeId = bestLapTime.Id;
+                            await tracksRepo.Update(track.Id, track);
+                        }
+                    }
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = bestLapTime.Id }, Mapper.Map<BestLapTimeDTO>(bestLapTime));
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         protected override void Dispose(bool disposing)

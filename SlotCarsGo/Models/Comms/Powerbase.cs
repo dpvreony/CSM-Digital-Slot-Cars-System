@@ -97,7 +97,8 @@
         /// <summary>
         /// Initialises the Serial Device connection to the Powerbase, and returns its success.
         /// </summary>
-        public async Task<bool> Connect()
+        /// 
+/*        public async Task<bool> Connect()
         {
             try
             {
@@ -124,14 +125,12 @@
 
             return this.serialDevice != null;
         }
-
+*/
         /// <summary>
         /// Stops listening to messages from the Powerbase.
         /// </summary>
         public void StopListening()
         {
-            // Pause to allow reset command to be sent
-            Task.Delay(500); 
             this.CancelListening();
         }
 
@@ -145,7 +144,6 @@
             this.raceSession = session;
             this.ledStatusLightByte = (byte)this.CalculateLEDStatusLights(false, this.raceSession.NumberOfDrivers);
         }
-
 
         /// <summary>
         /// Resets the game timer for a new race session.
@@ -166,8 +164,6 @@
             this.powerbaseListenerCancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = this.powerbaseListenerCancellationTokenSource.Token;
 
-            CancellationTokenSource readCancellationTokenSource = new CancellationTokenSource();
-            readCancellationTokenSource.CancelAfter(1000);
 
             // Calculate LED lights for number of players
             this.ledStatusLightByte = (byte)this.CalculateLEDStatusLights(true, this.raceSession.NumberOfDrivers);
@@ -186,7 +182,6 @@
             byte[] nextOutgoingPacket = new byte[(int)PacketType.Outgoing];
             nextOutgoingPacket = this.SuccessOutgoingPacket.Data;
             int byteIndex = 0; // For listening
-            bool msgReceived = true;
 
             using (this.serialDevice = await this.InitialiseDevice())
             {
@@ -200,53 +195,46 @@
                         this.reader.InputStreamOptions = InputStreamOptions.None;
                         this.writer = new DataWriter(serialDevice.OutputStream);
 
-                        if (msgReceived)
-                        {
-                            if (this.RaceSession.Finished)
-                            {
-                                nextOutgoingPacket = resetGameTimerPacket.Data;
-                            }
-
-                            // Send to the Powerbase
-                            this.writer.WriteBytes(nextOutgoingPacket);
-                            await this.writer.StoreAsync();
-
-                            System.Diagnostics.Debug.WriteLine($"Sent {++this.msgOutCnt}");
-                        }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine($"message not received, skipping send...");
-                        }
+                        // Send to the Powerbase
+                        this.writer.WriteBytes(nextOutgoingPacket);
+                        await this.writer.StoreAsync();
+                        System.Diagnostics.Debug.WriteLine($"Sent {++this.msgOutCnt}");
 
                         // Listen to device
-                        msgReceived = false;
                         byte[] incomingPacket = new byte[(int)PacketType.Incoming];
                         await reader.LoadAsync((int)PacketType.Incoming);
-
                         while (reader.UnconsumedBufferLength > 0)
                         {
                             incomingPacket[byteIndex++] = reader.ReadByte();
                         }
-
-                        if (byteIndex > 0)
-                        {
-                            msgReceived = true;
-                            byteIndex = 0;
-                        }
+                        byteIndex = byteIndex > 0 ? 0 : byteIndex;
 
                         // CRC check, send notunderstood if fails
-                        if (incomingPacket[(int)PacketType.Incoming - 1] == this.CalculateCrcChecksum(incomingPacket, PacketType.Incoming))
+                        if (incomingPacket[(int)PacketType.Incoming - 1] != this.CalculateCrcChecksum(incomingPacket, PacketType.Incoming))
                         {
-                            System.Diagnostics.Debug.WriteLine($"Packet received.");
-
+                            // CRC failed, request re-send
+                            nextOutgoingPacket = NotRecognisedOutgoingPacket.Data;
+                            System.Diagnostics.Debug.WriteLine($"Sent Unrecognised #{msgOutCnt}");
+                        }
+                        else
+                        {
                             // Send packet to session
+                            System.Diagnostics.Debug.WriteLine($"Packet received.");
                             await this.updateRaceSessionActionBlock.SendAsync(incomingPacket);
 
                             // Construct the outgoing packet
-                            if (this.RaceSession.Started)
+                            if (!this.RaceSession.Started || this.RaceSession.Finished)
+                            {
+                                int numPlayers = !this.RaceSession.Started ? this.raceSession.NumberOfDrivers : 0;
+                                this.resetGameTimerPacket.LEDStatus = (byte)this.CalculateLEDStatusLights(false, numPlayers);
+                                this.resetGameTimerPacket.Checksum = this.CalculateCrcChecksum(this.resetGameTimerPacket.Data, PacketType.Outgoing);
+                                nextOutgoingPacket = resetGameTimerPacket.Data;
+                                System.Diagnostics.Debug.WriteLine("Sent Reset.");
+                            }
+                            else
                             {
                                 nextOutgoingPacket = new byte[]
-                                {
+                                    {
                                     (byte)MessageBytes.SuccessByte,
                                     (byte)MessageBytes.NoThrottle,
                                     (byte)MessageBytes.NoThrottle,
@@ -256,7 +244,7 @@
                                     (byte)MessageBytes.NoThrottle,
                                     this.ledStatusLightByte,
                                     (byte)MessageBytes.ZeroByte
-                                };
+                                    };
 
                                 foreach (KeyValuePair<int, DriverResult> driver in this.RaceSession.DriverResults)
                                 {
@@ -264,24 +252,13 @@
                                     byte power = (byte)bits[this.powerSection]; // No power = 63
                                     bits[this.powerSection] = power > (byte)MessageBytes.MaxThrottleTimeout ? power : (byte)MessageBytes.MaxThrottleTimeout;
                                     nextOutgoingPacket[driver.Key] = (byte)bits.Data;
-                                    // TODO: Fuel management                                       outgoingPacket[i] = this.CalculateThrottle(incomingPacket[i], this.RaceSession.PlayerResults[i-1].Finished, this.RaceSession.PlayerResults[i-1].Fuel);
+                                    // TODO: Fuel management
+                                    // outgoingPacket[i] = this.CalculateThrottle(incomingPacket[i], this.RaceSession.PlayerResults[i-1].Finished, this.RaceSession.PlayerResults[i-1].Fuel);
                                 }
 
                                 // Calculate CRC for new outgoing packet
                                 nextOutgoingPacket[8] = this.CalculateCrcChecksum(nextOutgoingPacket, PacketType.Outgoing);
                             }
-                            else
-                            {
-                                // Session not started yet
-                                nextOutgoingPacket = resetGameTimerPacket.Data;
-                                System.Diagnostics.Debug.WriteLine("Sent Reset.");
-                            }
-                        }
-                        else
-                        {
-                            // CRC failed, request re-send
-                            nextOutgoingPacket = NotRecognisedOutgoingPacket.Data;
-                            System.Diagnostics.Debug.WriteLine($"Sent Unrecognised #{msgOutCnt}");
                         }
 
                         this.reader.DetachStream();
@@ -476,28 +453,31 @@
         {
             int ledStatus = started ? (byte)MessageBytes.GameTimerStarted : (byte)MessageBytes.GameTimerStopped; // Default Powerbase Green Light
 
-            foreach (KeyValuePair<int, DriverResult> driver in this.RaceSession.DriverResults)
+            if (numPlayers > 0)
             {
-                switch (driver.Value.Driver.ControllerId)
+                foreach (KeyValuePair<int, DriverResult> driver in this.RaceSession.DriverResults)
                 {
-                    case 1:
-                        ledStatus += 1;
-                        break;
-                    case 2:
-                        ledStatus += 2;
-                        break;
-                    case 3:
-                        ledStatus += 4;
-                        break;
-                    case 4:
-                        ledStatus += 8;
-                        break;
-                    case 5:
-                        ledStatus += 16;
-                        break;
-                    case 6:
-                        ledStatus += 32;
-                        break;
+                    switch (driver.Value.Driver.ControllerId)
+                    {
+                        case 1:
+                            ledStatus += 1;
+                            break;
+                        case 2:
+                            ledStatus += 2;
+                            break;
+                        case 3:
+                            ledStatus += 4;
+                            break;
+                        case 4:
+                            ledStatus += 8;
+                            break;
+                        case 5:
+                            ledStatus += 16;
+                            break;
+                        case 6:
+                            ledStatus += 32;
+                            break;
+                    }
                 }
             }
 

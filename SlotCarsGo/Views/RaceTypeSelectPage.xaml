@@ -42,19 +42,37 @@
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition x:Name="TitleRow" Height="Auto"/>
+            <RowDefinition x:Name="TitleRow" Height="48"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
 
+        
         <TextBlock
             Text="Select a Race Type"
+            Grid.Row="0" Grid.Column="0"            
             x:Name="TitlePage"
-            Margin="60,0,12,7"
+            Margin="10,0,12,7"
             Style="{StaticResource PageTitleStyle}" />
+
+        <Button
+            x:Name="BackButton"
+            Grid.Row="0" Grid.Column="1"
+            HorizontalAlignment="Right"
+            Content="Back"
+            FontWeight="Bold"
+            Background="Black"
+            Foreground="DarkOrange"
+            Margin="30,0,30,0"
+            Click="BackButton_Click"/>
+
 
         <controls:MasterDetailsView
             Style="{StaticResource MasterDetailView800x480}"
-            Grid.Row="1"
+            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
             MasterPaneWidth="160"
             x:Name="MasterDetailsViewControl"
             ItemsSource="{x:Bind ViewModel.RaceTypeItems, Mode=OneWay}"
@@ -63,24 +81,6 @@
             DetailsTemplate="{StaticResource DetailsTemplate}"
             NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
             BorderBrush="Transparent"
-            />
-        <!--  Adaptive triggers  -->
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="WindowStates">
-                <VisualState x:Name="WideState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="400"/>
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitlePage.Margin" Value="5,0,12,7"/>
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
+        />
     </Grid>
 </Page>

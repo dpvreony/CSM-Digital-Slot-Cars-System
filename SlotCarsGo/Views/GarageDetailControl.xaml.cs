@@ -5,6 +5,9 @@ using SlotCarsGo.Models;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using SlotCarsGo.Models.Racing;
+using GalaSoft.MvvmLight.Ioc;
+using SlotCarsGo.Services;
+using SlotCarsGo.ViewModels;
 
 namespace SlotCarsGo.Views
 {
@@ -21,6 +24,11 @@ namespace SlotCarsGo.Views
         public GarageDetailControl()
         {
             InitializeComponent();
+        }
+
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(MainViewModel).FullName);
         }
 
         private static void OnMasterMenuItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

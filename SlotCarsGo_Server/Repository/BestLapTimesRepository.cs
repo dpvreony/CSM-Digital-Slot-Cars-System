@@ -51,15 +51,15 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.BestLapTimes.FindAsync(id);
+                return await db.BestLapTimes.Where(bl => bl.Id == id).Include(bl => bl.LapTime).Include(bl => bl.ApplicationUser).FirstOrDefaultAsync();
             }
         }
 
-        public IQueryable<BestLapTime> GetForUserId(string userId)
+        public IEnumerable<BestLapTime> GetForUserId(string userId)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.BestLapTimes.Where(lt => lt.ApplicationUserId == userId);
+                return db.BestLapTimes.Where(lt => lt.ApplicationUserId == userId).ToList();
             }
         }
 
@@ -69,60 +69,75 @@ namespace SlotCarsGo_Server.Repository
             {
                 bestLapTime.Id = string.IsNullOrEmpty(bestLapTime.Id) ? Guid.NewGuid().ToString() : bestLapTime.Id;
                 bestLapTime = db.BestLapTimes.Add(bestLapTime); // register in context
+                await db.SaveChangesAsync();
+                /*
+                                LapTime lapTime = await db.LapTimes
+                                    .Where(l => l.Id == bestLapTime.LapTimeId)
+                                    .Include(l => l.DriverResult)
+                                    .Include(l => l.DriverResult.ApplicationUser)
+                                    .Include(l => l.DriverResult.Car)
+                                    .Include(l => l.DriverResult.RaceSession)
+                                    .Include(l => l.DriverResult.RaceSession.Track)
+                                    .FirstOrDefaultAsync();
 
-                LapTime lapTime = await db.LapTimes
-                    .Where(l => l.Id == bestLapTime.LapTimeId)
-                    .Include(l => l.DriverResult)
-                    .Include(l => l.DriverResult.ApplicationUser)
-                    .Include(l => l.DriverResult.Car)
-                    .Include(l => l.DriverResult.RaceSession)
-                    .Include(l => l.DriverResult.RaceSession.Track)
-                    .FirstOrDefaultAsync();
+                                TimeSpan time = bestLapTime.LapTime.Time;
+                                DriverResult driverResult = bestLapTime.LapTime.DriverResult;
+                                Car car = driverResult.Car;
+                                ApplicationUser user = driverResult.ApplicationUser;
+                                Track track = driverResult.RaceSession.Track;
 
-                TimeSpan time = bestLapTime.LapTime.Time;
-                DriverResult driverResult = bestLapTime.LapTime.DriverResult;
-                Car car = driverResult.Car;
-                ApplicationUser user = driverResult.ApplicationUser;
-                Track track = driverResult.RaceSession.Track;
+                                bool modified = false;
 
-                bool modified = false;
+                                // Check Track's overall record
+                                if (string.IsNullOrEmpty(track.BestLapTimeId)|| track.BestLapTime.LapTime.Time > time)
+                                {
+                                    track.BestLapTimeId = bestLapTime.Id;
+                                    modified = true;
+                                }
 
-                // Check Track's overall record
-                if (string.IsNullOrEmpty(track.BestLapTimeId)|| track.BestLapTime.LapTime.Time > time)
-                {
-                    track.BestLapTimeId = bestLapTime.Id;
-                    modified = true;
-                }
+                                // Check this car's overall record
+                                if (string.IsNullOrEmpty(car.BestLapTimeId) || car.BestLapTime.LapTime.Time > time)
+                                {
+                                    car.BestLapTimeId = bestLapTime.Id;
+                                    modified = true;
+                                }
 
-                // Check this car's overall record
-                if (string.IsNullOrEmpty(car.BestLapTimeId) || car.BestLapTime.LapTime.Time > time)
-                {
-                    car.BestLapTimeId = bestLapTime.Id;
-                    modified = true;
-                }
+                                // Check this car's best time for this user
+                                BestLapTime usersCarBestLap = car.BestLapTimes.Where(l => l.ApplicationUserId == user.Id).FirstOrDefault();
+                                if (usersCarBestLap == null)
+                                {
+                                    modified = true;
+                                    user.BestLapTimes.Add(bestLapTime);
+                                    car.BestLapTimes.Add(bestLapTime);
+                                }
+                                else if (time < usersCarBestLap.LapTime.Time)
+                                {
+                                    usersCarBestLap.LapTimeId = bestLapTime.Id;
+                                    modified = true;
+                                }
 
-                // Check this car's best time for this user
-                BestLapTime usersCarBestLap = car.BestLapTimes.Where(l => l.ApplicationUserId == user.Id).FirstOrDefault();
-                if (usersCarBestLap == null)
-                {
-                    modified = true;
-                    user.BestLapTimes.Add(bestLapTime);
-                    car.BestLapTimes.Add(bestLapTime);
-                }
-                else if (time < usersCarBestLap.LapTime.Time)
-                {
-                    usersCarBestLap.LapTimeId = bestLapTime.Id;
-                    modified = true;
-                }
-                
-                // If changes made then save best lap time
-                if (modified)
-                {
-                    await db.SaveChangesAsync();
-                }
+                                // If changes made then save best lap time
+                                if (modified)
+                                {
+                                    await db.SaveChangesAsync();
+                                }
+                */
             }
 
             return bestLapTime;
+        }
+
+        internal async Task<List<BestLapTime>> GetBestLapTimesForCar(string carId)
+        {
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                return await db.BestLapTimes
+                    .Where(bl => bl.CarId == carId)
+                    .Include(bl => bl.LapTime)
+                    .Include(bl => bl.ApplicationUser)
+                    .OrderBy(bl => bl.LapTime.Time)
+                    .ToListAsync();
+            }
         }
 
         public async Task<EntityState> Update(string id, BestLapTime bestLapTime)

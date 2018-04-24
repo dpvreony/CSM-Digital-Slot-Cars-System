@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -36,9 +37,10 @@ namespace SlotCarsGo_Server.Models.ViewModels
         public List<CarDTO> CarsInGarage { get; set; } = new List<CarDTO>();
         public List<SelectListItem> CarsInGarageListItems { get; set; } = new List<SelectListItem>();
 
-        public void Setup(ApplicationUser loggedInUser)
+        public async Task Setup(ApplicationUser loggedInUser)
         {
             this.User = loggedInUser;
+            BestLapTimesRepository<BestLapTime> bestLapTimesRepo = new BestLapTimesRepository<BestLapTime>();
 
             // Set Track Values
             if (string.IsNullOrEmpty(SelectedTrackId))
@@ -50,8 +52,20 @@ namespace SlotCarsGo_Server.Models.ViewModels
             {
                 this.SelectedTrack = this.User.Tracks.Where(t => t.Id == this.SelectedTrackId).FirstOrDefault();
             }
-            this.TrackRecord = this.SelectedTrack.BestLapTime == null ? "No Record Set" : this.SelectedTrack.BestLapTime.LapTime.Time.ToString(@"m\:ss\.fff");
-            this.TrackRecordHolder = this.SelectedTrack.BestLapTime == null ? "No Record Set" : this.SelectedTrack.BestLapTime.ApplicationUser.UserName;
+
+            string trackBestLapId = this.SelectedTrack.BestLapTimeId;
+            if (this.SelectedTrack.BestLapTimeId == null)
+            {
+                this.TrackRecord = "No Record Set";
+                this.TrackRecordHolder = "No Record Set";
+            }
+            else
+            {
+                BestLapTime trackBestLapTime = await bestLapTimesRepo.GetById(trackBestLapId);
+                this.TrackRecord = trackBestLapTime.LapTime.Time.ToString(@"m\:ss\.fff");
+                this.TrackRecordHolder = trackBestLapTime.ApplicationUser.UserName;
+            }
+
             foreach (Track track in this.User.Tracks.ToList())
             {
                 TrackDTO trackDTO = Mapper.Map<Track, TrackDTO>(track);
@@ -60,31 +74,30 @@ namespace SlotCarsGo_Server.Models.ViewModels
             }
 
             // Set Cars in Selected Track values
-            var cars = this.SelectedTrack.Cars
-                .Where(c => c.TrackId == this.SelectedTrackId && c.BestLapTime != null)
-                .OrderBy(c => c.BestLapTime)
-                .Concat(
-                    this.SelectedTrack.Cars
-                    .Where(c => c.TrackId == this.SelectedTrackId && c.BestLapTime == null))
-                    .OrderBy(c => c.Name)
-                    .ToList();
+            CarsRepository<Car, CarDTO> carsRepo = new CarsRepository<Car, CarDTO>();
+            //            var cars = carsRepo.GetFor(SelectedTrackId);
+            var cars = carsRepo.GetAllAsDTO(this.SelectedTrackId).OrderBy(c => c.TrackRecord);
 
-            if (cars.Count > 0)
+
+            if (cars.Count() > 0)
             {
-                foreach (Car car in cars)
+                // Populate dropdown
+                foreach (CarDTO car in cars)
                 {
-                    CarDTO carDTO = Mapper.Map<Car, CarDTO>(car);
-                    this.CarsInGarage.Add(carDTO);
-                    this.CarsInGarageListItems.Add(new SelectListItem() { Text = carDTO.Name, Value = carDTO.Id });
+                    this.CarsInGarage.Add(car);
+                    this.CarsInGarageListItems.Add(new SelectListItem() { Text = car.Name, Value = car.Id });
                 }
 
-                Car tempCar = string.IsNullOrEmpty(SelectedCarId)
+                // Select a car
+                CarDTO tempCar = string.IsNullOrEmpty(SelectedCarId)
                     ? cars.FirstOrDefault()
                     : cars.Where(c => c.Id == this.SelectedCarId).FirstOrDefault();
 
                 this.SelectedCarId = tempCar.Id;
-                this.SelectedCar = Mapper.Map<Car, CarDTO>(tempCar);
-                this.BestLapTimesForCar = tempCar.BestLapTimes.OrderBy(l => l.LapTime.Time).ToList();
+                //                this.SelectedCar = Mapper.Map<Car, CarDTO>(tempCar);
+                this.SelectedCar = tempCar;
+                this.BestLapTimesForCar = await bestLapTimesRepo.GetBestLapTimesForCar(this.SelectedCar.Id);
+
                 // Set up child View Models
                 this.ChangeTrackViewModel = new ChangeTrackViewModel { SelectedTrackId = this.SelectedTrackId, MyTracksListItems = this.MyTracksListItems };
                 this.ChangeCarViewModel = new ChangeCarViewModel { SelectedCarId = this.SelectedCarId, CarsInGarageListItems = this.CarsInGarageListItems };
@@ -170,7 +183,7 @@ namespace SlotCarsGo_Server.Models.ViewModels
 
         public List<SelectListItem> CarsInGarageListItems { get; set; }
 
-        public void SetCarToEdit(Car carToEdit)
+        public void SetCarToEdit(CarDTO carToEdit)
         {
             this.SelectedCarToEditId = carToEdit.Id;
             this.Name = carToEdit.Name;
@@ -189,7 +202,7 @@ namespace SlotCarsGo_Server.Models.ViewModels
 
         public List<SelectListItem> CarsInGarageListItems { get; set; }
 
-        public void SetCarToDelete(Car carToDelete)
+        public void SetCarToDelete(CarDTO carToDelete)
         {
             this.SelectedCarToDeleteId = carToDelete.Id;
         }

@@ -57,6 +57,8 @@ namespace SlotCarsGo_Server.Repository
                 IQueryable<Car> cars = db.Cars
                     .Where(d => d.TrackId == trackId)
                     .Include(d => d.BestLapTime)
+                    .Include(d => d.BestLapTime.LapTime)
+                    .Include(d => d.BestLapTime.ApplicationUser)
                     .OrderBy(d => d.Name);
 
                 foreach (Car car in cars)
@@ -72,7 +74,7 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.Cars.FindAsync(id);
+                return await db.Cars.Where(c => c.Id == id).Include(c => c.BestLapTime).Include(c => c.BestLapTimes).FirstOrDefaultAsync();
             }
         }
 
@@ -80,7 +82,22 @@ namespace SlotCarsGo_Server.Repository
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return db.Cars.Where(c => c.TrackId == trackId);
+/*
+                return db.Cars.Where(c => c.TrackId == trackId)
+                    .Include(c => c.BestLapTime)
+                    .Include(c => c.BestLapTime.ApplicationUser)
+                    .Include(c => c.BestLapTimes)
+                    .Include(c => c.BestLapTimes)
+                    .OrderBy(c => c.Name).ToList();
+*/
+                return db.Cars.Where(c => c.TrackId == trackId && c.BestLapTimeId != null)
+                    .Include(c => c.BestLapTime)
+                    .Include(c => c.BestLapTime.ApplicationUser)
+                    .Include(c => c.BestLapTime.LapTime)
+                    .OrderBy(c => c.BestLapTime.LapTime.Time)
+                    .Concat(
+                        db.Cars.Where(c => c.TrackId == trackId && c.BestLapTimeId == null).OrderBy(c => c.Name))
+                    .ToList();
             }
         }
 

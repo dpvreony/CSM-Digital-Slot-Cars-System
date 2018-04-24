@@ -25,12 +25,14 @@
             Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
             x:Uid="GridConfirmation_Title"
             Text="{Binding RaceTypeTitle}"
-            Style="{StaticResource PageTitleStyle}" Padding="50, 0,0,0"/>
+            Style="{StaticResource PageTitleStyle}" Padding="12,0,0,0"/>
         <Grid 
             Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1"
             Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+
             <Frame x:Name="RaceGridPanelFrame" Content="{Binding RaceGridPage}">
             </Frame>
+
         </Grid>
         <!-- Race Panel -->
         <Grid Grid.Row="1" Grid.Column="1">
@@ -65,30 +67,23 @@
                     Style="{StaticResource GridItemTextStyle}"
                     HorizontalAlignment="Center"/>
             </StackPanel>
-                <Button x:Name="QuitRaceButton" Grid.Row="4"
-                    Height="35" Width="60" Content="Quit" FontSize="{StaticResource MediumFontSize}" FontWeight="SemiBold"
-                    HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"
+            <StackPanel Orientation="Horizontal" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                <Button
+                    x:Name="BackButton"
+                    IsEnabled="{Binding IsRacePaused}"
+                    Height="35" Width="60" Content="Back"
+                    FontWeight="Bold"
+                    Background="Black"
+                    Foreground="DarkOrange"
+                    Margin="0,0,10,10"
+                    Click="BackButton_Click"/>
+                <Button x:Name="QuitRaceButton" 
+                    Height="35" Width="60" Content="Quit" FontWeight="Bold"
+                    Margin="20,0,10,10"
                     Background="OrangeRed"
+                    Foreground="White"
                     Click="QuitRaceButton_Click"/>
+            </StackPanel>
         </Grid>
-
-        <!--  Adaptive triggers  -->
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="WindowStates">
-                <VisualState x:Name="WideState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="640"/>
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitlePage.Margin" Value="48,0,12,7"/>
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>

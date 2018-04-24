@@ -5,6 +5,8 @@ using SlotCarsGo.ViewModels;
 using Windows.UI.Xaml.Controls;
 using GalaSoft.MvvmLight.Ioc;
 using Windows.UI.Xaml;
+using SlotCarsGo.Services;
+using System.Threading.Tasks;
 
 namespace SlotCarsGo.Views
 {
@@ -31,10 +33,14 @@ namespace SlotCarsGo.Views
             ViewModel.RaceButtonClicked();
         }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(GridConfirmationViewModel).FullName);
+        }
+
         private void QuitRaceButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            //            ViewModel.QuitButtonClicked();
-            ViewModel.RaceFinishedAsync();
+            ViewModel.QuitButtonClicked();
         }
     }
 }

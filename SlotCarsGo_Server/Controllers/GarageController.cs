@@ -19,7 +19,7 @@ namespace SlotCarsGo_Server.Controllers
     {
         // GET: /Garage/Index
         [Authorize]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             ViewBag.Title = "Manage Garage";
             try
@@ -29,7 +29,7 @@ namespace SlotCarsGo_Server.Controllers
 
                 if (user?.Tracks.Count == 0)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "RegisterTrack");
                 }
                 else
                 {
@@ -47,7 +47,7 @@ namespace SlotCarsGo_Server.Controllers
                         garageModel.SelectedCarId = carId.ToString();
                     }
 
-                    garageModel.Setup(user);
+                    await garageModel.Setup(user);
 
                     return View(garageModel);
                 }

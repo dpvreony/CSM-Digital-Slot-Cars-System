@@ -35,6 +35,14 @@ namespace SlotDriverResultsGo_Server.Controllers
 
                 driverResult = await repo.Insert(driverResult);
 
+                // Remove this driver from registered drivers
+                DriversRepository<Driver, DriverDTO> driversRepo = new DriversRepository<Driver, DriverDTO>();
+                Driver driver = driversRepo.GetForUser(driverResult.ApplicationUserId);
+                if (driver != null)
+                {
+                    await driversRepo.Delete(driver.Id);
+                }
+
                 return CreatedAtRoute("DefaultApi", new { id = driverResult.Id }, Mapper.Map<DriverResultDTO>(driverResult));
             }
 

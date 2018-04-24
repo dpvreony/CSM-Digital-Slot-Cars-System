@@ -4,6 +4,9 @@ using SlotCarsGo.ViewModels;
 
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using GalaSoft.MvvmLight.Ioc;
+using SlotCarsGo.Services;
+using Windows.UI.Xaml;
 
 namespace SlotCarsGo.Views
 {
@@ -19,6 +22,11 @@ namespace SlotCarsGo.Views
         public SettingsPage()
         {
             InitializeComponent();
+        }
+
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(MainViewModel).FullName);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

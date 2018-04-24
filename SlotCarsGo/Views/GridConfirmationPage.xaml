@@ -34,6 +34,14 @@
             Grid.Row="0"
             Grid.Column="1">
             <Button
+                x:Name="BackButton"
+                Content="Back"
+                FontWeight="Bold"
+                Background="Black"
+                Foreground="DarkOrange"
+                Margin="30,0,30,0"
+                Click="BackButton_Click"/>            
+            <Button
                 FontSize="28" FontFamily="Segoe MDL2 Assets"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"                
@@ -62,7 +70,7 @@
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>                    
+                    <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
@@ -70,7 +78,7 @@
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="10*"/>
                     <ColumnDefinition Width="1.5*"/>
-                    <ColumnDefinition Width="1.5*"/>                    
+                    <ColumnDefinition Width="1.5*"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock
@@ -194,7 +202,7 @@
                     Text="{Binding Player6_Car, Mode=TwoWay}"
                     Visibility="{Binding Player6Visibility}"
                     Style="{StaticResource GridItemTextStyle}"/>
-                
+
                 <!-- Confirm Player Setup buttons -->
                 <Button
                     x:Name="ConfirmUser1Button"
@@ -294,24 +302,6 @@
                     Visibility="{Binding Player6Visibility}"                    
                     Click="RemoveUserButton_Click"/>
             </Grid>
-        </Grid>                
-        <!--  Adaptive triggers  -->
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="WindowStates">
-                <VisualState x:Name="WideState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="640"/>
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitlePage.Margin" Value="48,0,12,7"/>
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
+        </Grid>
     </Grid>
 </Page>        

@@ -25,7 +25,8 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Track Record" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="{x:Bind MasterMenuItem.TrackRecord, Mode=OneWay}" Style="{StaticResource BodyTextBlockStyle}" />
+                        <TextBlock Text="{x:Bind MasterMenuItem.TrackRecord, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:ss\\\\.fff}' }"
+                                   Style="{StaticResource BodyTextBlockStyle}" />
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Record Holder" Style="{StaticResource SubtitleTextBlockStyle}" />

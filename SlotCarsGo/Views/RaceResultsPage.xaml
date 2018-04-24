@@ -64,7 +64,7 @@
                     Style="{StaticResource GridPositionVerticalTextStyle}"
                     Foreground="DeepSkyBlue"
                     HorizontalAlignment="Left"/>
-                <TextBlock Grid.Column="3" Padding="0,0,0,0" Text="{x:Bind Driver.UserName}" Style="{StaticResource LapTimeVerticalTextStyle}"/>
+                <TextBlock Grid.Column="3" Grid.ColumnSpan="2" Padding="0,0,0,0" Text="{x:Bind Driver.UserName}" Style="{StaticResource LapTimeVerticalTextStyle}"/>
             </Grid>
         </DataTemplate>
 
@@ -107,7 +107,7 @@
 
         <controls:MasterDetailsView
             Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
-            MasterPaneWidth="220"            
+            MasterPaneWidth="340"            
             x:Name="MasterDetailsViewControl"
             ItemsSource="{x:Bind ViewModel.Results, Mode=OneWay}"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
@@ -115,24 +115,5 @@
             DetailsTemplate="{StaticResource DetailsTemplate}"
             NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
             BorderBrush="Transparent" />
-        
-        <!--  Adaptive triggers  -->
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="WindowStates">
-                <VisualState x:Name="WideState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="400"/>
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitlePage.Margin" Value="60,0,12,7"/>
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>

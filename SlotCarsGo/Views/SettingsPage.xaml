@@ -19,61 +19,45 @@
                 <RowDefinition Height="48"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
             <TextBlock
-                Grid.Row="0"
+                Grid.Row="0" Grid.ColumnSpan="2"
                 x:Uid="Settings_Title"
                 x:Name="TitlePage"
                 Style="{StaticResource PageTitleStyle}" />
+            <Button
+                x:Name="HomeButton"
+                Grid.Row="0" Grid.Column="1" 
+                HorizontalAlignment="Right"
+                Margin="0,0,10,0"
+                Content="&#xE80F;"
+                Style="{StaticResource IconButton}"
+                FontSize="{StaticResource LargeFontSize}"
+                Click="HomeButton_Click"/>
 
-            <StackPanel Grid.Row="1">
-                <TextBlock
-                    x:Uid="Settings_Personalization"
-                    Style="{StaticResource SubtitleTextBlockStyle}" />
-
-
-                <TextBlock
-                    Text="Slot cars Go!"
-                    Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-                <StackPanel Margin="{StaticResource EightTopMargin}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-						Text="Website:" Margin="0,0,20,0"/>
-                        <HyperlinkButton
-						Content="https://slotscarsgo.timtyler.co.uk"
-						/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-						Text="Track Secret:" />
-                        <TextBlock
-						Text="{x:Bind ViewModel.Secret, Mode=OneWay}" />
-                    </StackPanel>
+            <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
+                <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <StackPanel Orientation="Horizontal">
                     <TextBlock
-						Text="Log in to the website and enter this track's secret in order to join races."
-						Margin="{StaticResource EightTopMargin}" />
+					Text="IP Address:" Margin="0,10,0,0"/>
+                    <TextBlock
+					Text="{x:Bind ViewModel.LocalIpAddress, Mode=OneWay}" Margin="10,10,0,0"/>
                 </StackPanel>
-
-                <TextBlock
-                        x:Uid="Settings_AppInfo"
-                        Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-                <TextBlock
-                        x:Uid="Settings_About"
-                        Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-                <StackPanel Margin="{StaticResource EightTopMargin}">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock
-                        Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
+					Text="Track Secret:" Margin="0,10,0,0"/>
                     <TextBlock
-                        x:Uid="Settings_AboutDescription"
-                        Margin="{StaticResource EightTopMargin}" />
-
-                 <StackPanel Margin="{StaticResource SettingsSubheaderMargin}">
+					Text="{x:Bind ViewModel.Secret, Mode=OneWay}" Margin="10,10,0,0"/>
+                </StackPanel>                
+                <TextBlock Text="Log in to the website and enter this track's secret to register to join races." Margin="0,10,0,0"/>
+                <HyperlinkButton Content="https://slotscarsgo.timtyler.co.uk" />
+                <StackPanel Margin="{StaticResource SettingsSubheaderMargin}">
                     <TextBlock
                         x:Uid="Settings_Theme"
                         Style="{StaticResource BodyTextStyle}" />
-
                     <StackPanel Margin="{StaticResource EightTopMargin}">
                         <RadioButton
                             x:Uid="Settings_Theme_Light"
@@ -104,31 +88,12 @@
                         </RadioButton>
                     </StackPanel>
                 </StackPanel>
-
-
-                    <HyperlinkButton
-                        x:Uid="Settings_PrivacyTermsLink"
-                        Margin="{StaticResource EightTopMargin}" />
-                </StackPanel>
+<!--                
+                <HyperlinkButton
+                    x:Uid="Settings_PrivacyTermsLink"
+                    Margin="{StaticResource EightTopMargin}" />
+-->                
             </StackPanel>
         </Grid>
-        <!--  Adaptive triggers  -->
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="WindowStates">
-                <VisualState x:Name="WideState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="640"/>
-                    </VisualState.StateTriggers>
-                </VisualState>
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitlePage.Margin" Value="48,0,12,7"/>
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>

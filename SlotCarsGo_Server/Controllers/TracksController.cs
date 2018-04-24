@@ -19,7 +19,7 @@ namespace SlotTracksGo_Server.Controllers
 {
     public class TracksController : ApiController
     {
-        private IRepositoryAsync<Track> repo = new TracksRepository<Track>();
+        private TracksRepository<Track> repo = new TracksRepository<Track>();
 
         // GET: api/Tracks/5
         [HttpGet]
@@ -27,7 +27,7 @@ namespace SlotTracksGo_Server.Controllers
         [Route("api/Tracks/{secret}")]
         public async Task<IHttpActionResult> GetTrack(string secret)
         {
-            Track track = await repo.GetById(secret);
+            Track track = await repo.GetBySecret(secret);
             if (track == null)
             {
                 return NotFound();

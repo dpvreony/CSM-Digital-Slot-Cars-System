@@ -4,6 +4,8 @@ using SlotCarsGo.ViewModels;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using GalaSoft.MvvmLight.Ioc;
+using SlotCarsGo.Services;
 
 namespace SlotCarsGo.Views
 {
@@ -18,6 +20,11 @@ namespace SlotCarsGo.Views
         {
             InitializeComponent();
             Loaded += GaragePage_Loaded;
+        }
+
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(MainViewModel).FullName);
         }
 
         private async void GaragePage_Loaded(object sender, RoutedEventArgs e)

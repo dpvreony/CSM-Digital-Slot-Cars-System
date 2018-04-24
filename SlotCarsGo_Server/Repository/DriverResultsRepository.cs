@@ -46,11 +46,23 @@ namespace SlotCarsGo_Server.Repository
             }
         }
 
+/* FILLER */
+
         public async Task<DriverResult> GetById(string id)
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                return await db.DriverResults.FindAsync(id);
+                return await db.DriverResults.Where(dr => dr.Id == id).FirstOrDefaultAsync();
+//                    .Include(dr => dr.ApplicationUser)
+//                    .Include(dr => dr.ApplicationUser.BestLapTimes)
+//                    .Include(dr => dr.Car)
+//                    .Include(dr => dr.Car.Track)
+//                    .Include(dr => dr.Car.Track.BestLapTime)
+//                    .Include(dr => dr.Car.Track.BestLapTime.LapTime)
+//                    .Include(dr => dr.Car.BestLapTime)
+//                    .Include(dr => dr.Car.BestLapTime.LapTime)
+//                    .Include(dr => dr.Car.BestLapTimes)
+//                    .FirstOrDefaultAsync();
             }
         }
 

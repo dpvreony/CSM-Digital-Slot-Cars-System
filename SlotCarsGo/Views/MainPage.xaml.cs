@@ -7,6 +7,8 @@ using Windows.UI.ViewManagement;
 using Windows.Foundation;
 using GalaSoft.MvvmLight.Ioc;
 using SlotCarsGo.Models.Comms;
+using SlotCarsGo.Services;
+using Windows.UI.Xaml;
 
 namespace SlotCarsGo.Views
 {
@@ -32,6 +34,11 @@ namespace SlotCarsGo.Views
         private void GarageButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             ViewModel.GarageButtonClicked();
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            SimpleIoc.Default.GetInstance<NavigationServiceEx>().Navigate(typeof(SettingsViewModel).FullName);
         }
     }
 }
